@@ -23,8 +23,8 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Array} shape Array of shape ids to use to filter images
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
-     * @apiParam (Optional arguments) {Array} created_at Array containing objects mapping field names (annotation, annotation_label) to date logical operators (gt, eq, neq, lt) and date Y-m-d values. Example: [{"ref" :"annotation", "operator": "gt", "date": "2026-01-01"}}] means an annotation created after 2026-01-01
-     * @apiParam (Optional arguments) {Array} updated_at Array containing objects mapping field names (annotation, annotation_label) to date logical operators (gt, eq, neq, lt) and date Y-m-d values. Example: [{"ref" :"annotation", "operator": "gt", "date": "2026-01-01"}}] means an annotation updated after 2026-01-01
+     * @apiParam (Optional arguments) {Array} annotation_created_at  Array of date patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_label_created_at  Array of date patterns to use to filter annotations
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for image volumes.
@@ -34,17 +34,14 @@ class FilterImageAnnotationsByLabelController extends Controller
      */
     public function index(FilterVolumeAnnotationsRequest $request)
     {
-        $volume = Volume::findOrFail($vid);
-        $this->authorize('access', $volume);
-
         $take = $request->input('take');
 
         $filters = [
             'shape' => $request->input('shape'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
-            'created_at' => $request->input('created_at'),
-            'updated_at' => $request->input('updated_at'),
+            'annotation_created_at' => $request->input('annotation_created_at'),
+            'annotation_label_created_at' => $request->input('annotation_label_created_at'),
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
@@ -59,8 +56,8 @@ class FilterImageAnnotationsByLabelController extends Controller
 
         return $query->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->where('images.volume_id', $vid)
-            ->where('image_annotation_labels.label_id', $lid)
+            ->where('images.volume_id', $request->volume->id)
+            ->where('image_annotation_labels.label_id', $request->labelId)
             ->when(!is_null($take), fn ($query) => $query->take($take))
             ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('image', $query, $union, $filters))
             ->when($session, function ($query) use ($session, $request) {

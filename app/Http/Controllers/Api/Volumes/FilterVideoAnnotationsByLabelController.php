@@ -23,8 +23,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Array} shape Array of shape ids to use to filter videos
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
-     * @apiParam (Optional arguments) {Array} created_at Array containing objects mapping field names (annotation, annotation_label) to date operators (gt, gte, eq, lt, lte) and date Y-m-d values. Example: [{"annotation": {"gt": "2026-01-01"}}] means an annotation created after 2026-01-01
-     * @apiParam (Optional arguments) {Array} updated_at Array containing objects mapping field names (annotation, annotation_label) to date logical operators (gt, eq, neq, lt) and date Y-m-d values. Example: [{"ref" :"annotation", "operator": "gt", "date": "2026-01-01"}}] means an annotation updated after 2026-01-01
+     * @apiParam (Optional arguments) {Array} annotation_created_at  Array of date patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_label_created_at  Array of date patterns to use to filter annotations
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for video volumes.
@@ -34,27 +34,13 @@ class FilterVideoAnnotationsByLabelController extends Controller
      */
     public function index(FilterVolumeAnnotationsRequest $request)
     {
-        $volume = Volume::findOrFail($vid);
-        $this->authorize('access', $volume);
-
-        $this->validate($request, [
-            'take' => 'integer',
-            'shape' => 'array',
-            'shape.*' => 'integer',
-            'user_id' => 'array',
-            'user_id.*' => 'integer',
-            'filename' => 'array',
-            'filename.*' => 'string',
-            'union' => 'boolean',
-        ]);
-
         $take = $request->input('take');
         $filters = [
             'shape' => $request->input('shape'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
-            'created_at' => $request->input('created_at'),
-            'updated_at' => $request->input('updated_at'),
+            'annotation_created_at' => $request->input('annotation_created_at'),
+            'annotation_label_created_at' => $request->input('annotation_label_created_at'),
         ];
 
         $filters = array_filter($filters);
@@ -70,8 +56,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
 
         return $query->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
-            ->where('videos.volume_id', $vid)
-            ->where('video_annotation_labels.label_id', $lid)
+            ->where('videos.volume_id', $request->volume->id)
+            ->where('video_annotation_labels.label_id', $request->labelId)
             ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('video', $query, $union, $filters))
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {

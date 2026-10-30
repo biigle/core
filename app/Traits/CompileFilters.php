@@ -34,6 +34,7 @@ trait CompileFilters
      * Handles different filter types (filename, dates, default) and extracts negation prefixes.
      * Returns an array of normalized filter arrays suitable for query application.
      *
+     * @param string $annotationType 'video' or 'image' depending on the nature of the support of the request
      * @param string $filterName The name of the filter to apply
      * @param array $filterValues The raw filter values from the request
      *
@@ -46,11 +47,13 @@ trait CompileFilters
     private function normalizeFilterValues(string $annotationType, string $filterName, array $filterValues): array
     {
         return array_map(function ($value) use ($filterName, $annotationType) {
+
             $isNegated = is_string($value) && str_starts_with($value, '-');
+            $actualValue = $isNegated ? substr($value, 1) : $value;
 
             return match ($filterName) {
                 'filename' => $this->normalizeFilenameFilter($value, $isNegated),
-                'created_at', 'updated_at' => $this->normalizeDateFilter($annotationType, $filterName, $value, $isNegated),
+                'annotation_created_at', 'annotation_label_created_at' => $this->normalizeDateFilter($annotationType, $filterName, $actualValue, $isNegated),
                 default => $this->normalizeDefaultFilter($filterName, $value, $isNegated),
             };
         }, $filterValues);
@@ -62,7 +65,7 @@ trait CompileFilters
      * Converts asterisks (*) to SQL LIKE wildcards (%) and prepares the filter for case-insensitive
      * matching using the ILIKE operator.
      *
-     * @param mixed $value The raw filter value, optionally prefixed with '-' for negation
+     * @param string $value The raw filter value, optionally prefixed with '-' for negation
      * @param bool $isNegated Whether the filter value was prefixed with '-'
      *
      * @return array A normalized filter array with keys:
@@ -71,14 +74,12 @@ trait CompileFilters
      *                - value: The filename pattern with * converted to %
      *                - negated: Whether the filter should be negated
      */
-    private function normalizeFilenameFilter($value, bool $isNegated): array
+    private function normalizeFilenameFilter(string $value, bool $isNegated): array
     {
-        $actualValue = $isNegated ? substr($value, 1) : $value;
-
         return [
             'field' => 'filename',
             'operator' => 'ilike',
-            'value' => str_replace('*', '%', $actualValue),
+            'value' => str_replace('*', '%', $value),
             'negated' => $isNegated,
         ];
     }
@@ -86,14 +87,10 @@ trait CompileFilters
     /**
      * Normalize a date filter with operator and time boundary handling.
      *
-     * Handles date comparison operators (gt, lt, eq) and applies appropriate time boundaries:
-     * - 'gt' (greater than): uses end of day
-     * - 'lt' (less than): uses start of day
-     * - 'eq' (equals): uses the exact date value
-     * - 'neq' (not equals): uses the exact date value
+     * Handles date comparison operators and applies appropriate time boundaries.
      *
      * @param string $filterName The date field name ('created_at' or 'updated_at')
-     * @param array $value An array with keys:
+     * @param string $value An array with keys:
      *                      - operator: The comparison operator ('gt', 'lt', 'eq', neq)
      *                      - ref: The table/column reference
      *                      - date: The date of reference
@@ -106,31 +103,37 @@ trait CompileFilters
      *                 - negated: not used here
      *                 - exact_date: if using equality, will force the conversion of the dates on PostrgreSQL
      */
-    private function normalizeDateFilter(string $annotationType, string $filterName, array $value, bool $isNegated): array
+    private function normalizeDateFilter(string $annotationType, string $filterName, string $value, bool $isNegated): array
     {
-        $dateValue = match ($value['operator']) {
-            'gt' => Carbon::createFromFormat('Y-m-d', $value['date'])->endOfDay()->toDateTimeString(),
-            'lt' => Carbon::createFromFormat('Y-m-d', $value['date'])->startOfDay()->toDateTimeString(),
-            'eq' => $value['date'],
-            'neq' => $value['date'],
+        $operator = substr($value, 0, 1) == '>'  || substr($value, 0, 1) == '<'  ?  substr($value, 0, 1) : '=';
+
+        if ($operator == '=') {
+            $date = $value;
+            $exactDate = true;
+        } else {
+            $date = substr($value, 1);
+            $exactDate = false;
+        }
+
+        $date = substr($value, 1);
+        $dateValue = match ($operator) {
+            '>' => Carbon::createFromFormat('Y-m-d', $date)->endOfDay()->toDateTimeString(),
+            '<' => Carbon::createFromFormat('Y-m-d', $date)->startOfDay()->toDateTimeString(),
+            '=' => $date,
             default => throw new \Exception('Operator not recognized'),
         };
 
-        $field = $annotationType."_{$value['ref']}s.{$filterName}";
+        // Only `created_at` is for now used.
+        $ref = str_replace('created_at', '', $filterName);
 
-        $operator = match ($value['operator']) {
-            'gt' => '>',
-            'lt' => '<',
-            'eq' => '=',
-            'neq' => '!=',
-        };
+        $field = $annotationType."_{$ref}s.created_at";
 
         return [
             'field' => $field,
             'operator' => $operator,
             'value' => $dateValue,
             'negated' => $isNegated,
-            'exact_date' => str_contains($operator, '='),
+            'exact_date' => $exactDate,
         ];
     }
 
@@ -151,12 +154,10 @@ trait CompileFilters
      */
     private function normalizeDefaultFilter(string $filterName, string $value, bool $isNegated): array
     {
-        $actualValue = $isNegated ? substr($value, 1) : $value;
-
         return [
             'field' => $filterName,
             'operator' => '=',
-            'value' => $actualValue,
+            'value' => $value,
             'negated' => $isNegated,
         ];
     }
@@ -181,12 +182,14 @@ trait CompileFilters
     {
         if ($filter['negated']) {
             if (isset($filter['exact_date']) && $filter['exact_date']) {
+                // whereDate is less efficient than whereNot, using it only for = / != cases.
                 $q->whereNot(fn ($query) => $query->whereDate($filter['field'], $filter['operator'], $filter['value'], $boolean));
             } else {
                 $q->whereNot($filter['field'], $filter['operator'], $filter['value'], $boolean);
             }
         } else {
             if (isset($filter['exact_date']) && $filter['exact_date']) {
+                // whereDate is less efficient than whereNot, using it only for = / != cases.
                 $q->whereDate($filter['field'], $filter['operator'], $filter['value'], $boolean);
             } else {
                 $q->where($filter['field'], $filter['operator'], $filter['value'], $boolean);

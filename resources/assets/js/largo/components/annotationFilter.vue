@@ -148,17 +148,13 @@ export default {
                 Filename: {},
                 'Annotation created': {},
                 'Label assigned': {},
-                'Annotation updated': {},
-                'Label updated': {},
             },
             filterToKeyMapping: {
                 Shape: "shape",
                 User: "user_id",
                 Filename: "filename",
-                'Annotation created': "created_at",
-                'Label assigned': "created_at",
-                'Annotation updated': "updated_at",
-                'Label updated': "updated_at",
+                'Annotation created': "annotation_created_at",
+                'Label assigned': "annotation_label_created_at",
             },
             selectedFilter: "Shape",
             selectedFilterValue: null,
@@ -166,10 +162,10 @@ export default {
             negate: false,
             dateFilterSelectedValue: null,
             dateLogicalOptions: {
-                "before": "lt",
-                "on": "eq",
-                "not on ": "neq",
-                "after": "gt",
+                "before": "<",
+                "on": "",
+                "not on ": "-",
+                "after": ">",
             },
             dateLogicalValue: "before",
         };
@@ -205,8 +201,7 @@ export default {
             return this.selectedFilter === 'Filename';
         },
         dateFilterSelected() {
-            return this.filterToKeyMapping[this.selectedFilter].includes("created") ||
-                   this.filterToKeyMapping[this.selectedFilter].includes("updated");
+            return this.filterToKeyMapping[this.selectedFilter].includes("created");
         },
     },
 
@@ -282,16 +277,10 @@ export default {
                 this.filenamePattern = '';
             } else if (this.dateFilterSelected) {
                 this.negate = false;
-                let ref = this.selectedFilter.includes('Annotation') ? 'annotation' : 'annotation_label';
                 filterName = this.dateFilterSelectedValue ;
 
                 logicalString = this.dateLogicalValue;
-                filterValue = {
-                    'ref': ref,
-                    'operator': this.dateLogicalOptions[this.dateLogicalValue],
-                    'date': filterName,
-                };
-
+                filterValue = this.dateLogicalOptions[this.dateLogicalValue];
             } else {
                 if (!this.selectedFilterValue) {
                     return;
