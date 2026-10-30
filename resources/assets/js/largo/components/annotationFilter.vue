@@ -152,7 +152,7 @@ export default {
                 'Label updated': {},
             },
             filterToKeyMapping: {
-                Shape: "shape_id",
+                Shape: "shape",
                 User: "user_id",
                 Filename: "filename",
                 'Annotation created': "created_at",

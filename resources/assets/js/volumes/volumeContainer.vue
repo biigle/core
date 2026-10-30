@@ -219,7 +219,7 @@ export default {
         },
         setLabels(response) {
             this.files.forEach(function (file) {
-                file.labels = response.body[file.id];
+                file.labels = response.body[file.id] || [];
             });
         },
         restoreSettings() {

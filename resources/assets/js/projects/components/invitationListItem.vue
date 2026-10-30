@@ -75,7 +75,7 @@ export default {
     computed: {
         role() {
             return this.roles.find((role) => {
-                return this.invitation.role_id === role.id;
+                return this.invitation.role === role.id;
             });
         },
         uses() {

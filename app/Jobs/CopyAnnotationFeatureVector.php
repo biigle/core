@@ -5,19 +5,14 @@ namespace Biigle\Jobs;
 use Biigle\AnnotationLabel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\QueryException;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
+#[DeleteWhenMissingModels]
 abstract class CopyAnnotationFeatureVector extends Job
 {
     use SerializesModels, InteractsWithQueue;
-
-    /**
-     * Ignore this job if the annotation does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Copy the feature vector of the annotation associated with the annotation label
@@ -47,8 +42,9 @@ abstract class CopyAnnotationFeatureVector extends Job
                     'vector' => $vector->vector,
                 ]);
             } catch (QueryException $e) {
-                // Annotation was deleted between the query and the insert.
-                if (!str_contains($e->getMessage(), 'SQLSTATE[23503]')) {
+                // SQLSTATE 23503 is a foreign key violation. The annotation was
+                // deleted between the query and the insert.
+                if ($e->getCode() !== '23503') {
                     throw $e;
                 }
             }

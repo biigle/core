@@ -20,7 +20,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiParam {Number} vid The volume ID
      * @apiParam {Number} lid The Label ID
      * @apiParam (Optional arguments) {Number} take Number of video annotations to return. If this parameter is present, the most recent annotations will be returned first. Default is unlimited.
-     * @apiParam (Optional arguments) {Array} shape_id Array of shape ids to use to filter videos
+     * @apiParam (Optional arguments) {Array} shape Array of shape ids to use to filter videos
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
      * @apiParam (Optional arguments) {Array} created_at Array containing objects mapping field names (annotation, annotation_label) to date operators (gt, gte, eq, lt, lte) and date Y-m-d values. Example: [{"annotation": {"gt": "2026-01-01"}}] means an annotation created after 2026-01-01
@@ -34,12 +34,23 @@ class FilterVideoAnnotationsByLabelController extends Controller
      */
     public function index(FilterVolumeAnnotationsRequest $request)
     {
-        $vid = $request->volume->id;
-        $lid = $request->labelId;
+        $volume = Volume::findOrFail($vid);
+        $this->authorize('access', $volume);
+
+        $this->validate($request, [
+            'take' => 'integer',
+            'shape' => 'array',
+            'shape.*' => 'integer',
+            'user_id' => 'array',
+            'user_id.*' => 'integer',
+            'filename' => 'array',
+            'filename.*' => 'string',
+            'union' => 'boolean',
+        ]);
 
         $take = $request->input('take');
         $filters = [
-            'shape_id' => $request->input('shape_id'),
+            'shape' => $request->input('shape'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
             'created_at' => $request->input('created_at'),

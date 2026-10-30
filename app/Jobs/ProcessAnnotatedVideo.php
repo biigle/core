@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image;
 
+/**
+ * @extends ProcessAnnotatedFile<VideoAnnotation>
+ */
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 {
     /**
@@ -30,7 +33,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
         // of memory issues.
         // Also (if feature vectors are generated), a PNG is stored for each frame in a
         // chunk. Large chunks could comsume too much space.
-        $this->getAnnotationQuery($file)
+        $this->getAnnotationQuery()
             ->chunkById(100, fn ($a) => $this->processAnnotationChunk($a, $video));
     }
 
@@ -91,29 +94,11 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     }
 
     /**
-     * Create the feature vectors based on the Python script output.
-     *
-     * @param Collection<int, VideoAnnotation> $annotations
+     * {@inheritdoc}
      */
-    protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
+    protected function getFeatureVectorModel(): string
     {
-        $annotations = $annotations->load('labels.label')->keyBy('id');
-        foreach ($output as $row) {
-            $annotation = $annotations->get($row[0]);
-
-            foreach ($annotation->labels as $al) {
-                VideoAnnotationLabelFeatureVector::updateOrCreate(
-                    ['id' => $al->id],
-                    [
-                        'annotation_id' => $annotation->id,
-                        'label_id' => $al->label_id,
-                        'label_tree_id' => $al->label->label_tree_id,
-                        'volume_id' => $this->file->volume_id,
-                        'vector' => $row[1],
-                    ]
-                );
-            }
-        }
+        return VideoAnnotationLabelFeatureVector::class;
     }
 
     /**
@@ -160,11 +145,16 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      *
      * @return Builder<VideoAnnotation>
      */
-    protected function getAnnotationQuery(VolumeFile $file): Builder
+    protected function getBaseAnnotationQuery(): Builder
     {
-        return VideoAnnotation::where('video_id', $file->id)->when(
-            !empty($this->only),
-            fn ($q) => $q->whereIn('id', $this->only)
-        );
+        return VideoAnnotation::where('video_id', $this->file->id);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getQueueConfigKey(): string
+    {
+        return 'largo.generate_video_annotation_patch_queue';
     }
 }

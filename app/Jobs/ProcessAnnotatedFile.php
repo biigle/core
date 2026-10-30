@@ -4,22 +4,27 @@ namespace Biigle\Jobs;
 
 use Biigle\Annotation;
 use Biigle\Contracts\Annotation as AnnotationContract;
+use Biigle\Enums\Shape;
 use Biigle\Exceptions\ProcessAnnotatedFileException;
 use Biigle\FileCache\Exceptions\FileLockedException;
-use Biigle\Shape;
 use Biigle\VideoAnnotation;
 use Biigle\VolumeFile;
 use Exception;
 use FileCache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image;
+use Pgvector\Laravel\Vector;
 use Str;
 use SVG\Nodes\Shapes\SVGCircle;
 use SVG\Nodes\Shapes\SVGEllipse;
@@ -30,9 +35,27 @@ use SVG\Nodes\Structures\SVGGroup;
 use SVG\Nodes\SVGNodeContainer;
 use SVG\SVG;
 
+/**
+ * @template TAnnotation of Annotation
+ */
+#[DeleteWhenMissingModels]
 abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 {
     use SerializesModels, InteractsWithQueue;
+
+    /**
+     * Number of feature vectors that are written to the database with a single query.
+     *
+     * Feature vectors are only visible to other jobs once the batch is written. A
+     * CopyAnnotationFeatureVector job for a label that is attached in the meantime
+     * finds no feature vector to copy, and computed feature vectors of an unwritten
+     * batch are lost if the job fails. Generating a feature vector is much slower
+     * than writing it, so a small batch keeps most of the performance benefit while
+     * reducing these issues.
+     *
+     * @var int
+     */
+    const FEATURE_VECTOR_BATCH_SIZE = 100;
 
     /**
      * The maximum number of times the job may be redispatched.
@@ -54,13 +77,6 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      * @var int
      */
     public $tries = 3;
-
-    /**
-     * Ignore this job if the annotation does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -86,6 +102,15 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         public int $redispatchTries = 0,
     ) {
         $this->targetDisk = $targetDisk ?: config('largo.patch_storage_disk');
+        $this->onQueue(config($this->getQueueConfigKey()));
+    }
+
+    /**
+     * Get the config key of the queue that should be used to process this job.
+     */
+    protected function getQueueConfigKey(): string
+    {
+        return 'largo.generate_annotation_patch_queue';
     }
 
     /**
@@ -216,9 +241,9 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     public function createSvgs(): void
     {
-        $this->getAnnotationQuery($this->file)
+        $this->getAnnotationQuery()
             // No SVGs should be generated for whole frame annotations.
-            ->where('shape_id', '!=', Shape::wholeFrameId())
+            ->where('shape', '!=', Shape::WHOLE_FRAME)
             ->eachById(fn ($a) => $this->createSvg($a));
     }
 
@@ -270,7 +295,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $thumbWidth = config('thumbnails.width');
         $thumbHeight = config('thumbnails.height');
 
-        if ($shape->id === Shape::wholeFrameId()) {
+        if ($shape === Shape::WHOLE_FRAME) {
             $image = $image->resize(floatval($thumbWidth) / $image->width);
         } else {
             $padding = config('largo.patch_padding');
@@ -375,15 +400,120 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
     /**
      * Create the feature vectors based on the Python script output.
+     *
+     * @param Collection<int, TAnnotation> $annotations
      */
-    abstract protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void;
+    protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
+    {
+        $annotations = $annotations->load('labels.label')->keyBy('id');
+        // Write the feature vectors in batches with a single query each instead of a
+        // query for each feature vector.
+        $vectors = [];
+        foreach ($output as $row) {
+            $annotation = $annotations->get($row[0]);
+            // Same conversion as the Vector cast of the model, which is not applied
+            // by upsert().
+            $vector = (string) new Vector($row[1]);
+
+            foreach ($annotation->labels as $al) {
+                $vectors[$al->id] = [
+                    'id' => $al->id,
+                    'annotation_id' => $annotation->id,
+                    'label_id' => $al->label_id,
+                    'label_tree_id' => $al->label->label_tree_id,
+                    'volume_id' => $this->file->volume_id,
+                    'vector' => $vector,
+                ];
+            }
+
+            if (count($vectors) >= static::FEATURE_VECTOR_BATCH_SIZE) {
+                $this->upsertFeatureVectors($vectors);
+                $vectors = [];
+            }
+        }
+
+        $this->upsertFeatureVectors($vectors);
+    }
 
     /**
-     * Get the query builder for the annotations (maybe filtered by IDs).
-     *
-     * @return Builder<covariant Annotation>
+     * Insert or update feature vectors.
      */
-    abstract protected function getAnnotationQuery(VolumeFile $file): Builder;
+    protected function upsertFeatureVectors(array $vectors): void
+    {
+        if (empty($vectors)) {
+            return;
+        }
+
+        // The transactions become savepoints if this runs inside another transaction,
+        // which are rolled back on error so the outer transaction is not aborted.
+        try {
+            DB::transaction(fn () => $this->doUpsertFeatureVectors(array_values($vectors)));
+        } catch (QueryException $e) {
+            // SQLSTATE 23503 is a foreign key violation. An annotation or annotation
+            // label was deleted while the feature vectors were generated. A single
+            // violation fails the whole batch so retry each row individually to only
+            // skip the affected ones.
+            if ($e->getCode() !== '23503') {
+                throw $e;
+            }
+
+            foreach ($vectors as $vector) {
+                try {
+                    DB::transaction(fn () => $this->doUpsertFeatureVectors([$vector]));
+                } catch (QueryException $e) {
+                    if ($e->getCode() !== '23503') {
+                        throw $e;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Perform the upsert query for a batch of feature vectors.
+     */
+    protected function doUpsertFeatureVectors(array $vectors): void
+    {
+        $this->getFeatureVectorModel()::upsert(
+            $vectors,
+            ['id'],
+            ['annotation_id', 'label_id', 'label_tree_id', 'volume_id', 'vector']
+        );
+    }
+
+    /**
+     * Get the class name of the feature vector model of the annotation labels.
+     *
+     * @return class-string<Model>
+     */
+    abstract protected function getFeatureVectorModel(): string;
+
+    /**
+     * Get the query builder for all annotations of the file of this job.
+     *
+     * @return Builder<TAnnotation>
+     */
+    abstract protected function getBaseAnnotationQuery(): Builder;
+
+    /**
+     * Get the query builder for the annotations of the file that should be processed.
+     *
+     * @return Builder<TAnnotation>
+     */
+    protected function getAnnotationQuery(): Builder
+    {
+        return $this->getBaseAnnotationQuery()
+            ->when(!empty($this->only), fn ($q) => $q->whereIn('id', $this->only))
+            // The file of all annotations of this job is already known, so set it
+            // manually to avoid a query for each annotation (e.g. in getTargetPath()).
+            ->afterQuery(function ($annotations) {
+                if ($annotations instanceof Collection) {
+                    $annotations->each(fn ($a) => $a->setRelation('file', $this->file));
+                }
+
+                return $annotations;
+            });
+    }
 
     /**
      * Draw annotation as SVG
@@ -397,23 +527,23 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     protected function getSVGAnnotation(array $points, Shape $shape): SVGNodeContainer
     {
         $tuples = [];
-        if ($shape->id !== Shape::circleId()) {
+        if ($shape !== Shape::CIRCLE) {
             for ($i = 0; $i < sizeof($points) - 1; $i = $i + 2) {
                 $tuples[] = [$points[$i], $points[$i + 1]];
             }
         }
 
-        $annotation = match ($shape->id) {
-            Shape::pointId() => new SVGCircle($points[0], $points[1], 5),
-            Shape::circleId() => new SVGCircle($points[0], $points[1], $points[2]),
-            Shape::polygonId() => new SVGPolygon($tuples),
-            Shape::lineId() => new SVGPolyline($tuples),
-            Shape::rectangleId() => $this->getRectangleSvgAnnotation($tuples),
-            Shape::ellipseId() => $this->getEllipseSvgAnnotation($tuples),
+        $annotation = match ($shape) {
+            Shape::POINT => new SVGCircle($points[0], $points[1], 5),
+            Shape::CIRCLE => new SVGCircle($points[0], $points[1], $points[2]),
+            Shape::POLYGON => new SVGPolygon($tuples),
+            Shape::LINE => new SVGPolyline($tuples),
+            Shape::RECTANGLE => $this->getRectangleSvgAnnotation($tuples),
+            Shape::ELLIPSE => $this->getEllipseSvgAnnotation($tuples),
             default => null,
         };
 
-        if ($shape->id !== Shape::pointId()) {
+        if ($shape !== Shape::POINT) {
             $annotation->setAttribute('fill', 'none');
             $annotation->setAttribute('vector-effect', 'non-scaling-stroke');
         }
@@ -428,7 +558,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
 
         $outline = clone $annotation;
 
-        if ($shape->id === Shape::pointId()) {
+        if ($shape === Shape::POINT) {
             $outline->setAttribute('r', 6);
             $outline->setAttribute('fill', '#fff');
             $annotation->setAttribute('fill', '#666');
@@ -451,7 +581,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function getRectangleSvgAnnotation(array $tuples): SVGRect
     {
-        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::rectangle());
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::RECTANGLE);
 
         $upperLeft = $sortedCoords['UL'];
         $width = sqrt(pow($sortedCoords['UR'][0] - $upperLeft[0], 2) + pow($sortedCoords['UR'][1] - $upperLeft[1], 2));
@@ -472,7 +602,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function getEllipseSvgAnnotation(array $tuples): SVGEllipse
     {
-        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ellipse());
+        $sortedCoords = $this->getOrientedCoordinates($tuples, Shape::ELLIPSE);
 
         $vecLR = [$sortedCoords['R'][0] - $sortedCoords['L'][0], $sortedCoords['R'][1] - $sortedCoords['L'][1]];
         $vecUD = [$sortedCoords['D'][0] - $sortedCoords['U'][0], $sortedCoords['D'][1] - $sortedCoords['U'][1]];
@@ -537,12 +667,12 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         usort($tuples, fn ($a, $b) => $a[0] <=> $b[0]);
 
         // Note: y-axis is inverted
-        if ($shape->id === Shape::rectangleId()) {
+        if ($shape === Shape::RECTANGLE) {
             $assigned['LL'] = $tuples[0][1] > $tuples[1][1] ? $tuples[0] : $tuples[1];
             $assigned['UL'] = $tuples[0][1] < $tuples[1][1] ? $tuples[0] : $tuples[1];
             $assigned['LR'] = $tuples[2][1] > $tuples[3][1] ? $tuples[2] : $tuples[3];
             $assigned['UR'] = $tuples[2][1] < $tuples[3][1] ? $tuples[2] : $tuples[3];
-        } elseif ($shape->id === Shape::ellipseId()) {
+        } elseif ($shape === Shape::ELLIPSE) {
             $assigned['L'] = $tuples[0];
             $assigned['R'] = end($tuples);
             $assigned['U'] = $tuples[1][1] < $tuples[2][1] ? $tuples[1] : $tuples[2];

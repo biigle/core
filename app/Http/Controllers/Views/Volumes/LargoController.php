@@ -2,11 +2,11 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Role;
-use Biigle\Shape;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 use Storage;
@@ -35,9 +35,9 @@ class LargoController extends Controller
             // All projects that the user and the volume have in common
             // and where the user is editor, expert or admin.
             $projects = Project::inCommon($request->user(), $volume->id, [
-                Role::editorId(),
-                Role::expertId(),
-                Role::adminId(),
+                Role::EDITOR,
+                Role::EXPERT,
+                Role::ADMIN,
             ])->get();
         }
 
@@ -54,11 +54,10 @@ class LargoController extends Controller
         $patchUrlTemplate = Storage::disk(config('largo.patch_storage_disk'))
             ->url(':prefix/:id.'.config('largo.patch_format'));
 
-        $shapes = Shape::pluck('name', 'id');
-
-        if (!$volume->isVideoVolume()) {
-            $wholeframeId = Shape::wholeFrameId();
-            unset($shapes[$wholeframeId]);
+        if ($volume->isVideoVolume()) {
+            $shapes = Shape::pluckById();
+        } else {
+            $shapes = Shape::pluckById(except: Shape::WHOLE_FRAME);
         }
 
         return view('largo.show', [

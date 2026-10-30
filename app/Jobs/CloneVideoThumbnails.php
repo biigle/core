@@ -4,10 +4,12 @@ namespace Biigle\Jobs;
 
 use Biigle\Video;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Storage;
 
+#[DeleteWhenMissingModels]
 class CloneVideoThumbnails extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
@@ -30,13 +32,6 @@ class CloneVideoThumbnails extends Job implements ShouldQueue
      * @var Video
      */
     public $video;
-
-    /**
-     * Ignore this job if the video does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     public function __construct(Video $video, String $prefix)
     {

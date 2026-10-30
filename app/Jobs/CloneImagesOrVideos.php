@@ -17,12 +17,14 @@ use Biigle\VideoLabel;
 use Biigle\Volume;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Http\Request;
+use Illuminate\Queue\Attributes\DeleteWhenMissingModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Ramsey\Uuid\Uuid;
 
+#[DeleteWhenMissingModels]
 class CloneImagesOrVideos extends Job implements ShouldQueue
 {
     use InteractsWithQueue, SerializesModels;
@@ -84,13 +86,6 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
      * @var array
      */
     protected $uuidMap;
-
-    /**
-     * Ignore this job if the project or volume does not exist any more.
-     *
-     * @var bool
-     */
-    protected $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -173,20 +168,22 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyImages($volume, $copy, $selectedImageIds)
     {
         // copy image references
+        // Process raw rows in chunks so not all files must be held in memory as models.
+        // Chunking by ID keeps the ID order, which the annotation and label cloning
+        // rely on.
         $volume->images()
-            ->orderBy('id')
             ->when(!empty($selectedImageIds), fn ($query) => $query->whereIn('id', $selectedImageIds))
-            ->get()->map(function ($image) use ($copy) {
-                $original = $image->getRawOriginal();
-                $original['volume_id'] = $copy->id;
-                $original['uuid'] = (string)Uuid::uuid4();
-                $this->uuidMap[$original['uuid']] = $image->uuid;
-                unset($original['id']);
-                return $original;
-            })
-            ->chunk(1000)
-            ->each(function ($chunk) {
-                Image::insert($chunk->toArray());
+            ->toBase()
+            ->chunkById(1000, function ($images) use ($copy) {
+                $insert = $images->map(function ($image) use ($copy) {
+                    $original = (array) $image;
+                    $original['volume_id'] = $copy->id;
+                    $original['uuid'] = (string)Uuid::uuid4();
+                    $this->uuidMap[$original['uuid']] = $image->uuid;
+                    unset($original['id']);
+                    return $original;
+                });
+                Image::insert($insert->all());
             });
 
     }
@@ -319,20 +316,22 @@ class CloneImagesOrVideos extends Job implements ShouldQueue
     private function copyVideos($volume, $copy, $selectedVideoIds)
     {
         // copy video references
+        // Process raw rows in chunks so not all files must be held in memory as models.
+        // Chunking by ID keeps the ID order, which the annotation and label cloning
+        // rely on.
         $volume->videos()
-            ->orderBy('id')
             ->when(!empty($selectedVideoIds), fn ($query) => $query->whereIn('id', $selectedVideoIds))
-            ->get()->map(function ($video) use ($copy) {
-                $original = $video->getRawOriginal();
-                $original['volume_id'] = $copy->id;
-                $original['uuid'] = (string)Uuid::uuid4();
-                unset($original['id']);
-                $this->uuidMap[$original['uuid']] = $video->uuid;
-                return $original;
-            })
-            ->chunk(1000)
-            ->each(function ($chunk) {
-                Video::insert($chunk->toArray());
+            ->toBase()
+            ->chunkById(1000, function ($videos) use ($copy) {
+                $insert = $videos->map(function ($video) use ($copy) {
+                    $original = (array) $video;
+                    $original['volume_id'] = $copy->id;
+                    $original['uuid'] = (string)Uuid::uuid4();
+                    $this->uuidMap[$original['uuid']] = $video->uuid;
+                    unset($original['id']);
+                    return $original;
+                });
+                Video::insert($insert->all());
             });
 
     }

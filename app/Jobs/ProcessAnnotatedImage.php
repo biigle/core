@@ -6,10 +6,12 @@ use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Image;
 
+/**
+ * @extends ProcessAnnotatedFile<ImageAnnotation>
+ */
 class ProcessAnnotatedImage extends ProcessAnnotatedFile
 {
     /**
@@ -28,7 +30,7 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
             $image = null;
         }
 
-        $this->getAnnotationQuery($file)
+        $this->getAnnotationQuery()
             ->chunkById(1000, function ($annotations) use ($image, $path) {
                 if (!$this->skipPatches) {
                     $annotations->each(function ($a) use ($image) {
@@ -49,29 +51,11 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
     }
 
     /**
-     * Create the feature vectors based on the Python script output.
-     *
-     * @param Collection<int, ImageAnnotation> $annotations
+     * {@inheritdoc}
      */
-    protected function updateOrCreateFeatureVectors(Collection $annotations, \Generator $output): void
+    protected function getFeatureVectorModel(): string
     {
-        $annotations = $annotations->load('labels.label')->keyBy('id');
-        foreach ($output as $row) {
-            $annotation = $annotations->get($row[0]);
-
-            foreach ($annotation->labels as $al) {
-                ImageAnnotationLabelFeatureVector::updateOrCreate(
-                    ['id' => $al->id],
-                    [
-                        'annotation_id' => $annotation->id,
-                        'label_id' => $al->label_id,
-                        'label_tree_id' => $al->label->label_tree_id,
-                        'volume_id' => $this->file->volume_id,
-                        'vector' => $row[1],
-                    ]
-                );
-            }
-        }
+        return ImageAnnotationLabelFeatureVector::class;
     }
 
     /**
@@ -88,11 +72,8 @@ class ProcessAnnotatedImage extends ProcessAnnotatedFile
      *
      * @return Builder<ImageAnnotation>
      */
-    protected function getAnnotationQuery(VolumeFile $file): Builder
+    protected function getBaseAnnotationQuery(): Builder
     {
-        return ImageAnnotation::where('image_id', $file->id)->when(
-            !empty($this->only),
-            fn ($q) => $q->whereIn('id', $this->only)
-        );
+        return ImageAnnotation::where('image_id', $this->file->id);
     }
 }
