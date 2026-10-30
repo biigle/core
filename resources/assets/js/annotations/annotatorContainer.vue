@@ -74,6 +74,7 @@ export default {
             mapResolution: undefined,
             selectedLabel: null,
             annotationMode: 'default',
+            previousAnnotationMode: undefined,
             // For lawnmower and sampling modes: When switching images, this determines
             // if the first (0) or the last (Infinity) image section/sampling location
             // should be shown.
@@ -254,7 +255,8 @@ export default {
             this.imageIndex = this.getPreviousIndex(this.imageIndex);
         },
         maybeUpdateShownImageSection() {
-            if (this.isLawnmowerAnnotationMode) {
+            const lawnmowerWasPaused = this.previousAnnotationMode === 'lawnmowerPaused';
+            if (this.isLawnmowerAnnotationMode && !lawnmowerWasPaused) {
                 if (this.annotationModeCarry === Infinity) {
                     this.$refs.canvas.lawnmower.showLastImageSection();
                 } else {
@@ -569,6 +571,7 @@ export default {
             return false;
         },
         handleAnnotationModeChange(mode, data) {
+            this.previousAnnotationMode = this.annotationMode;
             this.annotationMode = mode;
             this.annotationModeCarry = null;
             this.maybeUpdateAnnotationMode(data);

@@ -15,7 +15,6 @@ export function useLawnmowerMode({
     updateMapSize = required('updateMapSize'),
     emit = required('emit'),
 }) {
-    // The image section information is needed for the lawnmower cycling mode
     // Index of the current image section in x and y direction.
     let imageSection = [0, 0];
     // Actual center point of the current image section.
@@ -91,9 +90,9 @@ export function useLawnmowerMode({
                 (center[1] - imageSectionStartCenter.value[1]) /
                 imageSectionStepSize.value[1]
             ),
-        ].map((index, axis) => Math.max(
+        ].map((imageSectionIndex, i) => Math.max(
             0,
-            Math.min(index, imageSectionSteps.value[axis] - 1)
+            Math.min(imageSectionIndex, imageSectionSteps.value[i] - 1)
         ));
     }
 
