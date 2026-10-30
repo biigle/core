@@ -133,6 +133,7 @@ export function useLawnmowerMode({
     }
 
     function showPreviousImageSection() {
+        syncImageSectionWithViewport();
         let x = imageSection[0] - 1;
         if (x >= 0) {
             return showImageSection([x, imageSection[1]]);
@@ -145,6 +146,7 @@ export function useLawnmowerMode({
     }
 
     function showNextImageSection() {
+        syncImageSectionWithViewport();
         let x = imageSection[0] + 1;
         if (x < imageSectionSteps.value[0]) {
             return showImageSection([x, imageSection[1]]);
@@ -206,6 +208,20 @@ export function useLawnmowerMode({
         applySavedLawnmowerState();
     }
 
+    function syncImageSectionWithViewport(center) {
+        // In case the map has been resized, getImageSectionForCenter needs the
+        // current map size for calculating the new grid position
+        map.value.updateSize();
+        updateMapSize();
+
+        if (!center) {
+            center = map.value.getView().getCenter();
+        }
+
+        imageSectionCenter = center;
+        imageSection = getImageSectionForCenter(center);
+    }
+
     function applySavedLawnmowerState() {
         const state = getSavedLawnmowerState();
         if (!state || !image.value || state.imageId !== image.value.id) {
@@ -215,19 +231,13 @@ export function useLawnmowerMode({
         emit('lawnmower-pre-viewport-change');
         const view = map.value.getView();
 
-        // In case the map has been resized, getImageSectionForCenter needs the
-        // current map size for calculating the new grid position
-        map.value.updateSize();
-        updateMapSize();
-
         view.setResolution(state.resolution);
         nextTick(() => {
-            imageSectionCenter = state.center;
-            imageSection = getImageSectionForCenter(state.center);
+            syncImageSectionWithViewport(state.center);
             map.value.once('rendercomplete', () => {
                 emit('lawnmower-post-viewport-change');
             });
-            view.setCenter(state.center);
+            view.setCenter(imageSectionCenter);
             discardSavedLawnmowerState();
         });
     }
