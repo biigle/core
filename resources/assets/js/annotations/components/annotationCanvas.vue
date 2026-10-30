@@ -14,7 +14,7 @@ import ImageLayer from '@biigle/ol/layer/Image';
 import Keyboard from '@/core/keyboard.js';
 import LabelBot from './annotationCanvas/labelBot.vue';
 import LabelIndicator from './labelIndicator.vue';
-import Lawnmower from './annotationCanvas/lawnmower.vue';
+import { useLawnmowerMode, LawnmowerEmits } from '@/annotations/composables/lawnmower.js';
 import LineString from '@biigle/ol/geom/LineString';
 import MagicWandInteraction from './annotationCanvas/magicWandInteraction.vue';
 import Map from '@biigle/ol/Map';
@@ -47,7 +47,7 @@ import { isInvalidShape } from '../utils.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
-import {markRaw} from 'vue';
+import {computed, markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 
@@ -60,6 +60,7 @@ export default {
     template: '#annotation-canvas-template',
     emits: [
         'moveend',
+        'movestart',
         'update',
         'select',
         'previous',
@@ -68,6 +69,7 @@ export default {
         'new',
         'delete',
         'requires-selected-label',
+        ...LawnmowerEmits,
     ],
     mixins: [
         // Since this component got quite huge some logic is outsourced to these mixins.
@@ -75,7 +77,6 @@ export default {
         AttachLabelInteraction,
         DrawInteractions,
         LabelBot,
-        Lawnmower,
         MagicWandInteraction,
         MeasureInteraction,
         MousePosition,
@@ -248,18 +249,29 @@ export default {
     },
     methods: {
         createMap() {
-            let control = new ZoomToExtentControl({
+            const emitMovestart = () => {
+                this.$emit('movestart');
+            };
+
+            const zoomControl = new ZoomControl();
+            zoomControl.element.addEventListener('click', emitMovestart, true);
+
+            const extentControl = new ZoomToExtentControl({
                 tipLabel: 'Zoom to show whole image',
                 // fontawesome compress icon
                 label: '\uf066'
             });
+            extentControl.element.addEventListener('click', emitMovestart, true);
 
-            Keyboard.on('-', control.handleZoomToExtent.bind(control), 0, this.listenerSet);
+            Keyboard.on('-', () => {
+                this.$emit('movestart');
+                this.$nextTick(() => extentControl.handleZoomToExtent());
+            }, 0, this.listenerSet);
 
             let map = new Map({
                 controls: [
-                    new ZoomControl(),
-                    control,
+                    zoomControl,
+                    extentControl,
                 ],
                 interactions: defaultInteractions({
                     altShiftDragRotate: false,
@@ -283,14 +295,18 @@ export default {
                 },
             }));
 
-            control = new ZoomToNativeControl({
+            const nativeControl = new ZoomToNativeControl({
                 // fontawesome expand icon
                 label: '\uf065'
             });
+            nativeControl.element.addEventListener('click', emitMovestart, true);
 
-            Keyboard.on('+', control.zoomToNative.bind(control), 0, this.listenerSet);
+            Keyboard.on('+', () => {
+                this.$emit('movestart');
+                this.$nextTick(() => nativeControl.zoomToNative());
+            }, 0, this.listenerSet);
 
-            map.addControl(control);
+            map.addControl(nativeControl);
 
             return map;
         },
@@ -910,6 +926,16 @@ export default {
 
         this.map.on('change:size', this.updateMapSize);
         this.map.on('moveend', this.updateMapView);
+        this.map.on('movestart', () => {
+            if (this.map.getView().getInteracting()) {
+                this.$emit('movestart');
+            }
+        });
+        this.map.on('change:resolution', () => {
+            if (this.map.getView().getInteracting()) {
+                this.$emit('movestart');
+            }
+        });
         this.map.on('pointermove', this.updateMousePosition);
 
         this.selectInteraction.on('select', this.handleFeatureSelect);
@@ -927,6 +953,14 @@ export default {
 
         this.updateModifyInteractions();
         this.updateDeleteInteractions();
+
+        this.lawnmower = useLawnmowerMode({
+            viewExtent: computed(() => this.viewExtent),
+            image: computed(() => this.image),
+            map: computed(() => this.map),
+            updateMapSize: () => this.updateMapSize(),
+            emit: (event, ...args) => this.$emit(event, ...args),
+        })
     },
     mounted() {
         this.map.setTarget(this.$el);
