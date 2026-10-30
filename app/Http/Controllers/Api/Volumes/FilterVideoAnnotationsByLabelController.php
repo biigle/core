@@ -3,10 +3,9 @@
 namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\FilterVolumeAnnotationsRequest;
 use Biigle\Traits\CompileFilters;
 use Biigle\VideoAnnotation;
-use Biigle\Volume;
-use Illuminate\Http\Request;
 
 class FilterVideoAnnotationsByLabelController extends Controller
 {
@@ -24,41 +23,30 @@ class FilterVideoAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Array} shape Array of shape ids to use to filter videos
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_created_at  Array of date patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_label_created_at  Array of date patterns to use to filter annotations
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of video annotation IDs to their video UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for video volumes.
      *
-     * @param Request $request
-     * @param  int  $vid Volume ID
-     * @param int $lid Label ID
+     * @param FilterVolumeAnnotationsRequest $request
      * @return \Illuminate\Support\Collection
      */
-    public function index(Request $request, $vid, $lid)
+    public function index(FilterVolumeAnnotationsRequest $request)
     {
-        $volume = Volume::findOrFail($vid);
-        $this->authorize('access', $volume);
-
-        $this->validate($request, [
-            'take' => 'integer',
-            'shape' => 'array',
-            'shape.*' => 'integer',
-            'user_id' => 'array',
-            'user_id.*' => 'integer',
-            'filename' => 'array',
-            'filename.*' => 'string',
-            'union' => 'boolean',
-        ]);
-
         $take = $request->input('take');
         $filters = [
             'shape' => $request->input('shape'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
+            'annotation_created_at' => $request->input('annotation_created_at'),
+            'annotation_label_created_at' => $request->input('annotation_label_created_at'),
         ];
+
         $filters = array_filter($filters);
         $union = $request->input('union', false);
 
-        $session = $volume->getActiveAnnotationSession($request->user());
+        $session = $request->volume->getActiveAnnotationSession($request->user());
 
         if ($session) {
             $query = VideoAnnotation::allowedBySession($session, $request->user());
@@ -68,9 +56,9 @@ class FilterVideoAnnotationsByLabelController extends Controller
 
         return $query->join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
-            ->where('videos.volume_id', $vid)
-            ->where('video_annotation_labels.label_id', $lid)
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
+            ->where('videos.volume_id', $request->volume->id)
+            ->where('video_annotation_labels.label_id', $request->labelId)
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('video', $query, $union, $filters))
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
                     $query->where('video_annotation_labels.user_id', $request->user()->id);

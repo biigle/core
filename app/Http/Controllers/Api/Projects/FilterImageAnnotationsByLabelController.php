@@ -3,10 +3,10 @@
 namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\FilterProjectAnnotationsRequest;
 use Biigle\ImageAnnotation;
 use Biigle\Project;
 use Biigle\Traits\CompileFilters;
-use Illuminate\Http\Request;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
@@ -25,40 +25,29 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
      * @apiParam (Optional arguments) {Array} volume_id Array of volume ids to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_created_at  Array of date patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_label_created_at  Array of date patterns to use to filter annotations
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs.
      *
-     * @param Request $request
-     * @param  int  $pid Project ID
-     * @param int $lid Label ID
+     * @param FilterProjectAnnotationsRequest $request
      * @return \Illuminate\Support\Collection
      */
-    public function index(Request $request, $pid, $lid)
+    public function index(FilterProjectAnnotationsRequest $request)
     {
-        $project = Project::findOrFail($pid);
-        $this->authorize('access', $project);
-
-        $this->validate($request, [
-            'take' => 'integer',
-            'shape' => 'array',
-            'shape.*' => 'integer',
-            'user_id' => 'array',
-            'user_id.*' => 'integer',
-            'filename' => 'array',
-            'filename.*' => 'string',
-            'volume_id' => 'array',
-            'volume_id.*' => 'integer',
-            'union' => 'boolean',
-        ]);
-
+        $pid = $request->project->id;
+        $lid = $request->labelId;
         $take = $request->input('take');
         $filters = [
             'shape' => $request->input('shape'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
             'volume_id' => $request->input('volume_id'),
+            'annotation_created_at' => $request->input('annotation_created_at'),
+            'annotation_label_created_at' => $request->input('annotation_label_created_at'),
         ];
+
         $filters = array_filter($filters);
         $union = $request->input('union', false);
 
@@ -71,7 +60,7 @@ class FilterImageAnnotationsByLabelController extends Controller
             })
             ->when(!is_null($take), fn ($query) => $query->take($take))
             ->where('image_annotation_labels.label_id', $lid)
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('image', $query, $union, $filters))
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()
             ->orderBy('image_annotations.id', 'desc')
