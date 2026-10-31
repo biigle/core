@@ -570,6 +570,15 @@ export default {
             }
             return false;
         },
+        restoreLawnmowerImage(imageId) {
+            if (this.showImageWithId(imageId)) {
+                return;
+            }
+
+            // Image was deleted - discard saved state and show first section of current image
+            this.$refs.canvas.lawnmower.discardSavedLawnmowerState();
+            this.$refs.canvas.lawnmower.showFirstImageSection();
+        },
         handleAnnotationModeChange(mode, data) {
             this.previousAnnotationMode = this.annotationMode;
             this.annotationMode = mode;

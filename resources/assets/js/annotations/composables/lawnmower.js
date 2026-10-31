@@ -184,6 +184,7 @@ export function useLawnmowerMode({
 
     function discardSavedLawnmowerState() {
         localStorage.removeItem(getLawnmowerStorageKey());
+        restoringLawnmowerImageInProgress = false;
     }
 
     function getSavedLawnmowerState() {

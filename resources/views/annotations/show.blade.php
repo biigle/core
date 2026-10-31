@@ -116,7 +116,7 @@
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
-            v-on:restore-lawnmower-image="showImageWithId"
+            v-on:restore-lawnmower-image="restoreLawnmowerImage"
             v-on:lawnmower-pre-viewport-change="disableAutomaticLawnmowerPausing"
             v-on:lawnmower-post-viewport-change="enableAutomaticLawnmowerPausing"
             v-on:restore-lawnmower-pause-state="pauseLawnmower"
