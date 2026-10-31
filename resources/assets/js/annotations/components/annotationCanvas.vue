@@ -959,6 +959,7 @@ export default {
             image: computed(() => this.image),
             map: computed(() => this.map),
             updateMapSize: () => this.updateMapSize(),
+            isActive: computed(() => this.annotationMode === 'lawnmower'),
             emit: (event, ...args) => this.$emit(event, ...args),
         })
     },

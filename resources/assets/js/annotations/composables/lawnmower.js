@@ -13,6 +13,7 @@ export function useLawnmowerMode({
     image = required('image'),
     map = required('map'),
     updateMapSize = required('updateMapSize'),
+    isActive = required('isActive'),
     emit = required('emit'),
 }) {
     // Index of the current image section in x and y direction.
@@ -244,6 +245,7 @@ export function useLawnmowerMode({
 
     watch(() => image?.value, () => {
         const state = getSavedLawnmowerState();
+        // Restore the paused state if the page is reloaded
         if (pageReloaded) {
             if (state) {
                 emit('restore-lawnmower-pause-state', state.timestamp);
@@ -253,11 +255,41 @@ export function useLawnmowerMode({
             return;
         }
 
+        // Restore zoom, section position, etc. after returning to the image in the stored state
         if (state && restoringLawnmowerImageInProgress) {
             nextTick(() => applySavedLawnmowerState());
             restoringLawnmowerImageInProgress = false;
         }
     });
+
+    function recenterSectionAfterMapResize() {
+        if (!isActive.value ||
+            !Number.isInteger(imageSectionSteps.value[0]) ||
+            !Number.isInteger(imageSectionSteps.value[1])) {
+            return;
+        }
+        const distance = function (p1, p2) {
+            return Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
+        };
+
+        let nearest = Infinity;
+        let current = 0;
+        let nearestStep = [0, 0];
+        for (let y = 0; y < imageSectionSteps.value[1]; y++) {
+            for (let x = 0; x < imageSectionSteps.value[0]; x++) {
+                current = distance(imageSectionCenter, getImageSectionCenter([x, y]));
+                if (current < nearest) {
+                    nearestStep[0] = x;
+                    nearestStep[1] = y;
+                    nearest = current;
+                }
+            }
+        }
+
+        showImageSection(nearestStep);
+    }
+
+    watch(() => viewExtent.value, recenterSectionAfterMapResize);
 
     return {
         showFirstImageSection,
