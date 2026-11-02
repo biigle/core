@@ -3,7 +3,10 @@
 namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\ImageAnnotation;
 use Biigle\Project;
+use Biigle\VideoAnnotation;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProjectAnnotationLabels extends Controller
@@ -25,33 +28,39 @@ class ProjectAnnotationLabels extends Controller
      * "label_tree_id":1,
      * "count":10}]
      *
+     * @param Request $request
      * @param int $id Project ID
      * @return \Illuminate\Support\Collection
      */
-    public function getProjectAnnotationLabelCounts($id)
+    public function getProjectAnnotationLabelCounts(Request $request, $id)
     {
         $project = Project::findOrFail($id);
         $this->authorize('access', $project);
 
         // Count the annotation labels per label first and join the labels only once
         // with the (much smaller) result.
-        $imageCountQuery = DB::table('image_annotation_labels')
-            ->join('image_annotations', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
+        $user = $request->user();
+        $sessions = $project->getActiveAnnotationSessions($user);
+
+        $imageCountQuery = ImageAnnotation::join('image_annotation_labels', 'image_annotation_labels.annotation_id', '=', 'image_annotations.id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
             ->join('project_volume', 'images.volume_id', '=', 'project_volume.volume_id')
             ->where('project_volume.project_id', '=', $id)
+            ->allowedBySessions($sessions, $user)
             ->select('image_annotation_labels.label_id')
             ->selectRaw('count(*) as count')
-            ->groupBy('image_annotation_labels.label_id');
+            ->groupBy('image_annotation_labels.label_id')
+            ->toBase();
 
-        $videoCountQuery = DB::table('video_annotation_labels')
-            ->join('video_annotations', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
+        $videoCountQuery = VideoAnnotation::join('video_annotation_labels', 'video_annotation_labels.annotation_id', '=', 'video_annotations.id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
             ->join('project_volume', 'videos.volume_id', '=', 'project_volume.volume_id')
             ->where('project_volume.project_id', '=', $id)
+            ->allowedBySessions($sessions, $user)
             ->select('video_annotation_labels.label_id')
             ->selectRaw('count(*) as count')
-            ->groupBy('video_annotation_labels.label_id');
+            ->groupBy('video_annotation_labels.label_id')
+            ->toBase();
 
         $union = $videoCountQuery->unionAll($imageCountQuery);
 
