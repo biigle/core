@@ -12,9 +12,11 @@ use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\ImageMetadata;
 use Biigle\Services\MetadataParsing\Label;
 use Biigle\Services\MetadataParsing\LabelAndUser;
+use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
+use Biigle\Tests\Services\MetadataParsing\ErrorParserStub;
 use Biigle\Volume;
 use Exception;
 use FileCache;
@@ -145,6 +147,28 @@ class PendingVolumeControllerTest extends ApiTestCase
             'metadata_parser' => ImageCsvParser::class,
             'metadata_file' => $file,
         ])->assertStatus(422);
+    }
+
+    public function testStoreImageWithFileParserError()
+    {
+        $parsers = ParserFactory::$parsers;
+        ParserFactory::extend(ErrorParserStub::class, 'image');
+
+        try {
+            Storage::fake('pending-metadata');
+            $csv = __DIR__."/../../../../files/image-metadata.csv";
+            $file = new UploadedFile($csv, 'metadata.csv', 'text/csv', null, true);
+
+            $id = $this->project()->id;
+            $this->beAdmin();
+            $this->json('POST', "/api/v1/projects/{$id}/pending-volumes", [
+                'media_type' => 'image',
+                'metadata_parser' => ErrorParserStub::class,
+                'metadata_file' => $file,
+            ])->assertJsonValidationErrors(['metadata_file' => 'Unknown metadata file format.']);
+        } finally {
+            ParserFactory::$parsers = $parsers;
+        }
     }
 
     public function testStoreImageWithParserUnknown()

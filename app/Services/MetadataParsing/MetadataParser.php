@@ -4,6 +4,7 @@ namespace Biigle\Services\MetadataParsing;
 
 use SplFileInfo;
 use SplFileObject;
+use Throwable;
 
 abstract class MetadataParser
 {
@@ -32,6 +33,19 @@ abstract class MetadataParser
      * Returns true if the file is in the format understood by the parser.
      */
     abstract public function recognizesFile(): bool;
+
+    /**
+     * Like recognizesFile() but returns false if the parser throws an error. This can
+     * happen if a parser does not handle all kinds of invalid files.
+     */
+    final public function recognizesFileSafely(): bool
+    {
+        try {
+            return $this->recognizesFile();
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
 
     /**
      * Get a filled VolumeMetadata object based on the file.

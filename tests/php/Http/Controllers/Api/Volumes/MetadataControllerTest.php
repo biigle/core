@@ -6,7 +6,9 @@ use ApiTestCase;
 use Biigle\Enums\MediaType;
 use Biigle\Jobs\UpdateVolumeMetadata;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
+use Biigle\Services\MetadataParsing\ParserFactory;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
+use Biigle\Tests\Services\MetadataParsing\ErrorParserStub;
 use Illuminate\Http\UploadedFile;
 use Queue;
 use Storage;
@@ -122,6 +124,25 @@ class MetadataControllerTest extends ApiTestCase
             'parser' => 'unknown',
         ])
             ->assertStatus(422);
+    }
+
+    public function testStoreImageMetadataParserError()
+    {
+        $parsers = ParserFactory::$parsers;
+        ParserFactory::extend(ErrorParserStub::class, 'image');
+
+        try {
+            $id = $this->volume()->id;
+            $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
+            $this->beAdmin();
+            $this->postJson("/api/v1/volumes/{$id}/metadata", [
+                'file' => $csv,
+                'parser' => ErrorParserStub::class,
+            ])
+                ->assertJsonValidationErrors(['file' => 'Unknown metadata file format.']);
+        } finally {
+            ParserFactory::$parsers = $parsers;
+        }
     }
 
     public function testStoreVideoMetadataCsv()
