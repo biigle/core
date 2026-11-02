@@ -316,6 +316,27 @@ class ImportControllerTest extends ApiTestCase
             ->assertStatus(200);
     }
 
+    public function testUpdateVolumeImportInvalidUrl()
+    {
+        // The volume import throws this exception if a (new) volume URL is invalid.
+        // See VolumeImportTest::testPerformUnauthorizedDisk.
+        $message = "Volume 'my volume' has an invalid URL: Not authorized to access this storage disk.";
+        $this->makeImportMock(VolumeImport::class, 'abc123', false)
+            ->shouldReceive('perform')
+            ->once()
+            ->andThrow(new UnprocessableEntityHttpException($message));
+
+        $this->beGlobalAdmin();
+        $p = ProjectTest::create();
+        // The message must be returned as validation error so it is shown in the UI.
+        $this
+            ->putJson('/api/v1/import/abc123', [
+                'project_id' => $p->id,
+                'new_urls' => [1 => 'toast://files'],
+            ])
+            ->assertJsonValidationErrors(['import' => $message]);
+    }
+
     public function testDestroy()
     {
         $mock = Mockery::mock(ArchiveManager::class);
