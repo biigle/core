@@ -87,6 +87,7 @@
             :selected-label="selectedLabel"
             :annotation-opacity="annotationOpacity"
             :annotation-mode="annotationMode"
+            :lawnmower-section-carry="annotationModeCarry"
             :show-mouse-position="showMousePosition"
             :show-zoom-level="showZoomLevel"
             :show-scale-line="showScaleLine"

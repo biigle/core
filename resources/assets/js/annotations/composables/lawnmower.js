@@ -14,6 +14,7 @@ export function useLawnmowerMode({
     map = required('map'),
     updateMapSize = required('updateMapSize'),
     isActive = required('isActive'),
+    sectionCarry = required('sectionCarry'),
     emit = required('emit'),
 }) {
     // Index of the current image section in x and y direction.
@@ -244,7 +245,27 @@ export function useLawnmowerMode({
         });
     }
 
-    watch(() => image?.value, () => {
+    async function showInitialImageSection() {
+        // Wait for the canvas to be updated, otherwise we
+        // may compute the current section using the old viewport
+        await nextTick();
+
+        if (!isActive.value || !image.value) {
+            return;
+        }
+
+        if (sectionCarry.value === Infinity) {
+            showLastImageSection();
+        } else {
+            showFirstImageSection();
+        }
+    }
+
+    watch(() => image?.value, async (newImage) => {
+        if (!newImage) {
+            return;
+        }
+
         const state = getSavedLawnmowerState();
         // Restore the paused state if the page is reloaded
         if (pageReloaded) {
@@ -258,10 +279,22 @@ export function useLawnmowerMode({
 
         // Restore zoom, section position, etc. after returning to the image in the stored state
         if (state && restoringLawnmowerImageInProgress) {
-            nextTick(() => applySavedLawnmowerState());
             restoringLawnmowerImageInProgress = false;
+            nextTick(() => applySavedLawnmowerState());
+            return;
+        }
+
+        if (isActive.value) {
+            showInitialImageSection();
         }
     });
+
+    watch(() => isActive.value, (active, wasActive) => {
+        if (!active || wasActive || !image.value || pageReloaded) {
+            return;
+        }
+        showInitialImageSection();
+    })
 
     function recenterSectionAfterMapResize() {
         if (!isActive.value ||

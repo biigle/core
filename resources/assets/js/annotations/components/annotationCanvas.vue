@@ -100,6 +100,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        lawnmowerSectionCarry: {
+            type: Number,
+            default: null,
+        },
         canDelete: {
             type: Boolean,
             default: false,
@@ -960,6 +964,7 @@ export default {
             map: computed(() => this.map),
             updateMapSize: () => this.updateMapSize(),
             isActive: computed(() => this.annotationMode === 'lawnmower'),
+            sectionCarry: computed(() => this.lawnmowerSectionCarry),
             emit: (event, ...args) => this.$emit(event, ...args),
         })
     },

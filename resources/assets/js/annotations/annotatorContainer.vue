@@ -74,7 +74,6 @@ export default {
             mapResolution: undefined,
             selectedLabel: null,
             annotationMode: 'default',
-            previousAnnotationMode: undefined,
             // For lawnmower and sampling modes: When switching images, this determines
             // if the first (0) or the last (Infinity) image section/sampling location
             // should be shown.
@@ -209,11 +208,11 @@ export default {
                 // the last section is shown).
                 if (this.$refs.canvas.lawnmower.showNextImageSection()) {
                     return;
-                } else {
-                    // Show the first image section in the next image in this case,
-                    // so don't return.
-                    this.annotationModeCarry = 0;
                 }
+
+                // Show the first image section in the next image in this case,
+                // so don't return.
+                this.annotationModeCarry = 0;
             } else if (this.isSamplingAnnotationMode) {
                 // Similar mechanism than for Lanwmower Mode.
                 if (this.$refs.canvas.showNextSamplingLocation()) {
@@ -237,11 +236,11 @@ export default {
                 // the first section is shown).
                 if (this.$refs.canvas.lawnmower.showPreviousImageSection()) {
                     return;
-                } else {
-                    // Show the last image section in the previous image in this
-                    // case, so don't return.
-                    this.annotationModeCarry = Infinity;
                 }
+
+                // Show the last image section in the previous image in this
+                // case, so don't return.
+                this.annotationModeCarry = Infinity;
             } else if (this.isSamplingAnnotationMode) {
                 // Similar mechanism than for Lanwmower Mode.
                 if (this.$refs.canvas.showPreviousSamplingLocation()) {
@@ -253,16 +252,6 @@ export default {
 
             // Show previous image.
             this.imageIndex = this.getPreviousIndex(this.imageIndex);
-        },
-        maybeUpdateShownImageSection() {
-            const lawnmowerWasPaused = this.previousAnnotationMode === 'lawnmowerPaused';
-            if (this.isLawnmowerAnnotationMode && !lawnmowerWasPaused) {
-                if (this.annotationModeCarry === Infinity) {
-                    this.$refs.canvas.lawnmower.showLastImageSection();
-                } else {
-                    this.$refs.canvas.lawnmower.showFirstImageSection();
-                }
-            }
         },
         maybeUpdateShownSampling(data) {
             if (this.isSamplingAnnotationMode) {
@@ -278,7 +267,6 @@ export default {
             }
         },
         maybeUpdateAnnotationMode(data) {
-            this.maybeUpdateShownImageSection();
             this.maybeUpdateShownSampling(data);
         },
         handleMapMoveend(viewport) {
@@ -580,7 +568,6 @@ export default {
             this.$refs.canvas.lawnmower.showFirstImageSection();
         },
         handleAnnotationModeChange(mode, data) {
-            this.previousAnnotationMode = this.annotationMode;
             this.annotationMode = mode;
             this.annotationModeCarry = null;
             this.maybeUpdateAnnotationMode(data);
