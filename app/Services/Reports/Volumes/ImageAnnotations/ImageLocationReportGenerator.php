@@ -60,7 +60,7 @@ class ImageLocationReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $labels->isNotEmpty()) {
             $labels = $labels->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $labels->keys())->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $labels->keys())->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $usedLabels = (clone $usedLabelsQuery)
