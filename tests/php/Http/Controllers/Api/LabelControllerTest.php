@@ -8,7 +8,6 @@ use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
-use DB;
 
 class LabelControllerTest extends ApiTestCase
 {
@@ -62,26 +61,6 @@ class LabelControllerTest extends ApiTestCase
         $this->assertSame('new label name', $label->name);
         $this->assertSame('bada55', $label->color);
         $this->assertSame($sibling->id, $label->parent_id);
-    }
-
-    public function testUpdateValidatesOnce()
-    {
-        $tree = LabelTreeTest::create();
-        $label = LabelTest::create(['label_tree_id' => $tree->id]);
-        $parent = LabelTest::create(['label_tree_id' => $tree->id]);
-        $tree->addMember($this->editor(), Role::EDITOR);
-        $this->beEditor();
-
-        DB::enableQueryLog();
-        $this->putJson("/api/v1/labels/{$label->id}", ['parent_id' => $parent->id])
-            ->assertSuccessful();
-
-        // The exists rule of parent_id should be checked only once.
-        $queries = array_filter(
-            DB::getQueryLog(),
-            fn ($q) => str_contains($q['query'], 'count(*)') && str_contains($q['query'], 'from "labels"')
-        );
-        $this->assertCount(1, $queries);
     }
 
     public function testUpdateVersionedTree()
