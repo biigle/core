@@ -510,7 +510,19 @@ export default {
             this.$refs.canvas.refreshSingleAnnotation(annotation);
         },
         handleAttachAllSelected() {
-            this.selectedAnnotations.forEach(this.handleAttachLabel);
+            if (!this.isEditor) {
+                return;
+            }
+
+            if (!this.selectedLabel) {
+                this.handleRequiresSelectedLabel();
+
+                return;
+            }
+
+            // Don't pass the handler directly to forEach. Otherwise the array index
+            // would be passed as label argument.
+            this.selectedAnnotations.forEach((a) => this.handleAttachLabel(a));
         },
         emitImageChanged() {
             Events.emit('images.change', {id: this.imageId, image: this.image});
