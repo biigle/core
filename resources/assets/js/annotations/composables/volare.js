@@ -1,5 +1,6 @@
 import { ref, computed, watch, nextTick } from 'vue';
 import { required } from '@/utils.js';
+import Messages from '@/core/messages/store.js';
 
 
 export function useVolareMode({
@@ -145,6 +146,7 @@ export function useVolareMode({
         if (state.imageId !== image.value.id) {
             const imageShown = showImageWithId(state.imageId);
             if (!imageShown) {
+                Messages.info("The requested image does not exist in your current volume filtering or has been deleted. Resuming from current image.");
                 discardSavedVolareState();
                 resuming = false;
                 nextTick(updateFocussedAnnotation);

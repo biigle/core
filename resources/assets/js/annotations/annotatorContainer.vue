@@ -566,6 +566,7 @@ export default {
             // Image was deleted - discard saved state and show first section of current image
             this.$refs.canvas.lawnmower.discardSavedLawnmowerState();
             this.$refs.canvas.lawnmower.showFirstImageSection();
+            Messages.info("The requested image does not exist in your current volume filtering or has been deleted. Resuming from current image.");
         },
         handleAnnotationModeChange(mode, data) {
             this.annotationMode = mode;
