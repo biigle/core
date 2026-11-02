@@ -215,6 +215,49 @@ class SearchControllerTest extends TestCase
             ->assertDontSeeText('my remote volume');
     }
 
+    public function testIndexResultCountCapped()
+    {
+        $user = UserTest::make();
+        $user->role = Role::ADMIN;
+        $user->save();
+        $this->be($user);
+
+        // A bulk insert doesn't set the timestamps, which the result lists display.
+        $timestamps = ['created_at' => now(), 'updated_at' => now()];
+
+        $cases = [
+            [Project::class, 'projects', 'Projects', 'project', ['creator_id' => $user->id, ...$timestamps]],
+            [Volume::class, 'volumes', 'Volumes', 'volume', ['creator_id' => $user->id, ...$timestamps]],
+            [LabelTree::class, 'label-trees', 'Label Trees', 'label tree', $timestamps],
+        ];
+
+        foreach ($cases as [$class, $type, $tab, $name, $attrs]) {
+            $class::insert($class::factory()->count(1000)->raw($attrs));
+
+            $response = $this->get("search?t={$type}")->assertStatus(200);
+            $response->assertSeeText("1,000 {$name} results");
+            $response->assertDontSeeText('more than');
+            $this->assertMatchesRegularExpression("/{$tab} <span class=\"badge\">1k<\/span>/", $response->getContent());
+
+            $class::insert($class::factory()->count(1)->raw($attrs));
+
+            $response = $this->get("search?t={$type}")->assertStatus(200);
+            $response->assertSeeText("more than 1,000 {$name} results");
+            $this->assertMatchesRegularExpression("/{$tab} <span class=\"badge\">1k\+<\/span>/", $response->getContent());
+
+            // With federated search, the query is a union, which must be capped as a whole.
+            $user->federatedSearchModels()->attach(FederatedSearchModelTest::create(['type' => $class]));
+
+            $response = $this->get("search?t={$type}")->assertStatus(200);
+            $response->assertSeeText("more than 1,000 {$name} results");
+
+            $perPage = $response->viewData('results')->perPage();
+            $lastPage = (int) ceil(1000 / $perPage);
+            $response = $this->get("search?t={$type}&page=".($lastPage + 1))->assertStatus(200);
+            $this->assertSame($lastPage, $response->viewData('results')->currentPage());
+        }
+    }
+
     public function testIndexAnnotations()
     {
         $user = UserTest::create();

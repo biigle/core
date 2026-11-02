@@ -30,7 +30,8 @@ class SearchController extends Controller
     const MIN_FILE_QUERY_LENGTH = 3;
 
     /**
-     * Upper bound for the result counts of the file tabs.
+     * Upper bound for the result counts of the project, label tree, volume and
+     * file tabs.
      *
      * Determining the exact number of matches means scanning every matching
      * row. The number is only shown as a tab badge and in the result heading,
@@ -39,7 +40,7 @@ class SearchController extends Controller
      *
      * @var int
      */
-    const MAX_FILE_RESULT_COUNT = 1000;
+    const MAX_RESULT_COUNT = 1000;
 
     /**
      * Shows the search page.
@@ -60,11 +61,11 @@ class SearchController extends Controller
         $hasFederatedSearch = $user->FederatedSearchModels()->exists();
         $includeFederatedSearch = $hasFederatedSearch && $user->getSettings('include_federated_search', true);
 
-        $fileResultCountCap = self::MAX_FILE_RESULT_COUNT;
+        $resultCountCap = self::MAX_RESULT_COUNT;
         $minFileQueryLength = self::MIN_FILE_QUERY_LENGTH;
         $fileQueryTooShort = $this->fileQueryTooShort($query);
 
-        $args = compact('user', 'query', 'type', 'hasFederatedSearch', 'includeFederatedSearch', 'fileResultCountCap', 'minFileQueryLength', 'fileQueryTooShort');
+        $args = compact('user', 'query', 'type', 'hasFederatedSearch', 'includeFederatedSearch', 'resultCountCap', 'minFileQueryLength', 'fileQueryTooShort');
         $values = $this->searchProjects($user, $query, $type, $includeFederatedSearch);
         $values = array_merge($values, $this->searchLabelTrees($user, $query, $type, $includeFederatedSearch));
         $values = array_merge($values, $this->searchVolumes($user, $query, $type, $includeFederatedSearch));
@@ -126,10 +127,14 @@ class SearchController extends Controller
         }
 
 
-        $values = [];
+        $count = $this->cappedResultCount($queryBuilder);
+        $values = [
+            'labelTreeResultCount' => min($count, self::MAX_RESULT_COUNT),
+            'labelTreeResultCountCapped' => $count > self::MAX_RESULT_COUNT,
+        ];
 
         if ($type === 'label-trees') {
-            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(10);
+            $results = $this->paginateCapped($queryBuilder->orderBy('updated_at', 'desc'), $count, 10);
 
             $collection = $results->getCollection();
             $internal = LabelTree::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
@@ -146,10 +151,6 @@ class SearchController extends Controller
             }));
 
             $values['results'] = $results;
-
-            $values['labelTreeResultCount'] = $values['results']->total();
-        } else {
-            $values = ['labelTreeResultCount' => $queryBuilder->count()];
         }
 
         return $values;
@@ -199,10 +200,14 @@ class SearchController extends Controller
         }
 
 
-        $values = [];
+        $count = $this->cappedResultCount($queryBuilder);
+        $values = [
+            'projectResultCount' => min($count, self::MAX_RESULT_COUNT),
+            'projectResultCountCapped' => $count > self::MAX_RESULT_COUNT,
+        ];
 
         if (!$type || $type === 'projects') {
-            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(10);
+            $results = $this->paginateCapped($queryBuilder->orderBy('updated_at', 'desc'), $count, 10);
 
             $collection = $results->getCollection();
             $internal = Project::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
@@ -219,10 +224,6 @@ class SearchController extends Controller
             }));
 
             $values['results'] = $results;
-
-            $values['projectResultCount'] = $values['results']->total();
-        } else {
-            $values = ['projectResultCount' => $queryBuilder->count()];
         }
 
         return $values;
@@ -266,10 +267,14 @@ class SearchController extends Controller
         }
 
 
-        $values = [];
+        $count = $this->cappedResultCount($queryBuilder);
+        $values = [
+            'volumeResultCount' => min($count, self::MAX_RESULT_COUNT),
+            'volumeResultCountCapped' => $count > self::MAX_RESULT_COUNT,
+        ];
 
         if ($type === 'volumes') {
-            $results = $queryBuilder->orderBy('updated_at', 'desc')->paginate(12);
+            $results = $this->paginateCapped($queryBuilder->orderBy('updated_at', 'desc'), $count, 12);
 
             $collection = $results->getCollection();
             $internal = Volume::whereIn('id', $collection->where('external', false)->pluck('id'))->get()->keyBy('id');
@@ -286,10 +291,6 @@ class SearchController extends Controller
             }));
 
             $values['results'] = $results;
-
-            $values['volumeResultCount'] = $values['results']->total();
-        } else {
-            $values = ['volumeResultCount' => $queryBuilder->count()];
         }
 
         return $values;
@@ -326,29 +327,46 @@ class SearchController extends Controller
     }
 
     /**
-     * Count the results of a file query, up to one more than
-     * MAX_FILE_RESULT_COUNT.
+     * Count the results of a query, up to one more than MAX_RESULT_COUNT.
+     *
+     * The selected columns are kept, because all parts of a union (with federated
+     * search models) must select the same columns.
      *
      * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
      *
      * @return int
      */
-    protected function cappedFileResultCount($queryBuilder)
+    protected function cappedResultCount($queryBuilder)
     {
-        $limited = $queryBuilder->clone()
-            ->reorder()
-            ->select(DB::raw('1'))
-            ->limit(self::MAX_FILE_RESULT_COUNT + 1);
+        $limited = $queryBuilder->clone()->limit(self::MAX_RESULT_COUNT + 1);
 
         return DB::query()->fromSub($limited, 'capped')->count();
     }
 
     /**
-     * Paginate a file query, ordered by descending ID.
+     * Paginate a query with a total that is capped at MAX_RESULT_COUNT.
      *
-     * The total is capped at MAX_FILE_RESULT_COUNT, which bounds the number of
-     * pages as well. Later pages resolve to the last page, because the paginator
-     * would otherwise run the arbitrarily large offset of a hand-written URL.
+     * This bounds the number of pages as well. Later pages resolve to the last
+     * page, because the paginator would otherwise run the arbitrarily large offset
+     * of a hand-written URL.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
+     * @param int $count Result of cappedResultCount()
+     * @param int $perPage
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    protected function paginateCapped($queryBuilder, $count, $perPage)
+    {
+        $total = min($count, self::MAX_RESULT_COUNT);
+        $lastPage = max((int) ceil($total / $perPage), 1);
+        $page = min(Paginator::resolveCurrentPage(), $lastPage);
+
+        return $queryBuilder->paginate($perPage, page: $page, total: $total);
+    }
+
+    /**
+     * Paginate a file query, ordered by descending ID.
      *
      * A filename filter cannot use an index, so the query planner is free to
      * assume that walking the primary key backwards will fill the page quickly.
@@ -358,7 +376,7 @@ class SearchController extends Controller
      * collected through the volume_id index and sorted afterwards.
      *
      * @param \Illuminate\Database\Eloquent\Builder $queryBuilder
-     * @param int $count Result of cappedFileResultCount()
+     * @param int $count Result of cappedResultCount()
      * @param int $perPage
      * @param bool $restricted Whether the query is restricted to some volumes
      *
@@ -366,18 +384,13 @@ class SearchController extends Controller
      */
     protected function paginateFiles($queryBuilder, $count, $perPage, $restricted)
     {
-        $total = min($count, self::MAX_FILE_RESULT_COUNT);
-
         if ($restricted) {
             $queryBuilder->orderByRaw('id + 0 desc');
         } else {
             $queryBuilder->orderBy('id', 'desc');
         }
 
-        $lastPage = max((int) ceil($total / $perPage), 1);
-        $page = min(Paginator::resolveCurrentPage(), $lastPage);
-
-        return $queryBuilder->paginate($perPage, page: $page, total: $total);
+        return $this->paginateCapped($queryBuilder, $count, $perPage);
     }
 
     /**
@@ -419,9 +432,9 @@ class SearchController extends Controller
                 });
             });
 
-        $count = $this->cappedFileResultCount($imageQuery);
-        $values['imageResultCount'] = min($count, self::MAX_FILE_RESULT_COUNT);
-        $values['imageResultCountCapped'] = $count > self::MAX_FILE_RESULT_COUNT;
+        $count = $this->cappedResultCount($imageQuery);
+        $values['imageResultCount'] = min($count, self::MAX_RESULT_COUNT);
+        $values['imageResultCountCapped'] = $count > self::MAX_RESULT_COUNT;
 
         if ($type === 'images') {
             $values['results'] = $this->paginateFiles($imageQuery, $count, 12, $restricted);
@@ -469,9 +482,9 @@ class SearchController extends Controller
                 });
             });
 
-        $count = $this->cappedFileResultCount($queryBuilder);
-        $values['videoResultCount'] = min($count, self::MAX_FILE_RESULT_COUNT);
-        $values['videoResultCountCapped'] = $count > self::MAX_FILE_RESULT_COUNT;
+        $count = $this->cappedResultCount($queryBuilder);
+        $values['videoResultCount'] = min($count, self::MAX_RESULT_COUNT);
+        $values['videoResultCountCapped'] = $count > self::MAX_RESULT_COUNT;
 
         if ($type === 'videos') {
             $values['results'] = $this->paginateFiles($queryBuilder, $count, 12, $restricted);
