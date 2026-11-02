@@ -13,12 +13,11 @@ use ZipArchive;
 
 class UserExportControllerTest extends ApiTestCase
 {
-    public function testRequestGenerateAndDownloadUserExport(): void
+    public function testStoreAndGenerate(): void
     {
         Queue::fake();
         Notification::fake();
-        Storage::fake('test');
-        config(['sync.export_storage_disk' => 'test']);
+        Storage::fake('exports');
         $this->beGlobalAdmin();
         $this->user();
         $ids = User::pluck('id')->all();
@@ -31,18 +30,13 @@ class UserExportControllerTest extends ApiTestCase
         Queue::assertPushed(GenerateExportJob::class);
         (new GenerateExportJob($export))->handle();
 
-        Storage::disk('test')->assertExists("{$export->id}.zip");
+        Storage::disk('exports')->assertExists("{$export->id}.zip");
         $zip = new ZipArchive;
-        $zip->open(Storage::disk('test')->path("{$export->id}.zip"));
+        $zip->open(Storage::disk('exports')->path("{$export->id}.zip"));
         $exportedIds = array_column(json_decode($zip->getFromName('users.json'), true), 'id');
         sort($exportedIds);
         sort($ids);
         $this->assertSame($ids, $exportedIds);
         $zip->close();
-
-        $this->get("/api/v1/export/users/{$export->id}")
-            ->assertStatus(200)
-            ->assertHeader('content-disposition', 'attachment; filename=biigle_user_export.zip');
-        $this->getJson("/api/v1/export/volumes/{$export->id}")->assertStatus(404);
     }
 }

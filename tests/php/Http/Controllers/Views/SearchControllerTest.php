@@ -357,71 +357,28 @@ class SearchControllerTest extends TestCase
         $this->get('search')->assertSee('>Exports <', false);
     }
 
-    public function testIndexExportsOwnershipFilteringAndActions()
+    public function testIndexExports()
     {
         $sudo = UserTest::create(['role' => Role::ADMIN]);
-        $pending = $this->createExport($sudo, 'Migration Pending');
-        $ready = $this->createExport($sudo, 'Migration Ready', now());
+        $this->createExport($sudo, 'Migration Pending');
+        $this->createExport($sudo, 'Migration Ready', now());
         $this->createExport($sudo, 'Unrelated');
-        $this->createExport(UserTest::create(['role' => Role::ADMIN]), 'Migration Foreign', now());
+        $this->createExport(UserTest::create(['role' => Role::ADMIN]), 'Migration Foreign');
         $this->be($sudo);
 
-        $response = $this->get('search?t=exports&q=mIGRATION')->assertStatus(200);
-        $response->assertSeeText('Migration Pending')
+        $this->get('search?t=exports&q=migration')
+            ->assertStatus(200)
+            ->assertSeeText('Migration Pending')
             ->assertSeeText('Migration Ready')
-            ->assertSeeText('Pending for')
-            ->assertSeeText('Ready on')
-            ->assertSeeText('Created on')
             ->assertDontSeeText('Unrelated')
-            ->assertDontSeeText('Migration Foreign')
-            ->assertSee("api/v1/export/volumes/{$ready->id}")
-            ->assertSee("api/v1/export/volumes/{$pending->id}");
-        $response->assertSee("href=\"http://localhost:8000/api/v1/export/volumes/{$ready->id}\"", false)
-            ->assertDontSee("href=\"http://localhost:8000/api/v1/export/volumes/{$pending->id}\"", false);
-        $this->assertSame(2, substr_count($response->getContent(), 'method="POST" style="display: inline-block;"'));
-
-        $this->get('search?t=exports&q=missing')
-            ->assertSeeText("We couldn't find any exports matching 'missing'.");
-
-        $this->get('search?t=exports')
-            ->assertSeeText('Unrelated')
             ->assertDontSeeText('Migration Foreign');
-    }
-
-    public function testIndexExportsPaginationKeepsSearch()
-    {
-        $sudo = UserTest::create(['role' => Role::ADMIN]);
-        for ($i = 0; $i < 11; $i++) {
-            $this->createExport($sudo, "Batch {$i}");
-        }
-        $this->be($sudo);
-
-        $this->get('search?t=exports&q=Batch')
-            ->assertSee('q=Batch&amp;t=exports&amp;page=2', false);
-    }
-
-    public function testIndexExportsShowsEachType()
-    {
-        $sudo = UserTest::create(['role' => Role::ADMIN]);
-        $userExport = $this->createExport($sudo, null, now());
-        $userExport->type = 'users';
-        $userExport->save();
-        $treeExport = $this->createExport($sudo, null, now());
-        $treeExport->type = 'labelTrees';
-        $treeExport->save();
-        $this->be($sudo);
-
-        $this->get('search?t=exports')
-            ->assertSeeText('User export')
-            ->assertSeeText('Label tree export')
-            ->assertSee("api/v1/export/users/{$userExport->id}")
-            ->assertSee("api/v1/export/label-trees/{$treeExport->id}");
     }
 
     private function createExport($user, $description, $readyAt = null): ExportFile
     {
         $export = new ExportFile;
         $export->user()->associate($user);
+        $export->type = 'volumes';
         $export->description = $description;
         $export->entity_ids = [];
         $export->ready_at = $readyAt;

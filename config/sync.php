@@ -22,9 +22,9 @@ return [
     'import_storage_disk' => env('SYNC_IMPORT_STORAGE_DISK', 'imports'),
 
     /*
-    | Storage disk for generated volume exports.
+    | Storage disk for generated export files.
     */
-    'export_storage_disk' => env('SYNC_EXPORT_STORAGE_DISK', env('SYNC_VOLUME_EXPORT_STORAGE_DISK', 'volume-exports')),
+    'export_storage_disk' => env('SYNC_EXPORT_STORAGE_DISK', 'exports'),
 
     'notifications' => [
         'default_settings' => 'email',
@@ -45,5 +45,5 @@ return [
      */
     'postprocess_volume_import_queue' => env('SYNC_POSTPROCESS_VOLUME_IMPORT_QUEUE', 'default'),
 
-    'generate_export_queue' => env('SYNC_GENERATE_EXPORT_QUEUE', env('SYNC_GENERATE_VOLUME_EXPORT_QUEUE', 'default')),
+    'generate_export_queue' => env('SYNC_GENERATE_EXPORT_QUEUE', 'default'),
 ];

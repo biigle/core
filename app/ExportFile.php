@@ -5,15 +5,15 @@ namespace Biigle;
 use Biigle\Services\Export\LabelTreeExport;
 use Biigle\Services\Export\UserExport;
 use Biigle\Services\Export\VolumeExport;
+use File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use InvalidArgumentException;
+use SplFileInfo;
 use Storage;
 
 class ExportFile extends Model
 {
-    protected $table = 'exports';
-
     protected static function booted(): void
     {
         static::deleted(fn (ExportFile $export) => $export->deleteFile());
@@ -28,6 +28,11 @@ class ExportFile extends Model
         ];
     }
 
+    /**
+     * The user that requested the export.
+     *
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -51,6 +56,30 @@ class ExportFile extends Model
             'users' => 'User',
             default => throw new InvalidArgumentException('Unknown export type.'),
         };
+    }
+
+    public function getDownloadFilename(): string
+    {
+        return match ($this->type) {
+            'volumes' => 'biigle_volume_export.zip',
+            'labelTrees' => 'biigle_label_tree_export.zip',
+            'users' => 'biigle_user_export.zip',
+            default => throw new InvalidArgumentException('Unknown export type.'),
+        };
+    }
+
+    /**
+     * Generate the archive file for this export.
+     */
+    public function generate(): void
+    {
+        $path = $this->getGenerator()->getArchive();
+        try {
+            Storage::disk(config('sync.export_storage_disk'))
+                ->putFileAs('', new SplFileInfo($path), $this->getStorageFilename());
+        } finally {
+            File::delete($path);
+        }
     }
 
     public function deleteFile(): void

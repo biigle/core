@@ -408,9 +408,9 @@ class SearchController extends Controller
     }
 
     /**
-     * Add requester-owned volume exports to the search view.
+     * Add requester-owned export files to the search view.
      */
-    protected function searchExports(User $user, $query, $type): array
+    public function searchExports(User $user, $query, $type): array
     {
         $queryBuilder = ExportFile::where('user_id', $user->id)
             ->when($query, function ($q) use ($query) {
@@ -418,7 +418,9 @@ class SearchController extends Controller
             });
 
         if ($type === 'exports') {
-            $results = $queryBuilder->orderBy('ready_at', 'desc')->paginate(10);
+            $results = $queryBuilder->orderBy('ready_at', 'desc')
+                ->orderBy('id', 'desc')
+                ->paginate(10);
 
             return [
                 'results' => $results,

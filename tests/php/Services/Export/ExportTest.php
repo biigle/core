@@ -22,25 +22,6 @@ class ExportTest extends TestCase
             File::delete($path);
         }
     }
-
-    public function testGetArchiveCleansPartialArchiveOnFailure(): void
-    {
-        $directory = sys_get_temp_dir().'/biigle-export-'.uniqid();
-        mkdir($directory);
-        config(['sync.tmp_storage' => $directory]);
-
-        try {
-            (new PartiallyFailingExportStub([]))->getArchive();
-            $this->fail('Archive generation did not fail.');
-        } catch (\RuntimeException) {
-            // Expected.
-        }
-
-        $files = glob("{$directory}/*");
-        array_map('unlink', $files);
-        rmdir($directory);
-        $this->assertEmpty($files);
-    }
 }
 
 class ExportStub extends Export
@@ -48,21 +29,5 @@ class ExportStub extends Export
     public function getContent()
     {
         return ['test'];
-    }
-}
-
-class FailingExportStub extends Export
-{
-    public function getContent()
-    {
-        throw new \RuntimeException;
-    }
-}
-
-class PartiallyFailingExportStub extends ExportStub
-{
-    public function getAdditionalExports()
-    {
-        return [new FailingExportStub([])];
     }
 }

@@ -15,7 +15,7 @@
 /storage/pending-metadata
 /storage/imports
 /storage/reports
-/storage/volume-exports
+/storage/exports
 /vendor
 .env
 .env.backup

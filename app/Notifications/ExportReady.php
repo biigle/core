@@ -5,7 +5,6 @@ namespace Biigle\Notifications;
 use Biigle\ExportFile;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use InvalidArgumentException;
 
 class ExportReady extends Notification
 {
@@ -76,17 +75,10 @@ class ExportReady extends Notification
     }
 
     /**
-     * Get the owner-authorized download URL.
+     * Get the download URL of the export file.
      */
     protected function getUrl(): string
     {
-        $path = match ($this->export->type) {
-            'volumes' => 'volumes',
-            'labelTrees' => 'label-trees',
-            'users' => 'users',
-            default => throw new InvalidArgumentException('Unknown export type.'),
-        };
-
-        return url("api/v1/export/{$path}/{$this->export->id}");
+        return url("api/v1/export-files/{$this->export->id}");
     }
 }

@@ -10,7 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('volume_exports', function (Blueprint $table) {
+        Schema::create('export_files', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
 
@@ -18,8 +18,9 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('cascade');
 
+            $table->string('type');
             $table->string('description')->nullable();
-            $table->jsonb('volume_ids');
+            $table->jsonb('entity_ids');
             $table->timestamp('ready_at')->nullable();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('volume_exports');
+        Schema::dropIfExists('export_files');
     }
 };

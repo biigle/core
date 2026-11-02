@@ -74,20 +74,25 @@ class UserSettingsControllerTest extends ApiTestCase
     public function testUpdateExportNotifications()
     {
         $this->beUser();
+        $this->putJson('/api/v1/users/my/settings', ['export_notifications' => 'web'])
+            ->assertStatus(200);
+        $this->assertNull($this->user()->fresh()->getSettings('export_notifications'));
+
+        $this->beGlobalAdmin();
         $this->putJson('/api/v1/users/my/settings', ['export_notifications' => 'test'])
             ->assertStatus(422);
 
         $this->putJson('/api/v1/users/my/settings', ['export_notifications' => 'web'])
             ->assertStatus(200);
-        $this->assertEquals('web', $this->user()->fresh()->getSettings('export_notifications'));
+        $this->assertEquals('web', $this->globalAdmin()->fresh()->getSettings('export_notifications'));
 
         $this->putJson('/api/v1/users/my/settings', ['export_notifications' => 'email'])
             ->assertStatus(200);
-        $this->assertEquals('email', $this->user()->fresh()->getSettings('export_notifications'));
+        $this->assertEquals('email', $this->globalAdmin()->fresh()->getSettings('export_notifications'));
 
         config(['sync.notifications.allow_user_settings' => false]);
         $this->putJson('/api/v1/users/my/settings', ['export_notifications' => 'web'])
             ->assertStatus(200);
-        $this->assertEquals('email', $this->user()->fresh()->getSettings('export_notifications'));
+        $this->assertEquals('email', $this->globalAdmin()->fresh()->getSettings('export_notifications'));
     }
 }

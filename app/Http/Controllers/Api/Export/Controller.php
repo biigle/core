@@ -6,8 +6,6 @@ use Biigle\ExportFile;
 use Biigle\Http\Controllers\Api\Controller as BaseController;
 use Biigle\Http\Requests\StoreExport;
 use Biigle\Jobs\GenerateExportJob;
-use Illuminate\Http\Response;
-use Storage;
 
 abstract class Controller extends BaseController
 {
@@ -16,6 +14,12 @@ abstract class Controller extends BaseController
         $this->middleware('can:sudo');
     }
 
+    /**
+     * Request a new export file.
+     *
+     * @param StoreExport $request
+     * @return ExportFile
+     */
     public function store(StoreExport $request)
     {
         if (!$this->isAllowed()) {
@@ -38,53 +42,6 @@ abstract class Controller extends BaseController
         return $export;
     }
 
-    public function download($id)
-    {
-        $export = $this->findExport($id);
-        $this->authorize('access', $export);
-
-        if (!$export->ready_at) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
-        $disk = Storage::disk(config('sync.export_storage_disk'));
-        $path = $export->getStorageFilename();
-
-        if (!$disk->exists($path)) {
-            abort(Response::HTTP_NOT_FOUND);
-        }
-
-        return $disk->download($path, $this->getExportFilename(), [
-            'Content-Type' => 'application/zip',
-        ])
-            // Use fread() because the default fpassthru() can exhaust memory for large exports.
-            ->setCallback(function () use ($disk, $path) {
-                $stream = $disk->readStream($path);
-                while (!feof($stream)) {
-                    echo fread($stream, 8192);
-                }
-                fclose($stream);
-            });
-    }
-
-    public function destroy($id)
-    {
-        $export = $this->findExport($id);
-        $this->authorize('destroy', $export);
-        $export->delete();
-
-        if (!$this->isAutomatedRequest()) {
-            return $this->fuzzyRedirect()
-                ->with('message', 'Export deleted.')
-                ->with('messageType', 'success');
-        }
-    }
-
-    protected function findExport($id): ExportFile
-    {
-        return ExportFile::where('type', $this->getType())->findOrFail($id);
-    }
-
     protected function getIds(StoreExport $request): array
     {
         $query = $this->getQuery();
@@ -101,8 +58,6 @@ abstract class Controller extends BaseController
     abstract protected function getQuery();
 
     abstract protected function getType(): string;
-
-    abstract protected function getExportFilename();
 
     protected function isAllowed()
     {

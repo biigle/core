@@ -2,7 +2,6 @@
 <h2 class="lead">{{number_format($exportResultCount)}} export results</h2>
 <ul class="search-results">
     @foreach ($results as $export)
-        @php($exportPath = $export->type === 'labelTrees' ? 'label-trees' : $export->type)
         @php($exportName = $export->getTypeName().' export')
         <li>
             <span class="pull-right">
@@ -11,7 +10,7 @@
                 @else
                     <small class="text-muted" title="Export is pending to be generated">Pending for {{$export->created_at->diffForHumans(null, true)}}</small>
                 @endif
-                <form action="{{url("api/v1/export/{$exportPath}/{$export->id}")}}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure that you want to delete this export?')">
+                <form action="{{url("api/v1/export-files/{$export->id}")}}" method="POST" style="display: inline-block;" onsubmit="return confirm('Are you sure that you want to delete this export?')">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="_method" value="DELETE">
                     <button type="submit" class="btn btn-default btn-xs" title="Delete this export"><i class="fa fa-trash-alt"></i></button>
@@ -19,7 +18,7 @@
             </span>
             <span class="search-results__name">
                 @if ($export->ready_at)
-                    <a href="{{url("api/v1/export/{$exportPath}/{$export->id}")}}">{{$export->description ?: $exportName}}</a>
+                    <a href="{{url("api/v1/export-files/{$export->id}")}}">{{$export->description ?: $exportName}}</a>
                 @else
                     {{$export->description ?: $exportName}}
                 @endif

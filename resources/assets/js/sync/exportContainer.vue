@@ -1,13 +1,12 @@
 <script>
 import EntityChooser from './components/entityChooser.vue';
+import ExportApi from './api/export.js';
 import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
-import {requestExport} from './volumeExport.js';
-import {Http} from 'vue-resource';
 import {Tabs} from 'uiv';
 import {Tab} from 'uiv';
 
@@ -20,6 +19,12 @@ let fetchEntitiesApi = {
     users: UsersApi,
 };
 
+let storeExportApi = {
+    volumes: (data) => ExportApi.saveVolumes(data),
+    labelTrees: (data) => ExportApi.saveLabelTrees(data),
+    users: (data) => ExportApi.saveUsers(data),
+};
+
 export default {
     mixins: [LoaderMixin],
     components: {
@@ -29,7 +34,6 @@ export default {
     },
     data() {
         return {
-            exportApiUrl: null,
             allowedExports: [],
             entities: {
                 volumes: [],
@@ -42,7 +46,11 @@ export default {
                 users: [],
             },
             currentTab: 0,
-            volumeExportDescription: '',
+            descriptions: {
+                volumes: '',
+                labelTrees: '',
+                users: '',
+            },
             volumeIconMap: {},
         };
     },
@@ -113,6 +121,20 @@ export default {
         handleChosenVolumes(volumes) {
             this.chosenEntities.volumes = volumes;
         },
+        getEntitySelection(type) {
+            let entities = this.entities[type];
+            let chosenEntities = this.chosenEntities[type];
+
+            if ((entities.length / 2) > chosenEntities.length) {
+                return {only: chosenEntities.map((e) => e.id)};
+            }
+
+            return {
+                except: entities
+                    .filter((e) => chosenEntities.indexOf(e) === -1)
+                    .map((e) => e.id),
+            };
+        },
         requestVolumeExport() {
             return this.requestExport('volumes');
         },
@@ -123,19 +145,19 @@ export default {
             return this.requestExport('users');
         },
         requestExport(type) {
+            if (this.chosenEntities[type].length === 0) {
+                return Promise.resolve();
+            }
+
             this.startLoading();
-            const path = type === 'labelTrees' ? 'label-trees' : type;
             const name = type === 'labelTrees' ? 'label tree' : type.slice(0, -1);
-            return requestExport({
-                chosen: this.chosenEntities[type],
-                description: type === 'volumes' ? this.volumeExportDescription : null,
-                entities: this.entities[type],
-                messages: Messages,
-                post: Http.post.bind(Http),
-                type: name,
-                url: this.exportApiUrl + '/' + path,
-            })
-                .catch(handleErrorResponse)
+            let data = {
+                description: this.descriptions[type],
+                ...this.getEntitySelection(type),
+            };
+
+            return storeExportApi[type](data)
+                .then(() => Messages.success(`The ${name} export was requested. You will be notified when it is ready.`), handleErrorResponse)
                 .finally(this.finishLoading);
         },
         handleChosenLabelTrees(labelTrees) {
@@ -151,7 +173,6 @@ export default {
         },
     },
     created() {
-        this.exportApiUrl = biigle.$require('sync.exportApiUrl');
         this.allowedExports = biigle.$require('sync.allowedExports');
         let mediaTypes = biigle.$require('sync.mediaTypes');
         this.volumeIconMap[mediaTypes.image] = 'image';

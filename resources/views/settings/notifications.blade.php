@@ -37,6 +37,7 @@
                 </div>
             </form>
         </li>
+        @can('sudo')
         <li class="list-group-item">
             <h4>Export notifications</h4>
             <p class="text-muted">
@@ -64,6 +65,7 @@
                 </div>
             </form>
         </li>
+        @endcan
         @foreach ($modules->getMixins('settings.notifications') as $module => $nestedMixins)
             <li class="list-group-item">
                 @include($module.'::settings.notifications')
@@ -82,6 +84,7 @@
             settingsKey: 'report_notifications',
         },
     });
+    @can('sudo')
     biigle.$mount('export-notification-settings', {
         mixins: [biigle.$require('core.mixins.notificationSettings')],
         data: {
@@ -89,5 +92,6 @@
             settingsKey: 'export_notifications',
         },
     });
+    @endcan
 </script>
 @endpush

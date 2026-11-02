@@ -89,9 +89,9 @@ return [
             'root' => storage_path('reports'),
         ],
 
-        'volume-exports' => [
+        'exports' => [
             'driver' => 'local',
-            'root' => storage_path('volume-exports'),
+            'root' => storage_path('exports'),
         ],
 
         'largo' => [
