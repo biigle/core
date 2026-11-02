@@ -13,10 +13,13 @@ use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
 use Exception;
+use FFMpeg\Exception\RuntimeException;
+use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use FileCache;
 use Log;
 use Mockery;
+use ReflectionMethod;
 use Storage;
 use TestCase;
 
@@ -996,6 +999,50 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame([300, 284, 100, 32], $box);
     }
 
+    public function testGetVideoFrame()
+    {
+        // The video has 60 frames with 29.97 fps (each frame is 1001/30000 s long).
+        // The brightness of each frame encodes the frame number (modulo 16). It was
+        // created with:
+        // ffmpeg -f lavfi -i "color=black:s=32x24:r=30000/1001:d=2,format=yuv420p,geq=lum='16+mod(N\,16)*12':cb=128:cr=128" -c:v libx264 -qp 0 -g 30 frame-indexed.mp4
+        $video = FFMpeg::create()->open(__DIR__.'/../../files/frame-indexed.mp4');
+        $frameStart = fn ($frame) => $frame * 1001 / 30000;
+
+        // [time, expected frame] The expected frame is the last frame that starts at
+        // or before the time (truncated to microseconds) like in the browser.
+        $expect = [
+            [0, 0],
+            [0.05, 1],
+            [1.0, 29],
+            [1.5, 44],
+            // Exact start of a frame (1.001 s).
+            [$frameStart(30), 30],
+            // Exact start of a frame (1.2345666...). The browser truncates this to
+            // microseconds and shows the previous frame.
+            [$frameStart(37), 36],
+            // Start of the same frame rounded up to microseconds.
+            [round($frameStart(37), 6), 37],
+            // Just before the start of a frame.
+            [$frameStart(37) - 0.0001, 36],
+            // End of the video.
+            [2.002, 59],
+            // Beyond the end of the video.
+            [3.5, 59],
+        ];
+
+        foreach ($expect as [$time, $frame]) {
+            $image = $this->getVideoFrame($video, $time);
+            $this->assertSame($frame % 16, $this->getFrameNumber($image), "Wrong frame for time {$time}.");
+        }
+    }
+
+    public function testGetVideoFrameNotFound()
+    {
+        $video = FFMpeg::create()->open(__DIR__.'/../../files/frame-indexed.mp4');
+        $this->expectException(RuntimeException::class);
+        $this->getVideoFrame($video, 10);
+    }
+
     protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();
@@ -1007,6 +1054,21 @@ class ProcessAnnotatedVideoTest extends TestCase
         $video->shouldReceive('writeToFile');
 
         return $video;
+    }
+
+    protected function getVideoFrame(Video $video, float $time)
+    {
+        $job = new ProcessAnnotatedVideo(new VideoModel);
+        $method = new ReflectionMethod(ProcessAnnotatedVideo::class, 'getVideoFrame');
+
+        return $method->invoke($job, $video, $time);
+    }
+
+    protected function getFrameNumber($image)
+    {
+        // The frames of the video have the brightness 16 + (frame % 16) * 12 in the
+        // limited range of YUV. This is (frame % 16) * 13.97 in the full range of RGB.
+        return (int) round($image->getpoint(16, 12)[0] / 13.97);
     }
 }
 
@@ -1024,7 +1086,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
         return Mockery::mock(Video::class);
     }
 
-    public function getVideoFrame(Video $video, float $time, int $trySeek = 3)
+    public function getVideoFrame(Video $video, float $time)
     {
         if ($this->throwGetFrame !== false) {
             throw new $this->throwGetFrame;

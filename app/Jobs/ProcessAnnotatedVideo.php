@@ -2,10 +2,10 @@
 
 namespace Biigle\Jobs;
 
+use Alchemy\BinaryDriver\Exception\ExecutionFailureException;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
-use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
@@ -21,6 +21,16 @@ use Jcupitt\Vips\Image;
  */
 class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 {
+    /**
+     * Lengths of the segments of the video (in seconds) before the time of an annotation
+     * that are decoded to find the frame of the annotation if a segment of two frames
+     * does not contain it (e.g. for annotations at the end of the video or for videos
+     * with a variable frame rate).
+     *
+     * @var array<float>
+     */
+    const FRAME_SEARCH_WINDOWS = [1.0, 3.0];
+
     /**
      * {@inheritdoc}
      */
@@ -56,10 +66,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                     // FFMpeg can't extract the frame.
                     continue;
                 } catch (VipsException $e) {
-                    // The "buffer not in known format" error when FFMPeg returns an empty
-                    // buffer from the end of the video. We have the "trySeek" argument
-                    // that attempts to rewind for a bit to get a frame but this may not
-                    // always work.
+                    // The frame file could not be read.
                     continue;
                 }
 
@@ -112,32 +119,115 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
     }
 
     /**
-     * Get a video frame from a specific time as VipsImage object.
+     * Get the video frame that is shown at a specific time as VipsImage object.
+     *
+     * This is the last frame that starts at or before the time (like in the browser).
+     * If FFMpeg seeks to the time directly, it returns the first frame that starts at
+     * or after the time instead. This is the next frame if the time is not exactly at
+     * the start of a frame. See: https://github.com/biigle/core/issues/433
      *
      * @param Video $video
      * @param float $time
-     * @param int $trySeek
      *
      * @return Image
      */
-    protected function getVideoFrame(Video $video, float $time, int $trySeek = 60)
+    protected function getVideoFrame(Video $video, float $time)
     {
-        // Sometimes an annotation is near the end of the video (or exactly at the end).
-        // FFMpeg often returns an empty buffer in this case. If there is an empty frame,
-        // we try to seek backwards one frame until the buffer is not empty or the number
-        // of tries is exceeded.
-        do {
-            /** @var string */
-            $buffer = $video->frame(TimeCode::fromSeconds($time))
-                ->save('', false, true);
-            $trySeek -= 1;
-            // Roughly estimated framerate of 30 fps. With 60 iterations, we seek back up
-            // to 2 s by default (this is based on what was required for edge cases in
-            //  1.5M annotations on 16k videos).
-            $time = max(0, $time - 0.033333333);
-        } while (empty($buffer) && $trySeek > 0);
+        // Browsers handle the time with microsecond precision. E.g. Chromium truncates
+        // 2.9696333 s (the exact start of frame 89 with 29.97 fps: 89 * 1001 / 30000 s)
+        // to 2.969633 s and shows frame 88. The small offset compensates floating point
+        // errors.
+        $time = floor($time * 1e6 + 1e-3) / 1e6;
 
-        return Image::newFromBuffer($buffer);
+        $tmpFile = tempnam(sys_get_temp_dir(), 'largo_video_frame');
+        // The file requires a suffix so FFMpeg knows which format to use.
+        $framePath = "{$tmpFile}.jpg";
+        File::move($tmpFile, $framePath);
+
+        try {
+            // Decode a short segment of the video before the time and keep the last
+            // frame. If the segment contains no frame (e.g. if the time is beyond the
+            // end of the video), a longer segment is tried.
+            foreach ($this->getFrameSearchWindows($video) as $window) {
+                $this->extractLastFrameBefore($video, $time, $window, $framePath);
+                if (File::size($framePath) > 0) {
+                    return Image::newFromBuffer(File::get($framePath));
+                }
+            }
+        } finally {
+            File::delete($framePath);
+        }
+
+        throw new RuntimeException("Unable to extract the video frame at {$time} s.");
+    }
+
+    /**
+     * Get the lengths of the segments of the video (in seconds) before the time of an
+     * annotation that are decoded to find the frame of the annotation.
+     *
+     * All frames of a segment are extracted. The first segment spans two frames
+     * (based on the average frame rate) so only few frames have to be extracted.
+     *
+     * @param Video $video
+     *
+     * @return array<float>
+     */
+    protected function getFrameSearchWindows(Video $video): array
+    {
+        $windows = self::FRAME_SEARCH_WINDOWS;
+        // E.g. "30000/1001".
+        $frameRate = $video->getStreams()->videos()->first()?->get('avg_frame_rate');
+        $frameRate = array_map('floatval', explode('/', $frameRate ?? ''));
+
+        if (count($frameRate) === 2 && $frameRate[0] > 0 && $frameRate[1] > 0) {
+            $window = 2 * $frameRate[1] / $frameRate[0];
+            if ($window < $windows[0]) {
+                array_unshift($windows, $window);
+            }
+        }
+
+        return $windows;
+    }
+
+    /**
+     * Write the last frame that starts at or before the time to the file. The file is
+     * not changed if the segment of the video before the time contains no frame.
+     *
+     * @param Video $video
+     * @param float $time Time of the frame in seconds.
+     * @param float $window Length of the segment before the time in seconds.
+     * @param string $path Path to the JPEG file to write the frame to.
+     */
+    protected function extractLastFrameBefore(Video $video, float $time, float $window, string $path): void
+    {
+        $start = max(0, $time - $window);
+
+        try {
+            $video->getFFMpegDriver()->command([
+                '-y',
+                // Keep the original timestamps (relative to the start of the video like
+                // the seek position) so they are compared with the exact time below.
+                '-copyts',
+                '-start_at_zero',
+                '-ss', sprintf('%.6F', $start),
+                // Only decode the segment up to the time (and a bit more).
+                '-t', sprintf('%.6F', $time - $start + 0.1),
+                '-i', $video->getPathfile(),
+                '-an',
+                // Select all frames that start at or before the time (with a tolerance
+                // for floating point errors)...
+                '-vf', sprintf("select='lte(t\\,%.9F)'", $time + 1e-9),
+                // ...and keep only the last one in the file.
+                '-update', '1',
+                // JPEG with very high quality. This is much faster than PNG.
+                '-c:v', 'mjpeg',
+                '-q:v', '2',
+                '-f', 'image2',
+                $path,
+            ]);
+        } catch (ExecutionFailureException $e) {
+            throw new RuntimeException('Unable to extract the video frame.', $e->getCode(), $e);
+        }
     }
 
     /**
