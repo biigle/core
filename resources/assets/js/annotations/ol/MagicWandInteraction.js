@@ -179,6 +179,23 @@ class MagicWandInteraction extends PointerInteraction {
     }
 
     /**
+     * Determine if a point (in OpenLayers coordinates) is on a non-transparent pixel
+     * of the snapshot.
+     *
+     * @param {Array} point
+     *
+     * @return {Boolean}
+     */
+    isOnImage(point) {
+        let [x, y] = this.toSnapshotCoordinates([point]).shift();
+        if (x < 0 || y < 0 || x >= this.snapshot.width || y >= this.snapshot.height) {
+            return false;
+        }
+
+        return this.snapshot.data[(y * this.snapshot.width + x) * 4 + 3] !== 0;
+    }
+
+    /**
      * Convert MagicWand point objects to OpenLayers point arrays.
      *
      * @param {Array} points
@@ -195,16 +212,18 @@ class MagicWandInteraction extends PointerInteraction {
     handleUpEvent() {
         this.currentThreshold = this.colorThreshold;
 
-        if (!this.isShowingCross) {
-            this.sketchFeature.setStyle(null);
-            this.dispatchEvent({ type: 'drawend', feature: this.sketchFeature });
-            // Add feature to annotation source to prevent flickering feature
-            this.source.addFeature(this.sketchFeature);
+        // There is no sketch if no region could be detected.
+        if (this.sketchFeature) {
+            if (!this.isShowingCross) {
+                this.sketchFeature.setStyle(null);
+                this.dispatchEvent({ type: 'drawend', feature: this.sketchFeature });
+                // Add feature to annotation source to prevent flickering feature
+                this.source.addFeature(this.sketchFeature);
+            }
+
+            this.sketchSource.removeFeature(this.sketchFeature);
+            this.sketchFeature = null;
         }
-
-        this.sketchSource.removeFeature(this.sketchFeature);
-
-        this.sketchFeature = null;
 
         this.indicatorSource.clear();
         this.isShowingPoint = false;
@@ -222,6 +241,12 @@ class MagicWandInteraction extends PointerInteraction {
         }
         this.downPoint[0] = Math.round(e.coordinate[0]);
         this.downPoint[1] = Math.round(e.coordinate[1]);
+
+        // Don't start a sketch outside of the image.
+        if (!this.isOnImage(this.downPoint)) {
+            return false;
+        }
+
         this.drawSketch();
         this.indicatorPoint.getGeometry().setCoordinates(this.downPoint);
         this.indicatorCross.getGeometry().setCoordinates(this.downPoint);
@@ -373,7 +398,8 @@ class MagicWandInteraction extends PointerInteraction {
         let sketchData = sketch.data;
         let snapshotData = this.snapshot.data;
         for (let i = sketchData.length - 1; i >= 0; i--) {
-            if (snapshotData[i * 4] === 0) {
+            // Check the alpha channel. Opaque pixels can have a red value of 0, too.
+            if (snapshotData[i * 4 + 3] === 0) {
                 sketchData[i] = 0;
             }
         }
