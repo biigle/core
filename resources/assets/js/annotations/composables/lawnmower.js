@@ -261,7 +261,7 @@ export function useLawnmowerMode({
         }
     }
 
-    watch(() => image?.value, async (newImage) => {
+    watch(() => image?.value, (newImage) => {
         if (!newImage) {
             return;
         }
@@ -293,7 +293,12 @@ export function useLawnmowerMode({
         if (!active || wasActive || !image.value || pageReloaded) {
             return;
         }
-        showInitialImageSection();
+
+        if (getSavedLawnmowerState() || restoringLawnmowerImageInProgress) {
+            return;
+        } else {
+            showInitialImageSection();
+        }
     })
 
     function recenterSectionAfterMapResize() {
