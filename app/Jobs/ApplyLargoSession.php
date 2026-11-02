@@ -122,10 +122,13 @@ class ApplyLargoSession extends Job implements ShouldQueue
             return;
         }
 
+        // Retry on deadlocks. These can't be prevented entirely because other
+        // transactions may lock the annotations in an arbitrary order (see
+        // deleteDanglingAnnotations()).
         DB::transaction(function () {
             $this->handleImageAnnotations();
             $this->handleVideoAnnotations();
-        });
+        }, 3);
 
         $this->cleanupJobId();
         LargoSessionSaved::dispatch($this->id, $this->user);
@@ -468,8 +471,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // delete. A label attached concurrently by a user would otherwise not be seen
         // by the snapshot of the delete statement and the annotation (including the
         // new label) would be deleted. With the lock acquired first, the delete takes
-        // a fresh snapshot that sees the new label. This can't deadlock with other
-        // jobs because they are already serialized by lockAnnotations().
+        // a fresh snapshot that sees the new label.
+        //
+        // This can still deadlock with transactions that hold KEY SHARE locks on the
+        // annotations (via FK checks of label inserts or feature vector upserts) while
+        // they wait for rows that this job modified. The transaction in handle() is
+        // retried in this case.
         foreach ($chunks as $chunk) {
             $toDeleteQuery($chunk)->orderBy('id')->lockForUpdate()->pluck('id');
         }
@@ -486,11 +493,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
                 $toDeleteQuery($chunk)->delete();
             }
             // The annotation model observer does not fire for this query so we
-            // dispatch the remove patch job manually here.
+            // dispatch the remove patch job manually here. Only dispatch after commit
+            // because the transaction may be rolled back and retried.
             if ($annotationModel === ImageAnnotation::class) {
-                RemoveImageAnnotationPatches::dispatch($toDeleteArgs);
+                RemoveImageAnnotationPatches::dispatch($toDeleteArgs)->afterCommit();
             } else {
-                RemoveVideoAnnotationPatches::dispatch($toDeleteArgs);
+                RemoveVideoAnnotationPatches::dispatch($toDeleteArgs)->afterCommit();
             }
         }
     }
