@@ -43,6 +43,36 @@ class AnnotationSession extends Model
     ];
 
     /**
+     * Scope a query to annotation sessions that are currently active.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    public function scopeActive($query)
+    {
+        $now = Carbon::now();
+
+        return $query->where('starts_at', '<=', $now)->where('ends_at', '>', $now);
+    }
+
+    /**
+     * Scope a query to annotation sessions that apply to the given user.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    public function scopeForUser($query, User $user)
+    {
+        return $query->whereExists(function ($query) use ($user) {
+            $query->select(DB::raw(1))
+                ->from('annotation_session_user')
+                ->where('annotation_session_user.user_id', $user->id)
+                ->whereRaw('annotation_session_user.annotation_session_id = annotation_sessions.id');
+        });
+    }
+
+    /**
      * The volume, this annotation session belongs to.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Volume, $this>

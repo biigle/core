@@ -28,6 +28,34 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertNotNull($this->model->hide_own_annotations);
     }
 
+    public function testScopeActive()
+    {
+        // Make the annotation session of the test model inactive.
+        $this->model->starts_at = Carbon::yesterday()->subDay();
+        $this->model->ends_at = Carbon::yesterday();
+        $this->model->save();
+
+        $active = static::create([
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+        static::create([
+            'starts_at' => Carbon::tomorrow(),
+            'ends_at' => Carbon::tomorrow()->addDay(),
+        ]);
+
+        $this->assertSame([$active->id], AnnotationSession::active()->pluck('id')->all());
+    }
+
+    public function testScopeForUser()
+    {
+        $user = UserTest::create();
+        $this->model->users()->attach($user);
+        static::create();
+
+        $this->assertSame([$this->model->id], AnnotationSession::forUser($user)->pluck('id')->all());
+    }
+
     public function testNameRequired()
     {
         $this->model->name = null;

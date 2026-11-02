@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api\Labels;
 
+use Biigle\AnnotationSession;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
 use Biigle\Label;
@@ -28,10 +29,13 @@ class ImageAnnotationsController extends Controller
     {
         $label = Label::findOrFail($id);
         $this->validate($request, ['take' => 'integer']);
+        $user = $request->user();
+        $sessions = AnnotationSession::active()->forUser($user)->get();
 
-        return ImageAnnotation::visibleFor($request->user())
+        return ImageAnnotation::visibleFor($user)
             ->join('images', 'images.id', '=', 'image_annotations.image_id')
             ->withLabel($label)
+            ->allowedBySessions($sessions, $user)
             ->when($request->filled('take'), fn ($query) => $query->take($request->input('take')))
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()
