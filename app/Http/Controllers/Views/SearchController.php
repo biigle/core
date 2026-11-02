@@ -14,6 +14,7 @@ use Biigle\Volume;
 use DB;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class SearchController extends Controller
 {
@@ -346,7 +347,8 @@ class SearchController extends Controller
      * Paginate a file query, ordered by descending ID.
      *
      * The total is capped at MAX_FILE_RESULT_COUNT, which bounds the number of
-     * pages as well.
+     * pages as well. Later pages resolve to the last page, because the paginator
+     * would otherwise run the arbitrarily large offset of a hand-written URL.
      *
      * A filename filter cannot use an index, so the query planner is free to
      * assume that walking the primary key backwards will fill the page quickly.
@@ -372,7 +374,10 @@ class SearchController extends Controller
             $queryBuilder->orderBy('id', 'desc');
         }
 
-        return $queryBuilder->paginate($perPage, total: $total);
+        $lastPage = max((int) ceil($total / $perPage), 1);
+        $page = min(Paginator::resolveCurrentPage(), $lastPage);
+
+        return $queryBuilder->paginate($perPage, page: $page, total: $total);
     }
 
     /**

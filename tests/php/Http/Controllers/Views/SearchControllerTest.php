@@ -323,6 +323,9 @@ class SearchControllerTest extends TestCase
         // Paging is bounded by the cap as well.
         $response = $this->get('search?t=images&q=exact&page=84')->assertStatus(200);
         $this->assertSame(84, $response->viewData('results')->lastPage());
+
+        $response = $this->get('search?t=images&q=exact&page=85')->assertStatus(200);
+        $this->assertSame(84, $response->viewData('results')->currentPage());
     }
 
     public function testIndexAnnotationsSudo()
