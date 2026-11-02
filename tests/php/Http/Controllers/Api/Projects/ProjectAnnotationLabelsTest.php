@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
 use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -190,5 +191,35 @@ class ProjectAnnotationLabelsTest extends ApiTestCase
             ]]);
 
         $this->assertSame(3, $response->json()[0]['count']);
+    }
+
+    public function testGetProjectAnnotationLabelsFilter()
+    {
+        $id = $this->project()->id;
+        $l = LabelTest::create();
+        $img = ImageTest::create(['volume_id' => $this->volume()->id, 'filename' => 'abc.jpg']);
+        $a1 = ImageAnnotationTest::create(['image_id' => $img->id, 'shape' => Shape::POINT->value]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $img->id, 'shape' => Shape::CIRCLE->value]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l->id]);
+
+        $videoVolume = VolumeTest::create(['media_type' => MediaType::VIDEO, 'creator_id' => $this->volume()->creator_id]);
+        $this->project()->volumes()->attach($videoVolume->id);
+        $vid = VideoTest::create(['volume_id' => $videoVolume->id, 'filename' => 'abc.mp4']);
+        $a3 = VideoAnnotationTest::create(['video_id' => $vid->id, 'shape' => Shape::CIRCLE->value]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $l->id]);
+
+        $this->beEditor();
+        $this->getJson("/api/v1/projects/{$id}/label-count?shape[]=".Shape::CIRCLE->value)
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 2]);
+
+        $this->getJson("/api/v1/projects/{$id}/label-count?volume_id[]={$videoVolume->id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 1]);
+
+        $this->getJson("/api/v1/projects/{$id}/label-count?shape[]=".Shape::POINT->value."&volume_id[]={$videoVolume->id}&union=1")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 2]);
     }
 }
