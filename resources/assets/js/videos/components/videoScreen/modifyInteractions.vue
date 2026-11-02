@@ -131,7 +131,7 @@ export default {
         },
         toggleTranslating() {
             this.resetInteractionMode();
-            this.isTranslating = !this.isTranslating;
+            this.isTranslating = !this.isTranslating && this.canModifyAnnotations;
         },
         initTranslateInteraction(map) {
             this.translateInteraction = new TranslateInteraction({
@@ -160,21 +160,21 @@ export default {
         toggleAttaching() {
             if (this.isAttaching) {
                 this.resetInteractionMode();
-            } else {
+            } else if (this.canModifyAnnotations) {
                 this.interactionMode = 'attachLabel';
             }
         },
         toggleSwapping() {
             if (this.isSwapping) {
                 this.resetInteractionMode();
-            } else {
+            } else if (this.canModifyAnnotations) {
                 this.interactionMode = 'swapLabel';
             }
         },
         toggleForceSwapping() {
             if (this.isForceSwapping) {
                 this.resetInteractionMode();
-            } else {
+            } else if (this.canModifyAnnotations) {
                 this.interactionMode = 'forceSwapLabel';
             }
         },

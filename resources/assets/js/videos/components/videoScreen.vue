@@ -602,6 +602,13 @@ export default {
         showModifyBar() {
             return this.canModify || this.canDelete;
         },
+        // Annotations can't be created or modified if the video could not be loaded.
+        canAddAnnotations() {
+            return this.canAdd && !this.hasError;
+        },
+        canModifyAnnotations() {
+            return this.canModify && !this.hasError;
+        },
         hasSelectedAnnotations() {
             return this.selectedAnnotations.length > 0;
         },
@@ -842,6 +849,12 @@ export default {
         },
         isDefaultInteractionMode(isDefault) {
             this.selectInteraction.setActive(isDefault);
+        },
+        hasError(hasError) {
+            if (hasError) {
+                this.resetInteractionMode();
+                this.resetTranslating();
+            }
         },
         annotationOpacity(opactiy) {
             if (this.annotationLayer) {
