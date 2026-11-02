@@ -325,6 +325,31 @@ class SearchControllerTest extends TestCase
         $this->assertSame(84, $response->viewData('results')->lastPage());
     }
 
+    public function testIndexAnnotationsSudo()
+    {
+        $user = UserTest::make();
+        $user->role = Role::ADMIN;
+        $user->save();
+
+        $image1 = ImageTest::create(['filename' => 'my image']);
+        $image2 = ImageTest::create(['filename' => 'other image']);
+
+        $this->be($user);
+        $response = $this->get('search?t=images')->assertStatus(200);
+        $response->assertSeeText('my image');
+        $response->assertSeeText('other image');
+        $this->assertSame([$image2->id, $image1->id], $response->viewData('results')->pluck('id')->all());
+
+        $response = $this->get('search?t=images&q=other')->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertSeeText('other image');
+
+        $user->setSettings(['super_user_mode' => false]);
+        $response = $this->get('search?t=images')->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertDontSeeText('other image');
+    }
+
     public function testIndexVideos()
     {
         $user = UserTest::create();
@@ -353,6 +378,31 @@ class SearchControllerTest extends TestCase
             ->assertStatus(200)
             ->assertSeeText('random video')
             ->assertDontSeeText('another video');
+    }
+
+    public function testIndexVideosSudo()
+    {
+        $user = UserTest::make();
+        $user->role = Role::ADMIN;
+        $user->save();
+
+        $video1 = VideoTest::create(['filename' => 'random video']);
+        $video2 = VideoTest::create(['filename' => 'another video']);
+
+        $this->be($user);
+        $response = $this->get('search?t=videos')->assertStatus(200);
+        $response->assertSeeText('random video');
+        $response->assertSeeText('another video');
+        $this->assertSame([$video2->id, $video1->id], $response->viewData('results')->pluck('id')->all());
+
+        $response = $this->get('search?t=videos&q=another')->assertStatus(200);
+        $response->assertDontSeeText('random video');
+        $response->assertSeeText('another video');
+
+        $user->setSettings(['super_user_mode' => false]);
+        $response = $this->get('search?t=videos')->assertStatus(200);
+        $response->assertDontSeeText('random video');
+        $response->assertDontSeeText('another video');
     }
 
     public function testIndexReportsVolume()
