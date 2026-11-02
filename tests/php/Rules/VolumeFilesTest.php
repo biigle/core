@@ -55,13 +55,14 @@ class VolumeFilesTest extends TestCase
         $this->assertTrue($validator->passes(null, ['1.mp4', '1.MP4']));
         $this->assertTrue($validator->passes(null, ['1.mpeg', '2.MPEG']));
         $this->assertTrue($validator->passes(null, ['1.webm', '2.WEBM']));
+        $this->assertTrue($validator->passes(null, ['1.m4v', '2.M4V']));
     }
 
     public function testVideoFormatNotOk()
     {
         $validator = new VolumeFilesStub('', MediaType::VIDEO);
         $this->assertFalse($validator->passes(null, ['1.mp4', '2.avi']));
-        $this->assertStringContainsString('Only MPEG, MP4 or WebM', $validator->message());
+        $this->assertStringContainsString('Only MPEG, MP4, M4V or WebM', $validator->message());
     }
 
     public function testDupes()
