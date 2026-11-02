@@ -22,8 +22,6 @@ return new class extends Migration {
         'images' => 'filename',
         'videos' => 'filename',
         'volumes' => 'name',
-        'projects' => 'name',
-        'label_trees' => 'name',
     ];
 
     /**
