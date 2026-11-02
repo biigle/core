@@ -24,10 +24,6 @@ return new class extends Migration {
             // support the lookup by user_id that every search request performs.
             $table->index('user_id');
         });
-
-        Schema::table('federated_search_models', function (Blueprint $table) {
-            $table->index('type');
-        });
     }
 
     /**
@@ -37,10 +33,6 @@ return new class extends Migration {
      */
     public function down()
     {
-        Schema::table('federated_search_models', function (Blueprint $table) {
-            $table->dropIndex(['type']);
-        });
-
         Schema::table('federated_search_model_user', function (Blueprint $table) {
             $table->dropIndex(['user_id']);
         });
