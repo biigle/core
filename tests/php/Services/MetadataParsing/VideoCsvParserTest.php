@@ -201,6 +201,33 @@ class VideoCsvParserTest extends TestCase
         $this->assertCount(1, $data->getFiles());
         $this->assertCount(0, $data->getFiles()->first()->getFrames());
     }
+
+    public function testGetMetadataClassicMacLineEndings()
+    {
+        $path = tempnam(sys_get_temp_dir(), 'video_metadata_test');
+        try {
+            file_put_contents($path, implode("\r", [
+                'filename,taken_at,lng,lat',
+                'abc.mp4,2016-12-19 12:27:00,52.220,28.123',
+                'abc.mp4,2016-12-19 12:28:00,52.230,28.133',
+            ])."\r");
+
+            $parser = new VideoCsvParser(new File($path));
+            $this->assertTrue($parser->recognizesFile());
+            $data = $parser->getMetadata();
+            $this->assertCount(1, $data->getFiles());
+            $frames = $data->getFile('abc.mp4')->getFrames();
+            $this->assertCount(2, $frames);
+            $this->assertEquals('2016-12-19 12:27:00', $frames[0]->takenAt);
+            $this->assertEquals(52.220, $frames[0]->lng);
+            $this->assertEquals(28.123, $frames[0]->lat);
+            $this->assertEquals('2016-12-19 12:28:00', $frames[1]->takenAt);
+            $this->assertEquals(52.230, $frames[1]->lng);
+            $this->assertEquals(28.133, $frames[1]->lat);
+        } finally {
+            unlink($path);
+        }
+    }
 }
 
 class VideoCsvParserStub extends VideoCsvParser
