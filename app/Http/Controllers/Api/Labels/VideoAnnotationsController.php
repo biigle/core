@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api\Labels;
 
+use Biigle\AnnotationSession;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Label;
 use Biigle\VideoAnnotation;
@@ -28,10 +29,13 @@ class VideoAnnotationsController extends Controller
     {
         $label = Label::findOrFail($id);
         $this->validate($request, ['take' => 'integer']);
+        $user = $request->user();
+        $sessions = AnnotationSession::active()->forUser($user)->get();
 
-        return VideoAnnotation::visibleFor($request->user())
+        return VideoAnnotation::visibleFor($user)
             ->join('videos', 'videos.id', '=', 'video_annotations.video_id')
             ->withLabel($label)
+            ->allowedBySessions($sessions, $user)
             ->when($request->filled('take'), fn ($query) => $query->take($request->input('take')))
             ->select('videos.uuid', 'video_annotations.id')
             ->distinct()
