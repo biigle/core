@@ -36,8 +36,7 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
         $box = match ($shape) {
             Shape::POINT => $this->getPointBoundingBox($points, $pointPadding),
             Shape::CIRCLE => $this->getCircleBoundingBox($points),
-            // An ellipse will not be handled correctly by this but I didn't bother
-            // because this shape is almost never used anyway.
+            Shape::ELLIPSE => $this->getEllipseBoundingBox($points),
             default => $this->getPolygonBoundingBox($points),
         };
 
@@ -159,6 +158,38 @@ abstract class GenerateFeatureVectors extends Job implements ShouldQueue
             $points[1] - $points[2],
             $points[0] + $points[2],
             $points[1] + $points[2],
+        ];
+    }
+
+    /**
+     * Get the bounding box of an ellipse annotation.
+     *
+     * The four points of an ellipse are the end points of its two axes (points 1 and 3
+     * are the ends of one axis, points 2 and 4 of the other). The bounding box of the
+     * points is too small if the ellipse is rotated.
+     */
+    protected function getEllipseBoundingBox(array $points): array
+    {
+        if (count($points) !== 8) {
+            return $this->getPolygonBoundingBox($points);
+        }
+
+        $centerX = array_sum([$points[0], $points[2], $points[4], $points[6]]) / 4;
+        $centerY = array_sum([$points[1], $points[3], $points[5], $points[7]]) / 4;
+        // Vectors from the center to the end of each axis (half axes).
+        $ux = ($points[0] - $points[4]) / 2;
+        $uy = ($points[1] - $points[5]) / 2;
+        $vx = ($points[2] - $points[6]) / 2;
+        $vy = ($points[3] - $points[7]) / 2;
+        // Extent of the ellipse c + u * cos(t) + v * sin(t) in x and y direction.
+        $halfWidth = sqrt($ux * $ux + $vx * $vx);
+        $halfHeight = sqrt($uy * $uy + $vy * $vy);
+
+        return [
+            $centerX - $halfWidth,
+            $centerY - $halfHeight,
+            $centerX + $halfWidth,
+            $centerY + $halfHeight,
         ];
     }
 
