@@ -148,8 +148,18 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             // Decode a short segment of the video before the time and keep the last
             // frame. If the segment contains no frame (e.g. if the time is beyond the
             // end of the video), a longer segment is tried.
+            $exception = null;
             foreach ($this->getFrameSearchWindows($video) as $window) {
-                $this->extractLastFrameBefore($video, $time, $window, $framePath);
+                try {
+                    $this->extractLastFrameBefore($video, $time, $window, $framePath);
+                } catch (RuntimeException $e) {
+                    // Newer FFmpeg versions (e.g. 7.1) fail instead of writing an empty
+                    // file if the segment contains no frame.
+                    $exception = $e;
+
+                    continue;
+                }
+
                 if (File::size($framePath) > 0) {
                     return Image::newFromBuffer(File::get($framePath));
                 }
@@ -158,7 +168,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             File::delete($framePath);
         }
 
-        throw new RuntimeException("Unable to extract the video frame at {$time} s.");
+        throw new RuntimeException("Unable to extract the video frame at {$time} s.", 0, $exception);
     }
 
     /**

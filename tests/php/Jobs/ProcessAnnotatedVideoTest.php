@@ -1036,6 +1036,21 @@ class ProcessAnnotatedVideoTest extends TestCase
         }
     }
 
+    public function testGetVideoFrameEmptySegmentError()
+    {
+        // FFMpeg 7.1 fails (instead of writing an empty file) if a segment contains no
+        // frame. Then the next (longer) segment should be tried.
+        $video = FFMpeg::create()->open(__DIR__.'/../../files/frame-indexed.mp4');
+        $job = new ProcessAnnotatedVideoEmptySegmentErrorStub(new VideoModel);
+        $method = new ReflectionMethod(ProcessAnnotatedVideo::class, 'getVideoFrame');
+
+        // Beyond the end of the video (2.002 s). The segments of two frames and 1 s
+        // contain no frame.
+        $image = $method->invoke($job, $video, 3.5);
+        $this->assertSame(59 % 16, $this->getFrameNumber($image));
+        $this->assertSame(3, $job->attempts);
+    }
+
     public function testGetVideoFrameNotFound()
     {
         $video = FFMpeg::create()->open(__DIR__.'/../../files/frame-indexed.mp4');
@@ -1124,4 +1139,20 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
 class ProcessAnnotatedVideoBatchStub extends ProcessAnnotatedVideoStub
 {
     const FEATURE_VECTOR_BATCH_SIZE = 2;
+}
+
+class ProcessAnnotatedVideoEmptySegmentErrorStub extends ProcessAnnotatedVideo
+{
+    public $attempts = 0;
+
+    protected function extractLastFrameBefore(Video $video, float $time, float $window, string $path): void
+    {
+        $this->attempts += 1;
+        parent::extractLastFrameBefore($video, $time, $window, $path);
+
+        // Emulate FFMpeg 7.1, which fails if no frame was written.
+        if (filesize($path) === 0) {
+            throw new RuntimeException('Unable to extract the video frame.');
+        }
+    }
 }
