@@ -6,6 +6,7 @@ import PreviewThumbnail from './components/previewThumbnail.vue';
 import statisticsModal from './components/statisticsModal.vue';
 import ProjectsApi from '@/core/api/projects.js';
 import Typeahead from '@/core/components/typeahead.vue';
+import {prompt} from '@/core/messageBox.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 
 const SORTING = {
@@ -140,10 +141,14 @@ export default {
         removeVolume(id) {
             this.startLoading();
             ProjectsApi.detachVolume({ id: this.project.id, volume_id: id })
-                .then(() => this.volumeRemoved(id), (response) => {
+                .then(() => this.volumeRemoved(id), async (response) => {
                     if (response.status === 400) {
                         let volumeToDelete = this.volumes.find(volume => volume.id === id).name;
-                        let inputVolume = prompt(`The volume you are about to remove belongs only to this project and will be deleted. Are you sure you want to delete "${volumeToDelete}"? Please type the volume name to confirm.`);
+                        let inputVolume = await prompt(`The volume you are about to remove belongs only to this project and will be deleted. Are you sure you want to delete "${volumeToDelete}"? Please type the volume name to confirm.`, {
+                            okText: 'Delete',
+                            okType: 'danger',
+                            validator: (value) => value === volumeToDelete ? null : 'The name does not match the volume name.',
+                        });
                         if (inputVolume === volumeToDelete) {
                             this.forceRemoveVolume(id);
                         }

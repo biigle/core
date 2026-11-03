@@ -21,6 +21,7 @@ import VideoTimeline from './components/videoTimeline.vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {computed, markRaw} from 'vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
+import {confirm} from '@/core/messageBox.js';
 import {AUTO_PAUSE_INDEFINITE} from './components/settingsTab.vue';
 
 class VideoError extends Error {}
@@ -429,13 +430,14 @@ export default {
         },
         // This is used when the video popout is open and no videoScreen with the delete
         // event handler exists in this window.
-        deleteSelectedAnnotationsOrKeyframes() {
+        async deleteSelectedAnnotationsOrKeyframes() {
             if (this.selectedAnnotations.length === 0) {
                 return;
             }
 
-            if (confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
-                this.deleteAnnotationsOrKeyframes(this.selectedAnnotations);
+            const annotations = this.selectedAnnotations.slice();
+            if (await confirm('Are you sure that you want to delete all selected annotations/keyframes?', {okText: 'Delete', okType: 'danger'})) {
+                this.deleteAnnotationsOrKeyframes(annotations);
             }
         },
         deleteAnnotationsOrKeyframes(selectedAnnotations) {
@@ -544,11 +546,11 @@ export default {
 
             return Promise.resolve();
         },
-        detachAnnotationLabel(annotation, annotationLabel) {
+        async detachAnnotationLabel(annotation, annotationLabel) {
             if (annotation.labels.length > 1) {
                 annotation.detachAnnotationLabel(annotationLabel)
                     .catch(handleErrorResponse);
-            } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
+            } else if (await confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?', {okText: 'Delete', okType: 'danger'})) {
                 annotation.delete()
                     .then(() => this.removeAnnotation(annotation))
                     .catch(handleErrorResponse);

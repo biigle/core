@@ -47,6 +47,7 @@
 
 <script>
 import Messages from '@/core/messages/store.js';
+import {confirm} from '@/core/messageBox.js';
 
 export default {
     emits: [
@@ -138,8 +139,8 @@ export default {
         handleShowQrCode() {
             this.$emit('show', this.invitation);
         },
-        handleDelete() {
-            if (confirm('Do you really want to delete the invitation?')) {
+        async handleDelete() {
+            if (await confirm('Do you really want to delete the invitation?', {okText: 'Delete', okType: 'danger'})) {
                 this.$emit('delete', this.invitation.id);
             }
         },

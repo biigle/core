@@ -6,6 +6,7 @@ import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
 import {simplifyPolygon} from '@/annotations/ol/PolygonValidator.js';
 import {isInvalidShape} from '@/annotations/utils.js';
+import {confirm} from '@/core/messageBox.js';
 
 const allowedSplitShapes = ['Point', 'Circle', 'Rectangle', 'WholeFrame'];
 
@@ -124,9 +125,14 @@ export default {
                 this.modifyInteraction.setActive(isDefault);
             }
         },
-        emitDelete() {
-            if (this.canDelete && this.selectedAnnotations.length > 0 && confirm('Are you sure that you want to delete all selected annotations/keyframes?')) {
-                this.$emit('delete', this.selectedAnnotations);
+        async emitDelete() {
+            if (!this.canDelete || this.selectedAnnotations.length === 0) {
+                return;
+            }
+
+            const annotations = this.selectedAnnotations.slice();
+            if (await confirm('Are you sure that you want to delete all selected annotations/keyframes?', {okText: 'Delete', okType: 'danger'})) {
+                this.$emit('delete', annotations);
             }
         },
         toggleTranslating() {
