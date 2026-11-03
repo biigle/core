@@ -7,6 +7,7 @@ use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Honeypot;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
@@ -20,7 +21,11 @@ class RegisterControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        config(['biigle.user_registration' => true]);
+        config([
+            'biigle.user_registration' => true,
+            'biigle.email_verification' => false,
+            'biigle.user_registration_confirmation' => false,
+        ]);
         Honeypot::disable();
     }
 
@@ -63,12 +68,65 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ])->assertRedirect('/');
 
+        /** @var User $user */
         $user = User::where('email', 'e@ma.il')->first();
         $this->assertNotNull($user);
         $this->assertSame('a', $user->firstname);
         $this->assertSame('b', $user->lastname);
         $this->assertSame('something', $user->affiliation);
         $this->assertSame(Role::EDITOR, $user->role);
+    }
+
+    public function testRegisterWithEmailVerification()
+    {
+        config(['biigle.email_verification' => true]);
+        Notification::fake();
+
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ])->assertRedirect(route('verification.notice'));
+
+        /** @var User $user */
+        $user = User::where('email', 'e@ma.il')->first();
+        $this->assertSame(Role::GUEST, $user->role);
+        $this->assertNull($user->email_verified_at);
+
+        $user->markEmailAsVerified();
+        event(new Verified($user));
+
+        $this->assertSame(Role::EDITOR, $user->fresh()->role);
+    }
+
+    public function testRegisterWithEmailVerificationAndAdminConfirmation()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        Notification::fake();
+
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ]);
+
+        /** @var User $user */
+        $user = User::where('email', 'e@ma.il')->first();
+        $user->markEmailAsVerified();
+        event(new Verified($user));
+
+        $this->assertSame(Role::GUEST, $user->fresh()->role);
     }
 
     public function testRegisterHoneypot()
@@ -239,7 +297,7 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ]);
 
-        Notification::assertNothingSent();
+        Notification::assertNotSentTo(new AnonymousNotifiable, RegistrationConfirmation::class);
     }
 
     public function testRegisterAdminConfirmationEnabled()

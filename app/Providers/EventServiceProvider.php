@@ -18,6 +18,7 @@ class EventServiceProvider extends ServiceProvider
             \Biigle\Listeners\SendEmailVerificationIfEnabled::class,
         ],
         Verified::class => [
+            \Biigle\Listeners\PromoteUserAfterEmailVerification::class,
             \Biigle\Listeners\SendRegistrationConfirmationIfEnabled::class,
         ],
         \Biigle\Events\ImagesDeleted::class => [

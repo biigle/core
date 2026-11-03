@@ -98,7 +98,7 @@ class RegisterController extends Controller
         $user->email = $data['email'];
         $user->password = Hash::make($data['password']);
         $user->uuid = Uuid::uuid4();
-        if ($this->isAdminConfirmationEnabled()) {
+        if ($this->isEmailVerificationEnabled() || $this->isAdminConfirmationEnabled()) {
             $user->role = Role::GUEST;
         } else {
             $user->role = Role::EDITOR;

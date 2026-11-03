@@ -20,6 +20,7 @@ class UserExportTest extends TestCase
             'lastname' => $user1->lastname,
             'password' => $user1->password,
             'email' => $user1->email,
+            'email_verified_at' => null,
             'settings' => ['a' => 'b'],
             'uuid' => $user1->uuid,
             'affiliation' => $user1->affiliation,
