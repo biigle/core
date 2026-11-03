@@ -4,7 +4,7 @@
 <script type="module">
     biigle.$declare('labelTrees.members', {!! $members !!});
     biigle.$declare('labelTrees.roles', {!! $roles !!});
-    biigle.$declare('labelTrees.defaultRole', {!! Biigle\Role::editor() !!});
+    biigle.$declare('labelTrees.defaultRole', @json(Biigle\Enums\Role::EDITOR->toArray()));
 </script>
 @endpush
 

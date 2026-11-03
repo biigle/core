@@ -4,6 +4,9 @@ namespace Biigle\Http\Controllers\Api;
 
 use Biigle\Http\Requests\StoreVolumeFileLabel;
 use Biigle\Label;
+use DB;
+use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 abstract class VolumeFileLabelController extends Controller
 {
@@ -45,8 +48,23 @@ abstract class VolumeFileLabelController extends Controller
 
         if ($exists) {
             abort(400, 'This label is already attached.');
-        } else {
-            $fileLabel->save();
+        }
+
+        try {
+            // The transaction becomes a savepoint if there is an outer transaction, so
+            // a failed insert does not abort the outer transaction.
+            DB::transaction(fn () => $fileLabel->save());
+        } catch (UniqueConstraintViolationException) {
+            // The label was attached by a concurrent request after the check above.
+            abort(400, 'This label is already attached.');
+        } catch (QueryException $e) {
+            // SQLSTATE 23503 is a foreign key violation. The file or label was deleted
+            // by a concurrent request.
+            if ($e->getCode() === '23503') {
+                abort(404);
+            }
+
+            throw $e;
         }
 
         // should not be returned

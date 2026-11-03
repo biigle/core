@@ -2,10 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
+use Biigle\Enums\ReportType;
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\ReportType;
-use Biigle\Role;
 use Biigle\Tests\FederatedSearchModelTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTreeTest;
@@ -16,8 +17,8 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
 use Biigle\Video;
-use Biigle\Visibility;
 use Biigle\Volume;
+use DB;
 use TestCase;
 
 class SearchControllerTest extends TestCase
@@ -39,9 +40,9 @@ class SearchControllerTest extends TestCase
         $tree2 = LabelTreeTest::create(['name' => 'another tree']);
         $tree3 = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::privateId(),
+            'visibility' => Visibility::PRIVATE,
         ]);
-        $tree->addMember($user, Role::editor());
+        $tree->addMember($user, Role::EDITOR);
 
         $this->be($user);
         $this->get('search?t=label-trees')
@@ -61,7 +62,7 @@ class SearchControllerTest extends TestCase
     {
         $tree = LabelTreeTest::create([
             'name' => 'private one',
-            'visibility_id' => Visibility::privateId(),
+            'visibility' => Visibility::PRIVATE,
         ]);
 
         $project = ProjectTest::create();
@@ -121,8 +122,8 @@ class SearchControllerTest extends TestCase
         $project = ProjectTest::create(['name' => 'random name']);
         $project2 = ProjectTest::create(['name' => 'another project']);
         $project3 = ProjectTest::create(['name' => 'and again']);
-        $project->addUserId($user->id, Role::guestId());
-        $project2->addUserId($user->id, Role::adminId());
+        $project->addUserId($user->id, Role::GUEST);
+        $project2->addUserId($user->id, Role::ADMIN);
 
         $this->be($user);
         $response = $this->get('search')->assertStatus(200);
@@ -170,7 +171,7 @@ class SearchControllerTest extends TestCase
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST);
 
         $volume1 = VolumeTest::create(['name' => 'my volume']);
         $project->addVolumeId($volume1->id);
@@ -214,11 +215,54 @@ class SearchControllerTest extends TestCase
             ->assertDontSeeText('my remote volume');
     }
 
+    public function testIndexResultCountCapped()
+    {
+        $user = UserTest::make();
+        $user->role = Role::ADMIN;
+        $user->save();
+        $this->be($user);
+
+        // A bulk insert doesn't set the timestamps, which the result lists display.
+        $timestamps = ['created_at' => now(), 'updated_at' => now()];
+
+        $cases = [
+            [Project::class, 'projects', 'Projects', 'project', ['creator_id' => $user->id, ...$timestamps]],
+            [Volume::class, 'volumes', 'Volumes', 'volume', ['creator_id' => $user->id, ...$timestamps]],
+            [LabelTree::class, 'label-trees', 'Label Trees', 'label tree', $timestamps],
+        ];
+
+        foreach ($cases as [$class, $type, $tab, $name, $attrs]) {
+            $class::insert($class::factory()->count(1000)->raw($attrs));
+
+            $response = $this->get("search?t={$type}")->assertStatus(200);
+            $response->assertSeeText("1,000 {$name} results");
+            $response->assertDontSeeText('more than');
+            $this->assertMatchesRegularExpression("/{$tab} <span class=\"badge\">1k<\/span>/", $response->getContent());
+
+            $class::insert($class::factory()->count(1)->raw($attrs));
+
+            $response = $this->get("search?t={$type}")->assertStatus(200);
+            $response->assertSeeText("more than 1,000 {$name} results");
+            $this->assertMatchesRegularExpression("/{$tab} <span class=\"badge\">1k\+<\/span>/", $response->getContent());
+
+            // With federated search, the query is a union, which must be capped as a whole.
+            $user->federatedSearchModels()->attach(FederatedSearchModelTest::create(['type' => $class]));
+
+            $response = $this->get("search?t={$type}")->assertStatus(200);
+            $response->assertSeeText("more than 1,000 {$name} results");
+
+            $perPage = $response->viewData('results')->perPage();
+            $lastPage = (int) ceil(1000 / $perPage);
+            $response = $this->get("search?t={$type}&page=".($lastPage + 1))->assertStatus(200);
+            $this->assertSame($lastPage, $response->viewData('results')->currentPage());
+        }
+    }
+
     public function testIndexAnnotations()
     {
         $user = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($user->id, Role::guestId());
+        $project->addUserId($user->id, Role::GUEST);
 
         $image1 = ImageTest::create(['filename' => 'my image']);
         $project->addVolumeId($image1->volume_id);
@@ -232,10 +276,124 @@ class SearchControllerTest extends TestCase
         $response->assertSeeText('other image');
         $response->assertDontSeeText('third image');
 
-        $response = $this->get('search?t=images&q=my')->assertStatus(200);
+        // An empty term arrives as null because of ConvertEmptyStringsToNull,
+        // and must still list everything.
+        $response = $this->get('search?t=images&q=')->assertStatus(200);
+        $response->assertSeeText('my image');
+        $response->assertSeeText('other image');
+        $response->assertDontSeeText('third image');
+
+        $response = $this->get('search?t=images&q=my+i')->assertStatus(200);
         $response->assertSeeText('my image');
         $response->assertDontSeeText('other image');
         $response->assertDontSeeText('third image');
+    }
+
+    public function testIndexAnnotationsQueryTooShort()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::GUEST);
+
+        $image = ImageTest::create(['filename' => 'my image']);
+        $project->addVolumeId($image->volume_id);
+
+        $this->be($user);
+        // A substring match cannot use an index, so terms that are too short to
+        // narrow anything down are rejected instead of scanned.
+        $response = $this->get('search?t=images&q=my')->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertSeeText('at least 3 characters');
+        $response->assertDontSeeText('image results');
+        $this->assertMatchesRegularExpression('/Images <span class="badge">-<\/span>/', $response->getContent());
+        $this->assertMatchesRegularExpression('/Videos <span class="badge">-<\/span>/', $response->getContent());
+    }
+
+    public function testIndexAnnotationsEscapeWildcards()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::GUEST);
+
+        $image1 = ImageTest::create(['filename' => 'my image']);
+        $project->addVolumeId($image1->volume_id);
+        $image2 = ImageTest::create(['filename' => '50%_off\\image']);
+        $project->addVolumeId($image2->volume_id);
+
+        $this->be($user);
+        $response = $this->get('search?t=images&q='.urlencode('%%%'))->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertDontSeeText('50%_off');
+
+        $response = $this->get('search?t=images&q='.urlencode('my_image'))->assertStatus(200);
+        $response->assertDontSeeText('my image');
+
+        $response = $this->get('search?t=images&q='.urlencode('0%_off\\'))->assertStatus(200);
+        $response->assertSeeText('50%_off');
+        $response->assertDontSeeText('my image');
+    }
+
+    public function testIndexAnnotationsCountCapped()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create();
+        $project->addUserId($user->id, Role::GUEST);
+        $volume = VolumeTest::create();
+        $project->addVolumeId($volume->id);
+
+        $insert = function ($count, $prefix) use ($volume) {
+            DB::insert("INSERT INTO images (filename, uuid, volume_id, tiled) SELECT ? || i, md5(? || i)::uuid, ?, false FROM generate_series(1, ?) i", [
+                $prefix, $prefix, $volume->id, $count,
+            ]);
+        };
+
+        $insert(1000, 'exact');
+
+        $this->be($user);
+        $response = $this->get('search?t=images&q=exact')->assertStatus(200);
+        $response->assertSeeText('1,000 image results');
+        $response->assertDontSeeText('more than');
+
+        $insert(1, 'exact-extra');
+
+        // The cap applies with and without a search term.
+        foreach (['', 'exact'] as $q) {
+            $response = $this->get("search?t=images&q={$q}")->assertStatus(200);
+            $response->assertSeeText('more than 1,000 image results');
+            $this->assertMatchesRegularExpression('/Images <span class="badge">1k\+<\/span>/', $response->getContent());
+        }
+
+        // Paging is bounded by the cap as well.
+        $response = $this->get('search?t=images&q=exact&page=84')->assertStatus(200);
+        $this->assertSame(84, $response->viewData('results')->lastPage());
+
+        $response = $this->get('search?t=images&q=exact&page=85')->assertStatus(200);
+        $this->assertSame(84, $response->viewData('results')->currentPage());
+    }
+
+    public function testIndexAnnotationsSudo()
+    {
+        $user = UserTest::make();
+        $user->role = Role::ADMIN;
+        $user->save();
+
+        $image1 = ImageTest::create(['filename' => 'my image']);
+        $image2 = ImageTest::create(['filename' => 'other image']);
+
+        $this->be($user);
+        $response = $this->get('search?t=images')->assertStatus(200);
+        $response->assertSeeText('my image');
+        $response->assertSeeText('other image');
+        $this->assertSame([$image2->id, $image1->id], $response->viewData('results')->pluck('id')->all());
+
+        $response = $this->get('search?t=images&q=other')->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertSeeText('other image');
+
+        $user->setSettings(['super_user_mode' => false]);
+        $response = $this->get('search?t=images')->assertStatus(200);
+        $response->assertDontSeeText('my image');
+        $response->assertDontSeeText('other image');
     }
 
     public function testIndexVideos()
@@ -243,7 +401,7 @@ class SearchControllerTest extends TestCase
         $user = UserTest::create();
         $guest = UserTest::create();
         $project = ProjectTest::create();
-        $project->addUserId($guest->id, Role::guestId());
+        $project->addUserId($guest->id, Role::GUEST);
 
         $video1 = VideoTest::create(['filename' => 'random video']);
         $project->addVolumeId($video1->volume_id);
@@ -268,15 +426,40 @@ class SearchControllerTest extends TestCase
             ->assertDontSeeText('another video');
     }
 
+    public function testIndexVideosSudo()
+    {
+        $user = UserTest::make();
+        $user->role = Role::ADMIN;
+        $user->save();
+
+        $video1 = VideoTest::create(['filename' => 'random video']);
+        $video2 = VideoTest::create(['filename' => 'another video']);
+
+        $this->be($user);
+        $response = $this->get('search?t=videos')->assertStatus(200);
+        $response->assertSeeText('random video');
+        $response->assertSeeText('another video');
+        $this->assertSame([$video2->id, $video1->id], $response->viewData('results')->pluck('id')->all());
+
+        $response = $this->get('search?t=videos&q=another')->assertStatus(200);
+        $response->assertDontSeeText('random video');
+        $response->assertSeeText('another video');
+
+        $user->setSettings(['super_user_mode' => false]);
+        $response = $this->get('search?t=videos')->assertStatus(200);
+        $response->assertDontSeeText('random video');
+        $response->assertDontSeeText('another video');
+    }
+
     public function testIndexReportsVolume()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV,
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV,
             'user_id' => $r1->user_id,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,
@@ -300,7 +483,7 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsVideo()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::videoAnnotationsCsvId(),
+            'type' => ReportType::VIDEO_ANNOTATIONS_CSV,
             'source_id' => VideoTest::create()->id,
             'source_type' => Video::class,
             'source_name' => 'my video',
@@ -327,12 +510,12 @@ class SearchControllerTest extends TestCase
     public function testIndexReportsWhereExists()
     {
         $r1 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV,
             'source_id' => VolumeTest::create(['name' => 'my volume'])->id,
             'source_type' => Volume::class,
         ]);
         $r2 = ReportTest::create([
-            'type_id' => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV,
             'source_id' => ProjectTest::create(['name' => 'my project'])->id,
             'source_type' => Project::class,
         ]);

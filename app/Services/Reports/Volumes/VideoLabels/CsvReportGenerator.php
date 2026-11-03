@@ -41,12 +41,18 @@ class CsvReportGenerator extends VolumeReportGenerator
      */
     public function generateReport($path)
     {
-        $rows = $this->query()->get();
+        if ($this->shouldSeparateLabelTrees() || $this->shouldSeparateUsers()) {
+            $rows = $this->query()->get();
+        } else {
+            // The rows are not grouped so they can be streamed to keep the memory
+            // usage low for large volumes.
+            $rows = $this->query()->cursor();
+        }
         $toZip = [];
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $rows->keys())->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $csv = $this->createCsv($rows->get($id));
@@ -61,6 +67,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             $ids = $rows->keys()->filter(fn ($id) => $id !== $nullKey);
             $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
@@ -121,7 +128,7 @@ class CsvReportGenerator extends VolumeReportGenerator
     /**
      * Create a CSV file for this report.
      *
-     * @param \Illuminate\Support\Collection $rows The rows for the CSV
+     * @param \Illuminate\Support\Enumerable $rows The rows for the CSV
      * @return CsvFile
      */
     protected function createCsv($rows)

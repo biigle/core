@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -24,7 +24,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'uuid' => $this->faker->unique()->uuid(),
             'affiliation' => $this->faker->company(),
-            'role_id' => fn () => Role::editorId(),
+            'role' => Role::EDITOR,
         ];
     }
 }

@@ -19,7 +19,7 @@ import {Resource} from 'vue-resource';
  *
  * Add an annotation to an image:
  * resource.saveAnnotation({id: 1}, {
- *     shape_id: 1,
+ *     shape: 1,
  *     label_id: 1,
  *     confidence: 1.0,
  *     points: [10, 20],

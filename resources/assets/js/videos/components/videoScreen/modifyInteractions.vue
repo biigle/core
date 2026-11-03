@@ -45,7 +45,7 @@ export default {
         },
         cannotLinkAnnotations() {
             return this.selectedAnnotations.length !== 2
-                || this.selectedAnnotations[0].shape_id !== this.selectedAnnotations[1].shape_id
+                || this.selectedAnnotations[0].shape !== this.selectedAnnotations[1].shape
                 || this.selectedAnnotations[0].labels.length !== this.selectedAnnotations[1].labels.length
                 || !this.labelsAreIdentical(this.selectedAnnotations[0], this.selectedAnnotations[1]);
         },

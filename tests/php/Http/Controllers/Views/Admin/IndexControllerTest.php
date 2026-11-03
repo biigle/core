@@ -2,7 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Admin;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
 use Biigle\Tests\UserTest;
 use TestCase;
 
@@ -23,7 +23,7 @@ class IndexControllerTest extends TestCase
     {
         // redirect to profile settings
         $admin = UserTest::create();
-        $admin->role()->associate(Role::admin());
+        $admin->role = Role::ADMIN;
         $this->actingAs($admin)->get('admin')->assertViewIs('admin.index');
     }
 }

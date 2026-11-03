@@ -2,11 +2,11 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\LabelTrees;
 
-use Biigle\Role;
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\UserTest;
-use Biigle\Visibility;
 use TestCase;
 
 class LabelTreeVersionsControllerTest extends TestCase
@@ -16,18 +16,18 @@ class LabelTreeVersionsControllerTest extends TestCase
         $user = UserTest::create();
 
         $publicVersion = LabelTreeVersionTest::create([
-            'label_tree_id' => LabelTreeTest::create(['visibility_id' => Visibility::publicId()])->id,
+            'label_tree_id' => LabelTreeTest::create(['visibility' => Visibility::PUBLIC])->id,
         ]);
         $publicTree = LabelTreeTest::create([
-            'visibility_id' => Visibility::publicId(),
+            'visibility' => Visibility::PUBLIC,
             'version_id' => $publicVersion->id,
         ]);
 
         $privateVersion = LabelTreeVersionTest::create([
-            'label_tree_id' => LabelTreeTest::create(['visibility_id' => Visibility::privateId()])->id,
+            'label_tree_id' => LabelTreeTest::create(['visibility' => Visibility::PRIVATE])->id,
         ]);
         $privateTree = LabelTreeTest::create([
-            'visibility_id' => Visibility::privateId(),
+            'visibility' => Visibility::PRIVATE,
             'version_id' => $privateVersion->id,
         ]);
 
@@ -56,9 +56,9 @@ class LabelTreeVersionsControllerTest extends TestCase
     {
         $tree = LabelTreeTest::create();
         $editor = UserTest::create();
-        $tree->addMember($editor, Role::editorId());
+        $tree->addMember($editor, Role::EDITOR);
         $admin = UserTest::create();
-        $tree->addMember($admin, Role::adminId());
+        $tree->addMember($admin, Role::ADMIN);
 
         $this->be($editor);
         $this->get("label-trees/{$tree->id}/versions/create")->assertStatus(403);

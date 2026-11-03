@@ -46,7 +46,8 @@ class ImageAnnotationExamplesController extends Controller
             ->where('images.volume_id', $vid)
             ->where('labels.label_tree_id', $label->label_tree_id)
             ->where(fn ($query) => $query->where('labels.parent_id', $label->parent_id)->orWhere('labels.id', $label->parent_id))
-            ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id');
+            ->select('labels.color', 'labels.id', 'labels.name', 'labels.parent_id', 'labels.label_tree_id')
+            ->distinct();
 
         if ($session) {
             (new ImageAnnotation)->scopeAllowedBySession($query, $session, $user);

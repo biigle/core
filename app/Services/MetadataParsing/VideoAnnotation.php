@@ -2,10 +2,10 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Biigle\Enums\Shape;
 use Biigle\Rules\VideoAnnotationFrames;
 use Biigle\Rules\VideoAnnotationGaps;
 use Biigle\Rules\VideoAnnotationPoints;
-use Biigle\Shape;
 use Exception;
 
 class VideoAnnotation extends Annotation
@@ -43,14 +43,14 @@ class VideoAnnotation extends Annotation
     {
         parent::validate();
 
-        $message = (new VideoAnnotationPoints($this->shape_id))->getErrorMessage($this->points);
+        $message = (new VideoAnnotationPoints($this->shape))->getErrorMessage($this->points);
 
         // The duration is not known at this point, so the frame times are not checked
         // against it.
         $message ??= (new VideoAnnotationFrames())->getErrorMessage($this->frames);
 
         // Whole frame annotations have no points, so there are no gaps to check.
-        if ($this->shape_id !== Shape::wholeFrameId()) {
+        if ($this->shape !== Shape::WHOLE_FRAME) {
             $message ??= (new VideoAnnotationGaps($this->frames))->getErrorMessage($this->points);
         }
 

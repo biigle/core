@@ -10,7 +10,7 @@
     {{$shownUser->firstname}} {{$shownUser->lastname}}
     <small>
         {{$shownUser->email}}
-        <span class="label label-{{$roleClass}}">{{ucfirst($shownUser->role->name)}}</span>
+        <span class="label label-{{$roleClass}}">{{ucfirst($shownUser->role->label())}}</span>
         @if ($shownUser->canReview)
             <span class="label label-info" title="This user can review">R</span>
         @endif

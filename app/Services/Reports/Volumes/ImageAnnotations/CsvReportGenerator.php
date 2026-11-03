@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
@@ -48,7 +49,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 ->distinct()
                 ->pluck('label_tree_id');
 
-            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $treeIds)->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $csv = $this->createCsv($this->query()->where('labels.label_tree_id', $id));
@@ -63,6 +64,7 @@ class CsvReportGenerator extends AnnotationReportGenerator
 
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
@@ -104,11 +106,10 @@ class CsvReportGenerator extends AnnotationReportGenerator
             'images.filename',
             'images.lng as longitude',
             'images.lat as latitude',
-            'shapes.id as shape_id',
-            'shapes.name as shape_name',
             'image_annotations.points',
             'image_annotations.id as annotation_id',
             'image_annotation_labels.created_at',
+            'image_annotations.shape'
         ];
 
         if ($this->shouldGetAttributeColumn()) {
@@ -116,7 +117,6 @@ class CsvReportGenerator extends AnnotationReportGenerator
         }
         $query = $this
             ->initQuery($itemsToSelect)
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
@@ -173,8 +173,8 @@ class CsvReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_id,
-                $row->shape_name,
+                $row->shape,
+                Shape::from($row->shape)->label(),
                 $row->points,
             ];
 

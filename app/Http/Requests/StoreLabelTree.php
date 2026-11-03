@@ -2,9 +2,11 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLabelTree extends FormRequest
 {
@@ -41,7 +43,7 @@ class StoreLabelTree extends FormRequest
     {
         return [
             'name' => 'required|max:256',
-            'visibility_id' => 'required|integer|exists:visibilities,id',
+            'visibility' => ['required', 'integer', Rule::enum(Visibility::class)],
             'project_id' => 'integer|exists:projects,id',
             'upstream_label_tree_id' => 'integer|exists:label_trees,id',
         ];
@@ -55,11 +57,12 @@ class StoreLabelTree extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
         $validator->after(function ($validator) {
+            // Only run these checks if all other validation rules passed.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             if ($this->filled('project_id')) {
                 $this->project = Project::find($this->input('project_id'));
 

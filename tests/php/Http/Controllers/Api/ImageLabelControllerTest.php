@@ -3,6 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\Image;
+use Biigle\ImageLabel;
 use Biigle\Tests\ImageLabelTest;
 use Biigle\Tests\ImageTest;
 use Illuminate\Support\Str;
@@ -103,8 +105,36 @@ class ImageLabelControllerTest extends ApiTestCase
             'id' => $this->admin()->id,
             'firstname' => $this->admin()->firstname,
             'lastname' => $this->admin()->lastname,
-            'role_id' => $this->admin()->role_id,
+            'role' => $this->admin()->role->value,
         ]);
+    }
+
+    public function testStoreUniqueViolation()
+    {
+        // Simulate a concurrent request that attaches the same label after the
+        // existence check.
+        ImageLabel::creating(fn ($l) => $l->replicate()->saveQuietly());
+
+        $this->beEditor();
+        $this
+            ->postJson("/api/v1/images/{$this->image->id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(400);
+    }
+
+    public function testStoreForeignKeyViolation()
+    {
+        // Simulate a concurrent request that deletes the image after the existence
+        // check.
+        ImageLabel::creating(fn ($l) => Image::where('id', $l->image_id)->delete());
+
+        $this->beEditor();
+        $this
+            ->postJson("/api/v1/images/{$this->image->id}/labels", [
+                'label_id' => $this->labelRoot()->id,
+            ])
+            ->assertStatus(404);
     }
 
     public function testStoreLabelIdTypeString()

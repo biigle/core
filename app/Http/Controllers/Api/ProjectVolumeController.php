@@ -27,7 +27,7 @@ class ProjectVolumeController extends Controller
      *    {
      *       "id": 1,
      *       "name": "volume 1",
-     *       "media_type_id": 3,
+     *       "media_type": 3,
      *       "creator_id": 7,
      *       "created_at": "2015-02-19 14:45:58",
      *       "updated_at":"2015-02-19 14:45:58",
@@ -79,7 +79,7 @@ class ProjectVolumeController extends Controller
      * @apiParamExample {String} Request example:
      * name: 'New volume'
      * url: 'local://volumes/test-volume'
-     * media_type_id: 1
+     * media_type: 1
      * files: '1.jpg,2.jpg,3.jpg'
      * handle: '10.3389/fmars.2017.00083'
      *
@@ -87,7 +87,7 @@ class ProjectVolumeController extends Controller
      * {
      *    "id": 2,
      *    "name": "New volume",
-     *    "media_type_id": 1,
+     *    "media_type": 1,
      *    "creator_id": 2,
      *    "created_at": "2015-02-19 16:10:17",
      *    "updated_at": "2015-02-19 16:10:17",
@@ -104,7 +104,7 @@ class ProjectVolumeController extends Controller
             $volume = new Volume;
             $volume->name = $request->input('name');
             $volume->url = $request->input('url');
-            $volume->media_type_id = $request->input('media_type_id');
+            $volume->media_type = $request->input('media_type');
             $volume->handle = $request->input('handle');
             $volume->metadata_parser = $request->metadataParser;
             $volume->creator()->associate($request->user());

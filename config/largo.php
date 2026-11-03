@@ -33,6 +33,8 @@ return [
      | Specifies which queue should be used for which job.
      */
     'generate_annotation_patch_queue' => env('LARGO_GENERATE_ANNOTATION_PATCH_QUEUE', 'default'),
+    // Allows to configure a separate queue for (slower) video annotation patches.
+    'generate_video_annotation_patch_queue' => env('LARGO_GENERATE_VIDEO_ANNOTATION_PATCH_QUEUE', env('LARGO_GENERATE_ANNOTATION_PATCH_QUEUE', 'default')),
     'remove_annotation_patches_queue' => env('LARGO_REMOVE_ANNOTATION_PATCHES_QUEUE', 'default'),
 
     /*

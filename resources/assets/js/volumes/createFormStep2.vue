@@ -421,9 +421,11 @@ export default {
             this.metadataFilenames = this.filenames.split(',');
         }
 
-        let [disk, path] = this.url.split('://');
-        if (this.disks.includes(disk)) {
-            this.initializeSelectedStorageDiskAfterError(disk, path);
+        if (this.url) {
+            let [disk, path] = this.url.split('://');
+            if (this.disks.includes(disk)) {
+                this.initializeSelectedStorageDiskAfterError(disk, path);
+            }
         }
     },
     mounted() {

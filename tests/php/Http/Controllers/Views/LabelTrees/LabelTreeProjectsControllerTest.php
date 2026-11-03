@@ -2,19 +2,19 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\LabelTrees;
 
+use Biigle\Enums\Visibility;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\UserTest;
-use Biigle\Visibility;
 use TestCase;
 
 class LabelTreeProjectsControllerTest extends TestCase
 {
     public function testShow()
     {
-        $tree = LabelTreeTest::create(['visibility_id' => Visibility::publicId()]);
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
         $user = UserTest::create();
 
-        $privateTree = LabelTreeTest::create(['visibility_id' => Visibility::privateId()]);
+        $privateTree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE]);
 
         $response = $this->get("label-trees/{$tree->id}/projects");
         $response->assertRedirect('login');

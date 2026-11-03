@@ -2,6 +2,7 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\CsvFile;
 use Biigle\Services\Reports\MakesZipArchives;
@@ -48,7 +49,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 ->distinct()
                 ->pluck('label_tree_id');
 
-            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $treeIds)->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $csv = $this->createCsv($this->query()->where('labels.label_tree_id', $id));
@@ -63,6 +64,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
 
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
@@ -103,11 +105,10 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 'images.filename',
                 'images.lng as longitude',
                 'images.lat as latitude',
-                'shapes.name as shape_name',
+                'image_annotations.shape',
                 'image_annotations.points',
                 'images.attrs',
             ])
-            ->join('shapes', 'image_annotations.shape_id', '=', 'shapes.id')
             ->leftJoin('users', 'image_annotation_labels.user_id', '=', 'users.id')
             ->orderBy('image_annotation_labels.id');
 
@@ -146,7 +147,7 @@ class CocoReportGenerator extends AnnotationReportGenerator
                 $row->filename,
                 $row->longitude,
                 $row->latitude,
-                $row->shape_name,
+                Shape::from($row->shape)->label(),
                 $row->points,
                 $row->attrs,
             ]);

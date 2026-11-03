@@ -24,14 +24,14 @@ class ImageAnnotationBulkController extends Controller
      * [
      *     {
      *        "image_id": 123,
-     *        "shape_id": 1,
+     *        "shape": 1,
      *        "label_id": 1,
      *        "confidence": 1.00,
      *        "points": [10, 11]
      *     },
      *     {
      *        "image_id": 321,
-     *        "shape_id": 3,
+     *        "shape": 3,
      *        "label_id": 5,
      *        "confidence": 1.00,
      *        "points": [10, 11, 20, 21]
@@ -55,14 +55,14 @@ class ImageAnnotationBulkController extends Controller
      * [
      *     {
      *        "image_id": 123,
-     *        "shape_id": 1,
+     *        "shape": 1,
      *        "label_id": 1,
      *        "confidence": 1.00,
      *        "points": [10, 11]
      *     },
      *     {
      *        "image_id": 321,
-     *        "shape_id": 3,
+     *        "shape": 3,
      *        "label_id": 5,
      *        "confidence": 1.00,
      *        "points": [10, 11, 20, 21]
@@ -77,7 +77,7 @@ class ImageAnnotationBulkController extends Controller
     {
         $annotations = collect($request->all())->map(function ($input) {
             $annotation = new ImageAnnotation;
-            $annotation->shape_id = $input['shape_id'];
+            $annotation->shape = $input['shape'];
             $annotation->points = $input['points'];
             $annotation->image_id = $input['image_id'];
             /** @phpstan-ignore property.notFound */

@@ -2,6 +2,7 @@
 
 namespace Biigle;
 
+use Biigle\Enums\Role;
 use Biigle\Observers\UserObserver;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
@@ -14,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * @property string $uuid
+ * @property Role $role
  */
 #[Hidden(['password', 'remember_token', 'pivot', 'uuid'])]
 #[ObservedBy(UserObserver::class)]
@@ -29,7 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function casts(): array
     {
         return [
-            'role_id' => 'int',
+            'role' => Role::class,
             'attrs' => 'array',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
@@ -70,16 +72,6 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * The global role of this user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Role, $this>
-     */
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
-
-    /**
      * Api tokens of this user.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<ApiToken, $this>
@@ -106,7 +98,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getIsGlobalAdminAttribute()
     {
-        return $this->role_id === Role::adminId();
+        return $this->role === Role::ADMIN;
     }
 
     /**
@@ -197,7 +189,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getCanReviewAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role === Role::EDITOR &&
                 $this->getSettings('can_review', false));
     }
 
@@ -219,7 +211,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getHasNoRateLimitAttribute()
     {
         return $this->isInSuperUserMode ||
-            ($this->role_id === Role::editorId() &&
+            ($this->role === Role::EDITOR &&
                 $this->getSettings('disable_rate_limit', false));
     }
 

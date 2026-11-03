@@ -5,6 +5,9 @@ namespace Biigle\Tests\Http\Controllers\Views;
 use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
 use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\ProjectTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VolumeTest;
@@ -30,6 +33,29 @@ class DashboardControllerTest extends TestCase
         $this->actingAs($user)->get('/')
             ->assertSee('Signed in as')
             ->assertDontSee('Landing Page');
+    }
+
+    public function testDashboardProjectVolumePreview()
+    {
+        $user = UserTest::create();
+        $project = ProjectTest::create(['creator_id' => $user->id]);
+
+        for ($i = 1; $i <= 5; $i++) {
+            $volume = VolumeTest::create([
+                'name' => "preview-volume-{$i}",
+                'created_at' => "2022-01-0{$i} 00:00:00",
+            ]);
+            $project->addVolumeId($volume->id);
+        }
+
+        $this->actingAs($user)->get('/')
+            ->assertSeeInOrder([
+                'preview-volume-5',
+                'preview-volume-4',
+                'preview-volume-3',
+                'preview-volume-2',
+            ])
+            ->assertDontSee('preview-volume-1');
     }
 
     public function testVolumeActivityItems()
@@ -92,6 +118,34 @@ class DashboardControllerTest extends TestCase
 
         $items = $controller->annotationsActivityItems($user, 3);
         $this->assertCount(3, $items);
+    }
+
+    public function testAnnotationsActivityItemsManyLabelsOfSameImage()
+    {
+        $controller = new DashboardController;
+        $user = UserTest::create();
+
+        // Many annotation labels of the same image must count as a single activity
+        // item and must not crowd out the other images of the scanned annotation
+        // labels.
+        $old = ImageAnnotationLabelTest::create([
+            'user_id' => $user->id,
+            'created_at' => '2022-01-01 00:00:00',
+        ]);
+
+        $image = ImageTest::create();
+        for ($i = 0; $i < 3; $i++) {
+            ImageAnnotationLabelTest::create([
+                'user_id' => $user->id,
+                'annotation_id' => ImageAnnotationTest::create(['image_id' => $image->id])->id,
+                'created_at' => '2022-01-02 00:00:00',
+            ]);
+        }
+
+        $items = $controller->annotationsActivityItems($user, 2);
+        $this->assertCount(2, $items);
+        $this->assertSame($image->id, $items[0]['item']->id);
+        $this->assertSame($old->annotation->image_id, $items[1]['item']->id);
     }
 
     public function testVideosActivityItems()

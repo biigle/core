@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use Biigle\Enums\ReportType;
 use Biigle\Report;
-use Biigle\ReportType;
 use Biigle\User;
 use Biigle\Volume;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -26,7 +26,7 @@ class ReportFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'type_id' => fn () => ReportType::imageAnnotationsCsvId(),
+            'type' => ReportType::IMAGE_ANNOTATIONS_CSV,
             'source_id' => Volume::factory(),
             'source_type' => Volume::class,
         ];

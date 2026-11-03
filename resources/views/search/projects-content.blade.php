@@ -1,7 +1,7 @@
 @if(!$type || $type === 'projects')
 <div class="clearfix">
     @include('search.partials.federated-search-toggle')
-    <h2 class="lead">{{number_format($projectResultCount)}} project results</h2>
+    <h2 class="lead">@if($projectResultCountCapped)more than {{number_format($resultCountCap)}}@else{{number_format($projectResultCount)}}@endif project results</h2>
 </div>
 <ul class="search-results">
     @foreach ($results as $project)

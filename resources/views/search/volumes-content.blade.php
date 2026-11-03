@@ -1,7 +1,7 @@
 @if($type === 'volumes')
 <div class="clearfix">
     @include('search.partials.federated-search-toggle')
-    <h2 class="lead">{{number_format($volumeResultCount)}} volume results</h2>
+    <h2 class="lead">@if($volumeResultCountCapped)more than {{number_format($resultCountCap)}}@else{{number_format($volumeResultCount)}}@endif volume results</h2>
 </div>
 <ul id="search-results" class="row volume-search-results">
     @foreach ($results as $volume)

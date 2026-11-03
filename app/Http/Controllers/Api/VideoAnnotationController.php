@@ -38,7 +38,7 @@ class VideoAnnotationController extends Controller
      *       "created_at": "2015-02-18 11:45:00",
      *       "updated_at": "2015-02-18 11:45:00",
      *       "video_id": 1,
-     *       "shape_id": 1,
+     *       "shape": 1,
      *       "frames": [10.0, 15.0],
      *       "points": [[100, 200],[200, 300]],
      *       "labels": [
@@ -103,7 +103,7 @@ class VideoAnnotationController extends Controller
      *    "created_at": "2015-02-18 11:45:00",
      *    "updated_at": "2015-02-18 11:45:00",
      *    "video_id": 1,
-     *    "shape_id": 1,
+     *    "shape": 1,
      *    "frames": [10.0, 15.0],
      *    "points": [[100, 200],[200, 300]],
      *    "labels": [
@@ -148,7 +148,7 @@ class VideoAnnotationController extends Controller
      *
      * @apiParam {Number} id The video ID.
      *
-     * @apiParam (Required arguments) {Number} shape_id ID of the shape of the new annotation.
+     * @apiParam (Required arguments) {Number} shape ID of the shape of the new annotation.
      * @apiParam (Required arguments) {Number} label_id ID of the initial label of the new annotation. Required if 'feature_vector' is not provided.
      * @apiParam (Required arguments) {Number[]} feature_vector A feature vector array of size 384 for label prediction with the LabelBOT service. Required if 'label_id' is not provided.
      * @apiParam (Required arguments) {Number[]} frames Array of the key frame times. Each key frame corresponds to one entry in the points array.
@@ -164,7 +164,7 @@ class VideoAnnotationController extends Controller
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
-     *    "shape_id": 1,
+     *    "shape": 1,
      *    "label_id": 1,
      *    "frames": [1.0, 2.0, 3.0],
      *    "points": [[10, 11], [20, 21], [30, 31]]
@@ -174,7 +174,7 @@ class VideoAnnotationController extends Controller
      * {
      *    "id": 1,
      *    "video_id": 1,
-     *    "shape_id": 1,
+     *    "shape": 1,
      *    "updated_at": "2015-02-18 11:45:00",
      *    "created_at": "2015-02-18 11:45:00",
      *    "frames": [1.0, 2.0, 3.0],
@@ -215,7 +215,7 @@ class VideoAnnotationController extends Controller
 
         $annotation = new VideoAnnotation([
             'video_id' => $request->video->id,
-            'shape_id' => $request->input('shape_id'),
+            'shape' => $request->input('shape'),
             'points' => $points,
             'frames' => $request->input('frames'),
         ]);

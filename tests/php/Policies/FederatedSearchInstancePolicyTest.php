@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Policies;
 
+use Biigle\Enums\Role;
 use Biigle\FederatedSearchInstance;
-use Biigle\Role;
 use Biigle\Tests\FederatedSearchInstanceTest;
 use Biigle\Tests\UserTest;
 use TestCase;
@@ -17,7 +17,7 @@ class FederatedSearchInstancePolicyTest extends TestCase
     {
         parent::setUp();
         $this->user = UserTest::create();
-        $this->globalAdmin = UserTest::create(['role_id' => Role::adminId()]);
+        $this->globalAdmin = UserTest::create(['role' => Role::ADMIN]);
     }
 
     public function testCreate()

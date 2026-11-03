@@ -96,7 +96,7 @@ export default {
         attachMember() {
             let member = {
                 id: this.selectedMember.id,
-                role_id: this.selectedRole,
+                role: this.selectedRole,
                 firstname: this.selectedMember.firstname,
                 lastname: this.selectedMember.lastname,
                 affiliation: this.selectedMember.affiliation,

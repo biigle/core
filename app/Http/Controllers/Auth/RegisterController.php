@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Auth;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Http\Requests\StoreUser;
 use Biigle\Notifications\RegistrationConfirmation;
-use Biigle\Role;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -99,9 +99,9 @@ class RegisterController extends Controller
         $user->password = Hash::make($data['password']);
         $user->uuid = Uuid::uuid4();
         if ($this->isAdminConfirmationEnabled()) {
-            $user->role_id = Role::guestId();
+            $user->role = Role::GUEST;
         } else {
-            $user->role_id = Role::editorId();
+            $user->role = Role::EDITOR;
         }
 
         app()->make(Modules::class)->callControllerMixins('createNewUser', [

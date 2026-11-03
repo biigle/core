@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\Volumes;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
 use Biigle\Project;
-use Biigle\Role;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
@@ -30,7 +30,7 @@ class VolumeCloneController extends Controller
         } else {
             // Array of all project IDs that the user and the volume have in common.
             $projectIds = Project::inCommon($user, $volume->id)->pluck('id');
-            $destProjectQuery = $user->projects()->where('project_role_id', Role::adminId());
+            $destProjectQuery = $user->projects()->where('project_role', Role::ADMIN);
         }
 
         // Collection of projects where cloned volume can be copied to.

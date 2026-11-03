@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Projects;
 
+use Biigle\Enums\Role;
 use Biigle\ProjectInvitation;
-use Biigle\Role;
 use Biigle\User;
 use TestCase;
 
@@ -44,7 +44,7 @@ class ProjectInvitationControllerTest extends TestCase
     {
         $user = User::factory()->create();
         $invitation = ProjectInvitation::factory()->create();
-        $invitation->project->addUserId($user->id, Role::editorId());
+        $invitation->project->addUserId($user->id, Role::EDITOR);
         $this->be($user);
         $this->get("project-invitations/{$invitation->uuid}")
             ->assertRedirect("projects/{$invitation->project->id}")

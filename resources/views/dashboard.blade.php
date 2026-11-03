@@ -21,7 +21,7 @@
             </div>
         </div>
     @endif
-    @if (config('biigle.user_registration_confirmation') && $user->role_id === \Biigle\Role::guestId())
+    @if (config('biigle.user_registration_confirmation') && $user->role === \Biigle\Enums\Role::GUEST)
         <div class="row">
             <div class="col-xs-12">
                     <p class="text-info text-center">
@@ -98,13 +98,7 @@
                         </a>
                     </h4>
 
-                    <?php
-                        $volumes = $project->volumes()
-                            ->orderBy('created_at', 'desc')
-                            ->limit(4)
-                            ->get();
-                    ?>
-                    @forelse ($volumes as $item)
+                    @forelse ($project->volumes as $item)
                         <div class="col-xs-12 col-sm-6 col-md-3">
                             @include('projects.partials.dashboardPreviewItem')
                         </div>

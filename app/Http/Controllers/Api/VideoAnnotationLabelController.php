@@ -6,8 +6,9 @@ use Biigle\Events\AnnotationLabelAttached;
 use Biigle\Http\Requests\DestroyVideoAnnotationLabel;
 use Biigle\Http\Requests\StoreVideoAnnotationLabel;
 use Biigle\VideoAnnotationLabel;
+use DB;
 use Illuminate\Database\QueryException;
-use Str;
+use Illuminate\Database\UniqueConstraintViolationException;
 
 class VideoAnnotationLabelController extends Controller
 {
@@ -62,20 +63,29 @@ class VideoAnnotationLabelController extends Controller
         }
 
         try {
-            $annotationLabel->save();
-            // should not be returned
-            unset($annotationLabel->annotation);
-
-            AnnotationLabelAttached::dispatch($annotationLabel);
-
-            return response($annotationLabel, 201);
-        } catch (QueryException $e) {
+            // The transaction becomes a savepoint if there is an outer transaction, so
+            // a failed insert does not abort the outer transaction.
+            DB::transaction(fn () => $annotationLabel->save());
+        } catch (UniqueConstraintViolationException) {
             // Although we check for existence above, this error happened some time.
             // I suspect some kind of race condition between PHP FPM workers.
-            if (!Str::contains($e->getMessage(), 'Unique violation')) {
-                throw $e;
+            abort(400, 'The user already attached this label to the annotation.');
+        } catch (QueryException $e) {
+            // SQLSTATE 23503 is a foreign key violation. The annotation or label was
+            // deleted by a concurrent request.
+            if ($e->getCode() === '23503') {
+                abort(404);
             }
+
+            throw $e;
         }
+
+        // should not be returned
+        unset($annotationLabel->annotation);
+
+        AnnotationLabelAttached::dispatch($annotationLabel);
+
+        return response($annotationLabel, 201);
     }
 
     /**

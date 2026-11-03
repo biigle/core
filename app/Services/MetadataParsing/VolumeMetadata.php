@@ -2,8 +2,8 @@
 
 namespace Biigle\Services\MetadataParsing;
 
+use Biigle\Enums\MediaType;
 use Biigle\Label as DbLabel;
-use Biigle\MediaType;
 use Biigle\User as DbUser;
 use Illuminate\Support\Collection;
 

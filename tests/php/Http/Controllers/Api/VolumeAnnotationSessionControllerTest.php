@@ -3,7 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
-use Biigle\MediaType;
+use Biigle\Enums\MediaType;
 use Biigle\Tests\AnnotationSessionTest;
 use Carbon\Carbon;
 
@@ -179,7 +179,7 @@ class VolumeAnnotationSessionControllerTest extends ApiTestCase
 
     public function testSessionWithoutVideoVolumeUser()
     {
-        $id = $this->volume(['media_type_id' => MediaType::videoId()])->id;
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
         $this->beAdmin();
 
         // Users field must be present

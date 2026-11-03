@@ -2,10 +2,10 @@
 
 namespace Biigle\Services\Reports\Volumes\ImageAnnotations;
 
+use Biigle\Enums\Shape;
 use Biigle\LabelTree;
 use Biigle\Services\Reports\File;
 use Biigle\Services\Reports\MakesZipArchives;
-use Biigle\Shape;
 use Biigle\User;
 use DB;
 use GeoJson\Feature\Feature;
@@ -57,7 +57,7 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $items->isNotEmpty()) {
             $items = $items->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $items->keys())->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $items->keys())->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $tmpItems = $items->get($id);
@@ -73,6 +73,7 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
             $ids = $items->keys()->filter(fn ($id) => $id !== $nullKey);
             $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {
@@ -108,7 +109,7 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
                 'image_annotation_labels.id as annotation_label_id',
                 'image_annotation_labels.label_id',
                 'image_annotations.image_id',
-                'image_annotations.shape_id',
+                'image_annotations.shape',
                 'images.filename',
                 'images.attrs->metadata->yaw as yaw',
                 'images.attrs->metadata->distance_to_ground as distance_to_ground',
@@ -174,8 +175,8 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
         $imageCenter = [$item->width / 2, $item->height / 2];
         $flatPoints = json_decode($item->points);
 
-        // GeoJSON does no support circles so we treat them as points.
-        if ($item->shape_id === Shape::circleId()) {
+        // GeoJSON does not support circles so we treat them as points.
+        if ($item->shape === Shape::CIRCLE->value) {
             unset($flatPoints[2]);
         }
 
@@ -250,11 +251,11 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
             ];
         }, $rotatedOffsetInRadians);
 
-        switch ($item->shape_id) {
-            case Shape::pointId():
-            case Shape::circleId():
+        switch ($item->shape) {
+            case Shape::POINT->value:
+            case Shape::CIRCLE->value:
                 return new Point($coordinates[0]);
-            case Shape::lineId():
+            case Shape::LINE->value:
                 return new LineString($coordinates);
         }
 

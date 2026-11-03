@@ -42,14 +42,14 @@ class ProjectsController extends Controller
 
         $hidden = ['doi'];
         $volumes = $project->volumes()
-            ->select('id', 'name', 'updated_at', 'media_type_id')
-            ->with('mediaType')
+            ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
             ->get()
             ->each(function ($item) use ($hidden) {
                 $item->append('thumbnailUrl')
                     ->append('thumbnailsUrl')
-                    ->makeHidden($hidden);
+                    ->makeHidden($hidden)
+                    ->setAttribute('media_type_label', $item->media_type->label());
             });
 
         $userProject = $request->user()->projects()->where('id', $id)->first();

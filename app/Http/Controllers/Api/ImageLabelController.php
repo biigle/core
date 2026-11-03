@@ -30,7 +30,7 @@ class ImageLabelController extends VolumeFileLabelController
      *       },
      *       "user": {
      *          "id": 1,
-     *          "role_id": 2,
+     *          "role": 2,
      *          "firstname": "Joe",
      *          "lastname": "User"
      *       }
@@ -65,7 +65,7 @@ class ImageLabelController extends VolumeFileLabelController
      *    },
      *    "user": {
      *       "id": 1,
-     *       "role_id": 2,
+     *       "role": 2,
      *       "firstname": "Joe",
      *       "lastname": "User"
      *    }

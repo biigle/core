@@ -2,12 +2,12 @@
 
 namespace Biigle\Services\Import;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Label;
 use Biigle\LabelTree;
 use Biigle\LabelTreeVersion;
-use Biigle\Role;
 use Biigle\User;
-use Biigle\Visibility;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Support\Collection;
@@ -260,7 +260,7 @@ class LabelTreeImport extends Import
                 'name' => $tree['name'],
                 'description' => $tree['description'],
                 'uuid' => $tree['uuid'],
-                'visibility_id' => Visibility::privateId(),
+                'visibility' => Visibility::PRIVATE,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
@@ -326,7 +326,7 @@ class LabelTreeImport extends Import
             ->whereIn('uuid', $trees->pluck('uuid'))
             ->pluck('members')
             ->collapse()
-            ->filter(fn ($user) => $user['role_id'] === Role::adminId())
+            ->filter(fn ($user) => $user['role'] === Role::ADMIN->value)
             ->pluck('id')
             ->unique()
             ->toArray();
@@ -355,7 +355,7 @@ class LabelTreeImport extends Import
             ->map(fn ($member) => [
                 'user_id' => $userIdMap[$member['id']],
                 'label_tree_id' => $labelTreeIdMap[$member['label_tree_id']],
-                'role_id' => $member['role_id'],
+                'role' => $member['role'],
             ]);
 
         DB::table('label_tree_user')->insert($insertMembers->toArray());

@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use Biigle\Enums\Role;
 use Biigle\Project;
-use Biigle\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +22,7 @@ class ProjectInvitationFactory extends Factory
             'uuid' => $this->faker->unique()->uuid(),
             'expires_at' => now()->addDay(),
             'project_id' => Project::factory(),
-            'role_id' => Role::editorId(),
+            'role' => Role::EDITOR,
             'current_uses' => 0,
             'add_to_sessions' => false,
         ];

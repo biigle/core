@@ -39,7 +39,7 @@
                 </td>
                 <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
                 <td>
-                    <span class="label label-{{$roleClass[$u->role_id]}}" title="{{$roleNames[$u->role_id]}}">{{$roleNames[$u->role_id][0]}}</span>
+                    <span class="label label-{{$roleClass[$u->role->value]}}" title="{{$roleNames[$u->role->value]}}">{{$roleNames[$u->role->value][0]}}</span>
                 </td>
                 <td>
                     @if ($u->affiliation)

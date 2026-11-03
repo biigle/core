@@ -2,10 +2,10 @@
 
 namespace Biigle\Http\Controllers\Views\LabelTrees;
 
+use Biigle\Enums\Role;
+use Biigle\Enums\Visibility;
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\LabelTree;
-use Biigle\Role;
-use Biigle\Visibility;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -27,31 +27,28 @@ class LabelTreeMembersController extends Controller
 
         $this->authorize('update', $tree);
 
-        $roles = collect([Role::admin(), Role::editor()]);
+        $roles = collect([Role::ADMIN, Role::EDITOR]);
 
         $roleOrder = [
-            Role::editorId(),
-            Role::adminId(),
+            Role::EDITOR,
+            Role::ADMIN,
         ];
 
         $members = $tree->members()
-            ->select('id', 'firstname', 'lastname', 'label_tree_user.role_id', 'affiliation')
+            ->select('id', 'firstname', 'lastname', 'label_tree_user.role', 'affiliation')
             ->get()
-            ->sort(fn ($a, $b) => array_search($b->role_id, $roleOrder) - array_search($a->role_id, $roleOrder))
+            ->sort(fn ($a, $b) => array_search($b->role, $roleOrder, true) - array_search($a->role, $roleOrder, true))
             ->values();
 
 
-        $visibilities = collect([
-            Visibility::publicId() => Visibility::public()->name,
-            Visibility::privateId() => Visibility::private()->name,
-        ]);
+        $visibilities = Visibility::pluckById();
 
         return view('label-trees.show.members', [
             'tree' => $tree,
             'members' => $members,
             'roles' => $roles,
             'visibilities' => $visibilities,
-            'private' => $tree->visibility_id === Visibility::privateId(),
+            'private' => $tree->visibility === Visibility::PRIVATE,
             'activeTab' => 'members',
         ]);
     }

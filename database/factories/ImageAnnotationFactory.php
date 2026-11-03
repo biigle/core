@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
+use Biigle\Enums\Shape;
 use Biigle\Image;
-use Biigle\Shape;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ImageAnnotationFactory extends Factory
@@ -17,7 +17,7 @@ class ImageAnnotationFactory extends Factory
     {
         return [
             'image_id' => Image::factory(),
-            'shape_id' => Shape::factory(),
+            'shape' => Shape::POINT,
             'points' => [0, 0],
         ];
     }

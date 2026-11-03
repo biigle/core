@@ -78,6 +78,12 @@ class VolumeUrl implements Rule
     {
         $client = App::make(Client::class);
 
+        if ($this->isOwnDomain($value)) {
+            $this->message = "The application's own domain cannot be used in volume URLs.";
+
+            return false;
+        }
+
         if ($this->isDeniedProvider($value)) {
             $this->message = 'Personal storage providers such as Dropbox, OneDrive or Google Drive are not supported as remote locations.';
 
@@ -185,6 +191,21 @@ class VolumeUrl implements Rule
         }
 
         return false;
+    }
+
+    /**
+     * Determine if the remote volume URL points to this application.
+     *
+     * @param string $value
+     *
+     * @return boolean
+     */
+    protected function isOwnDomain($value)
+    {
+        $ownDomain = parse_url(config('app.url'), PHP_URL_HOST);
+        $domain = parse_url($value, PHP_URL_HOST);
+
+        return $ownDomain && $domain && strcasecmp($ownDomain, $domain) === 0;
     }
 
     /**
