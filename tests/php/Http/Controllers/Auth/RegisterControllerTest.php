@@ -73,13 +73,22 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ];
 
+        $this->get('register');
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
+            ->post('register', ['_token' => Session::token()])
+            ->assertRedirect('register');
+
         $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
             ->post('register', $data)
             ->assertRedirect('/');
 
+        $this->post('logout');
+
         $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
             ->post('register', $data)
-            ->assertStatus(429);
+            ->assertRedirect('register')
+            ->assertSessionHas('message', 'Please wait before submitting the form again.')
+            ->assertSessionHas('messageType', 'danger');
     }
 
     public function testRegisterSuccess()

@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Notification;
 use Ramsey\Uuid\Uuid;
 use Validator;
@@ -50,7 +51,6 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
-        $this->middleware('throttle:registration')->only('register');
     }
 
     /**
@@ -141,6 +141,13 @@ class RegisterController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        $limit = RateLimiter::limiter('registration')($request);
+        if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
+            return redirect()->route('register')->withInput()
+                ->with('message', 'Please wait before submitting the form again.')
+                ->with('messageType', 'danger');
+        }
+
         return $this->baseRegister($request);
     }
 
@@ -173,6 +180,9 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
+        $limit = RateLimiter::limiter('registration')($request);
+        RateLimiter::hit($limit->key, $limit->decaySeconds);
+
         if ($this->isEmailVerificationEnabled()) {
             return redirect()->route('verification.notice')
                 ->with('messageType', 'info')

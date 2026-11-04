@@ -141,7 +141,9 @@ class ControllerTest extends TestCase
             ->assertStatus(302);
 
         $this->post(route('verification.resend'))
-            ->assertStatus(429);
+            ->assertRedirect()
+            ->assertSessionHas('message', 'Please wait before submitting the form again.')
+            ->assertSessionHas('messageType', 'danger');
     }
 
     public function testEmailVerificationWithoutAuthentication()

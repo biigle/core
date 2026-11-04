@@ -7,17 +7,19 @@ use Biigle\User;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 
 class VerificationController extends Controller
 {
-    use VerifiesEmails;
+    use VerifiesEmails {
+        resend as baseResend;
+    }
 
     public function __construct()
     {
         $this->middleware('auth')->except('verify');
         $this->middleware('throttle:6,1')->only('verify');
-        $this->middleware('throttle:verification')->only('resend');
     }
 
     public function verify(Request $request)
@@ -40,6 +42,23 @@ class VerificationController extends Controller
         }
 
         return $this->verificationResponse('Your email address has been verified. You may now log in.', 'success');
+    }
+
+    public function resend(Request $request)
+    {
+        $limit = RateLimiter::limiter('verification')($request);
+        if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
+            return back()
+                ->with('message', 'Please wait before submitting the form again.')
+                ->with('messageType', 'danger');
+        }
+
+        $response = $this->baseResend($request);
+        if (!$request->user()->hasVerifiedEmail()) {
+            RateLimiter::hit($limit->key, $limit->decaySeconds);
+        }
+
+        return $response;
     }
 
     protected function verificationResponse(string $message, string $messageType)
