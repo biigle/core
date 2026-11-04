@@ -7,9 +7,11 @@ use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Honeypot;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Notification;
 use Mockery;
 use Session;
@@ -26,6 +28,7 @@ class RegisterControllerTest extends TestCase
             'biigle.email_verification' => false,
             'biigle.user_registration_confirmation' => false,
         ]);
+        RateLimiter::for('registration', fn () => Limit::none());
         Honeypot::disable();
     }
 
@@ -54,6 +57,29 @@ class RegisterControllerTest extends TestCase
         $this->get('register');
         $this->post('register', ['_token'   => Session::token()])
             ->assertRedirect('register');
+    }
+
+    public function testRegisterIsRateLimited()
+    {
+        RateLimiter::for('registration', fn ($request) => Limit::perSecond(1, 10)->by($request->ip()));
+
+        $data = [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ];
+
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
+            ->post('register', $data)
+            ->assertRedirect('/');
+
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
+            ->post('register', $data)
+            ->assertStatus(429);
     }
 
     public function testRegisterSuccess()

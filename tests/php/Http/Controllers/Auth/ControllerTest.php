@@ -8,6 +8,7 @@ use Session;
 use TestCase;
 use Biigle\User;
 use URL;
+use Illuminate\Support\Facades\Notification;
 
 class ControllerTest extends TestCase
 {
@@ -127,6 +128,20 @@ class ControllerTest extends TestCase
         $this->assertAuthenticated();
         $response = $this->post('/logout');
         $this->assertGuest();
+    }
+
+    public function testEmailVerificationResendIsRateLimited()
+    {
+        config(['biigle.email_verification' => true]);
+        Notification::fake();
+        $user = UserTest::create(['email_verified_at' => null]);
+        $this->actingAs($user);
+
+        $this->post(route('verification.resend'))
+            ->assertStatus(302);
+
+        $this->post(route('verification.resend'))
+            ->assertStatus(429);
     }
 
     public function testEmailVerificationWithoutAuthentication()
