@@ -22,7 +22,7 @@ class VerificationController extends Controller
 
     public function verify(Request $request)
     {
-        if (! URL::hasValidSignature($request)) {
+        if (!URL::hasValidSignature($request)) {
             return $this->verificationFailed();
         }
 

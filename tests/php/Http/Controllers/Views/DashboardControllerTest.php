@@ -2,8 +2,8 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
-use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Enums\Role;
+use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;

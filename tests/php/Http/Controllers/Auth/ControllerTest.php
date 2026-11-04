@@ -4,11 +4,11 @@ namespace Biigle\Tests\Http\Controllers\Auth;
 
 use Auth;
 use Biigle\Tests\UserTest;
+use Biigle\User;
+use Illuminate\Support\Facades\Notification;
 use Session;
 use TestCase;
-use Biigle\User;
 use URL;
-use Illuminate\Support\Facades\Notification;
 
 class ControllerTest extends TestCase
 {

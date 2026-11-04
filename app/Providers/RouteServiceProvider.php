@@ -65,15 +65,11 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perHour(3600)->by($request->ip());
         });
 
-            RateLimiter::for('registration', function (Request $request) {
-                return Limit::perSecond(1, 10)->by($request->ip());
-            });
+        RateLimiter::for('registration', fn (Request $request) => Limit::perSecond(1, 10)->by($request->ip()));
 
-            RateLimiter::for('verification', function (Request $request) {
-                return Limit::perSecond(1, 10)->by(
-                    $request->user()?->getAuthIdentifier() ?? $request->ip()
-                );
-            });
+        RateLimiter::for('verification', fn (Request $request) => Limit::perSecond(1, 10)->by(
+            $request->user()?->getAuthIdentifier() ?? $request->ip()
+        ));
 
         $this->routes(function () {
             // Web
