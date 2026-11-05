@@ -24,10 +24,13 @@ class LogsController extends Controller
         if ($manager->isFile()) {
             $logs = $manager->getLogFilenames();
         } elseif ($manager->isRedis()) {
+            $request->validate(['q' => 'nullable|string']);
+
             $logLevel = $request->input('level', 'error');
+            $search = $request->input('q');
 
             $perPage = 10;
-            $messages = $manager->getRedisLogMessages($logLevel);
+            $messages = $manager->getRedisLogMessages($logLevel, $search);
             $total = $messages->count();
             $paginator = new LengthAwarePaginator([], $total, $perPage);
             $paginator->setPath(LengthAwarePaginator::resolveCurrentPath());
@@ -50,7 +53,11 @@ class LogsController extends Controller
                 $paginator->appends('level', $logLevel);
             }
 
-            return view('admin.logs.index-redis', compact('paginator', 'logLevel'));
+            if ($search) {
+                $paginator->appends('q', $search);
+            }
+
+            return view('admin.logs.index-redis', compact('paginator', 'logLevel', 'search'));
         } else {
             $logs = [];
         }
