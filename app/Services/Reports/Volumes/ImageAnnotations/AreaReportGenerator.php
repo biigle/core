@@ -361,10 +361,18 @@ class AreaReportGenerator extends AnnotationReportGenerator
                 $sqpx = $image->width * $image->height;
             }
 
-            // The area in m² is only known if the laserpoint detection module exists
-            // and the laserpoint detection was performed for the image.
-            if (class_exists(LImage::class)) {
-                $sqm = LImage::convert($image)->area;
+            // The area in m² is known if it was imported with the image metadata or if
+            // a laser point detection was performed (this requires the laserpoints
+            // module). The metadata takes precedence, as in the annotation tool.
+            $isValid = fn ($area) => is_numeric($area) && $area > 0;
+            $area = $image->metadata['area'] ?? null;
+
+            if (!$isValid($area) && class_exists(LImage::class)) {
+                $area = LImage::convert($image)->area;
+            }
+
+            if ($isValid($area)) {
+                $sqm = floatval($area);
             }
 
             $this->imageAreas[$id] = ['sqpx' => $sqpx, 'sqm' => $sqm];

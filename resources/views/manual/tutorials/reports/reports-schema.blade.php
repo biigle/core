@@ -110,7 +110,7 @@
         <h4><a name="annotation-area-report"></a>Area</h4>
 
         <p>
-            The image annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². Line string annotations are included, too, with the "width" set to the total length of the line string. If a laser point detection was performed, the width and height in m and the area in m² is included as well. The area of the image is included, too, so the percentage cover of the annotations can be computed.
+            The image annotation area report is an XLSX spreadsheet of all area annotations (rectangle, circle, ellipse and polygon) with their width and height in pixels (px) and their area in px². Line string annotations are included, too, with the "width" set to the total length of the line string. If the area of the image is known from the <a href="{{route('manual-tutorials', ['volumes', 'file-metadata'])}}">image metadata</a> or a laser point detection, the width and height in m and the area in m² is included as well. If both are available, the area from the image metadata is used. The area of the image is included, too, so the percentage cover of the annotations can be computed.
         </p>
         <div class="panel panel-warning">
             <div class="panel-body text-warning">
@@ -141,7 +141,7 @@
             <li><strong>Annotation width (px)</strong> See the width in m for the interpretation of this value for different shapes.</li>
             <li><strong>Annotation height (px)</strong> See the height in m for the interpretation of this value for different shapes.</li>
             <li><strong>Annotation area (px²)</strong></li>
-            <li><strong>Image area (m²)</strong> Only available if a laser point detection was performed. Can be used to compute the percentage cover of the annotation.</li>
+            <li><strong>Image area (m²)</strong> Only available if the area is known from the image metadata or a laser point detection. Can be used to compute the percentage cover of the annotation.</li>
             <li><strong>Image area (px²)</strong> Can be used to compute the percentage cover of the annotation.</li>
         </ol>
 
