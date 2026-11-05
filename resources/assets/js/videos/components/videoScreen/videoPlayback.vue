@@ -342,9 +342,7 @@ export default {
 
                 const sample = await this.mediabunnySink.getSample(time + this.mediabunnyPositiveOffset);
                 if (!sample) {
-                    console.warn("Could not get a video sample at the specified time. Falling back to native seeking.");
-                    this.renderPausedFrameWithNativeSeeking(time);
-                    return;
+                    throw new Error("Could not get a video sample at the specified time.");
                 }
 
                 const videoFrame = sample.toVideoFrame();
