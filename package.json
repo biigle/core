@@ -1,5 +1,6 @@
 {
   "license": "GPL-3.0-only",
+  "name": "biigle",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
