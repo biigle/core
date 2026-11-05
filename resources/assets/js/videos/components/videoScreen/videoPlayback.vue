@@ -304,33 +304,45 @@ export default {
             }
 
             let input;
-            let track;
             try {
                 input = new Input({
                     source: new UrlSource(this.video.src),
                     formats: ALL_FORMATS
                 });
-                track = await input.getPrimaryVideoTrack();
+                const track = await input.getPrimaryVideoTrack();
 
                 if (revision !== this.videoSourceRevision) {
                     input.dispose();
                     return;
-                } else if (!track) {
-                    this.clearMediabunnyInputWithWarning(input, revision, 'Unable to read a video track from this video.');
+                }
+
+                if (!track) {
+                    throw new Error('Unable to read a video track from this video.');
+                }
+
+                const canDecode = await track.canDecode();
+                if (revision !== this.videoSourceRevision) {
+                    input.dispose();
                     return;
-                } else if (!(await track.canDecode())) {
-                    this.clearMediabunnyInputWithWarning(input, revision, 'The used video codec is not supported by the WebCodecs API. The browser might display incorrect frames for a given timestamp. Consider switching the browser or transcoding the video to a more widely supported codec like H.264 (AVC).');
+                } else if (!canDecode) {
+                    throw new Error('The used video codec is not supported by the WebCodecs API. The browser might display incorrect frames for a given timestamp. Consider switching the browser or transcoding the video to a more widely supported codec like H.264 (AVC).');
+                }
+
+                const firstTimestamp = await track.getFirstTimestamp();
+                if (revision !== this.videoSourceRevision) {
+                    input.dispose();
                     return;
                 }
-            } catch (error) {
-                this.clearMediabunnyInputWithWarning(input, revision, 'Unable to read the video. Check the video URL and CORS configuration.');
-                return;
-            }
 
-            const firstTimestamp = await track.getFirstTimestamp();
-            this.mediabunnyPositiveOffset = firstTimestamp > 0 ? firstTimestamp : 0;
-            this.mediabunnyInput = input;
-            this.mediabunnySink = new VideoSampleSink(track);
+                this.mediabunnyPositiveOffset = firstTimestamp > 0 ? firstTimestamp : 0;
+                this.mediabunnyInput = input;
+                this.mediabunnySink = new VideoSampleSink(track);
+            } catch (error) {
+                const warning = error instanceof Error
+                    ? error.message
+                    : 'Unable to read the video. Check the video URL and CORS configuration.';
+                this.clearMediabunnyInputWithWarning(input, revision, warning);
+            }
         },
         async renderFrameWithMediabunny(time) {
             const revision = this.videoSourceRevision;
