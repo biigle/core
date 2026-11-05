@@ -118,19 +118,13 @@ export default {
             }
             this.animationFrameId = null;
         },
-        renderPausedFrameWithNativeSeeking(time) {
-            if (this.video.seeking) {
+        renderPausedFrameNatively(time) {
+            // If the time changed, this request is stale and must not overwrite a newer frame.
+            if (this.video.seeking || this.video.currentTime !== time) {
                 return;
             }
 
-            // Check if we seeked before to avoid recursion
-            if (this.video.currentTime !== time) {
-                // Use native seeking in case mediabunny is not available (unsupported codec, etc.):
-                // Assign video.currentTime manually and hope the browser displays the correct frame
-                this.$emit('seek', time, true);
-            } else {
-                this.renderVideo(true);
-            }
+            this.renderVideo(true);
         },
         async renderPausedFrame(time = this.video.currentTime) {
             await this.mediabunnyInitPromise;
@@ -139,7 +133,7 @@ export default {
                 this.renderVideo(true);
                 return;
             } else if (!this.mediabunnySink) {
-                this.renderPausedFrameWithNativeSeeking(time);
+                this.renderPausedFrameNatively(time);
                 return;
             }
 
@@ -157,6 +151,16 @@ export default {
         },
         async setPausedAndSeek() {
             this.setPaused();
+            await this.mediabunnyInitPromise;
+
+            if (this.video.paused && !this.mediabunnySink) {
+                // Without mediabunny, the displayed frame may not belong to currentTime.
+                // Forcing a seek makes annotations reproducible at this time.
+                // See: https://github.com/biigle/core/issues/433
+                this.$emit('seek', this.video.currentTime, true);
+                return;
+            }
+
             await this.renderPausedFrame();
         },
         play() {
@@ -342,8 +346,8 @@ export default {
 
                 const sample = await this.mediabunnySink.getSample(time + this.mediabunnyPositiveOffset);
                 if (!sample) {
-                    console.warn("Could not get a video sample at the specified time. Falling back to native seeking.");
-                    this.renderPausedFrameWithNativeSeeking(time);
+                    console.warn("Could not get a video sample at the specified time. Falling back to native rendering.");
+                    this.renderPausedFrameNatively(time);
                     return;
                 }
 
@@ -358,9 +362,9 @@ export default {
                 this.drawVideoFrame(videoFrame);
                 videoFrame.close();
             } catch (error) {
-                console.warn("Mediabunny frame decoding failed. Falling back to native seeking. The error was: ", error);
+                console.warn("Mediabunny frame decoding failed. Falling back to native rendering. The error was: ", error);
                 if (!sourceHasChanged()) {
-                    this.renderPausedFrameWithNativeSeeking(time);
+                    this.renderPausedFrameNatively(time);
                 }
             } finally {
                 this.mediabunnyDecodeCount--;
