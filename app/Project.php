@@ -7,6 +7,7 @@ use Biigle\Enums\Role;
 use Biigle\Jobs\DeleteVolume;
 use Biigle\Observers\ProjectObserver;
 use Cache;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -183,6 +184,33 @@ class Project extends Model
     public function volumes()
     {
         return $this->belongsToMany(Volume::class);
+    }
+
+    /**
+     * Returns the active annotation sessions of the volumes of this project for the
+     * given user.
+     *
+     * @param User $user
+     * @return \Illuminate\Database\Eloquent\Collection<int, AnnotationSession>
+     */
+    public function getActiveAnnotationSessions(User $user)
+    {
+        $now = Carbon::now();
+
+        return AnnotationSession::whereIn('volume_id', function ($query) {
+            $query->select('volume_id')
+                ->from('project_volume')
+                ->where('project_id', $this->id);
+        })
+            ->where('starts_at', '<=', $now)
+            ->where('ends_at', '>', $now)
+            ->whereExists(function ($query) use ($user) {
+                $query->select(DB::raw(1))
+                    ->from('annotation_session_user')
+                    ->where('annotation_session_user.user_id', $user->id)
+                    ->whereRaw('annotation_session_user.annotation_session_id = annotation_sessions.id');
+            })
+            ->get();
     }
 
     /**

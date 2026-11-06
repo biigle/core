@@ -8,6 +8,7 @@ use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * An image annotation is a region of an image that can be labeled by the users.
@@ -107,6 +108,46 @@ abstract class Annotation extends Model implements AnnotationContract
         return $query->join($foreignTable, $foreignKeyName, '=', $parentKeyName)
             ->where("{$foreignTable}.label_id", $label->id)
             ->select("{$table}.*");
+    }
+
+    /**
+     * Scope a query of annotations of multiple volumes to only include annotations
+     * that are allowed by the active annotation sessions of the volumes for the user.
+     * Annotations of volumes without active annotation session are not restricted.
+     *
+     * The query must join the file table (e.g. "images") and the annotation label
+     * table (e.g. "image_annotation_labels"). If an annotation session hides the
+     * annotations of other users, only annotation labels of the user are included
+     * (like in volume Largo).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     * @param \Illuminate\Support\Collection<int, AnnotationSession> $sessions The active annotation sessions of the user.
+     * @param User $user The user to whom the restrictions should apply ('own' user)
+     * @return \Illuminate\Database\Eloquent\Builder<static>
+     */
+    public function scopeAllowedBySessions($query, Collection $sessions, User $user)
+    {
+        if ($sessions->isEmpty()) {
+            return $query;
+        }
+
+        $fileTable = explode('.', $this->file()->getQualifiedOwnerKeyName())[0];
+        $labelTable = explode('.', $this->labels()->getQualifiedForeignKeyName())[0];
+
+        return $query->where(function ($query) use ($sessions, $user, $fileTable, $labelTable) {
+            $query->whereNotIn("{$fileTable}.volume_id", $sessions->pluck('volume_id'));
+
+            foreach ($sessions as $session) {
+                $query->orWhere(function ($query) use ($session, $user, $fileTable, $labelTable) {
+                    $query->where("{$fileTable}.volume_id", $session->volume_id)
+                        ->allowedBySession($session, $user);
+
+                    if ($session->hide_other_users_annotations) {
+                        $query->where("{$labelTable}.user_id", $user->id);
+                    }
+                });
+            }
+        });
     }
 
     /**
