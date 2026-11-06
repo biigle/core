@@ -263,7 +263,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $disk = Storage::fake('test');
         $video = $this->getFrameMock();
         $annotation = VideoAnnotationTest::create([
-            'points' => [[100, 100, 100, 300, 300, 300, 300, 100]],
+            'points' => [[100, 200, 200, 100, 300, 200, 200, 300]],
             'frames' => [1],
             'shape' => Shape::ELLIPSE,
         ]);
@@ -280,7 +280,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="200" rx="100" ry="100" transform="rotate(0,200,200)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="200" rx="100" ry="100" transform="rotate(0,200,200)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 

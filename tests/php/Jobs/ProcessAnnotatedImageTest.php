@@ -222,7 +222,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $disk = Storage::fake('test');
         $image = $this->getImageMock();
         $annotation = ImageAnnotationTest::create([
-            'points' => [100, 100, 100, 300, 300, 300, 300, 100],
+            'points' => [100, 200, 200, 100, 300, 200, 200, 300],
             'shape' => Shape::ELLIPSE,
         ]);
         $job = new ProcessAnnotatedImageStub($annotation->image);
@@ -238,8 +238,21 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="200" rx="100" ry="100" transform="rotate(0,200,200)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="200" rx="100" ry="100" transform="rotate(0,200,200)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
+    }
+
+    public function testGetAnnotationBoundingBoxRotatedEllipse()
+    {
+        // Ellipse with the center (200, 200) and the half axes (60, 80) and (-40, 30).
+        // The points are the ends of the two axes.
+        $points = [260, 280, 160, 230, 140, 120, 240, 170];
+        $job = new ProcessAnnotatedImage(ImageTest::create());
+        $box = $job->getAnnotationBoundingBox($points, Shape::ELLIPSE);
+
+        // The half width is sqrt(60^2 + 40^2) = 72.1, the half height is
+        // sqrt(80^2 + 30^2) = 85.4. The box of the four points would only be 120x160.
+        $this->assertSame([128, 115, 144, 171], $box);
     }
 
     public function testHandleContainedNegative()
