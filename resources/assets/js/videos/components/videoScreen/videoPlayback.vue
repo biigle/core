@@ -92,9 +92,16 @@ export default {
             }
 
             this.renderCurrentTime = this.video.currentTime;
-            this.drawVideoFrame(this.video);
+            this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+            this.videoSource.changed();
         },
         startRenderLoop() {
+            // A second loop would overwrite animationFrameId and could never be
+            // cancelled, e.g. if playback started while a paused frame was decoded.
+            if (this.animationFrameId) {
+                return;
+            }
+
             let render;
             if (this.shouldUseVideoFrameCallback) {
                 render = () => {
@@ -127,17 +134,32 @@ export default {
             this.renderVideo(true);
         },
         async renderPausedFrame(time = this.video.currentTime) {
-            await this.mediabunnyInitPromise;
+            // Emit before the first await so that the seeking state doesn't drop between
+            // the native "seeked" event and the start of decoding while the canvas still
+            // shows the previous frame.
+            const revision = this.videoSourceRevision;
+            this.mediabunnyDecodeCount++;
+            this.$emit('mediabunny-decoding', true);
+            try {
+                await this.mediabunnyInitPromise;
 
-            if (!this.video.paused) {
-                this.renderVideo(true);
-                return;
-            } else if (!this.mediabunnySink) {
-                this.renderPausedFrameNatively(time);
-                return;
+                if (!this.video.paused) {
+                    this.renderVideo(true);
+                    return;
+                } else if (!this.mediabunnySink) {
+                    this.renderPausedFrameNatively(time);
+                    return;
+                }
+
+                await this.renderFrameWithMediabunny(time);
+            } finally {
+                // The counter was reset for the new video source and decodes of the old
+                // source must not affect it.
+                if (revision === this.videoSourceRevision) {
+                    this.mediabunnyDecodeCount--;
+                    this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
+                }
             }
-
-            await this.renderFrameWithMediabunny(time);
         },
         setPlaying() {
             this.playing = true;
@@ -178,10 +200,17 @@ export default {
         },
         handleVideoMetadata() {
             this.videoSourceRevision++;
+            this.mediabunnyDecodeCount = 0;
+            this.$emit('mediabunny-decoding', false);
             this.mediabunnySink = null;
             this.mediabunnyInitPromise = this.initMediabunny(this.videoSourceRevision);
         },
         async handleSeeked() {
+            if (!this.video.paused) {
+                this.renderVideo(true);
+                return;
+            }
+
             await this.renderPausedFrame();
         },
         // 5 next methods are a workaround to get previous and next frames, adapted from here: https://github.com/angrycoding/requestVideoFrameCallback-prev-next/tree/main
@@ -349,8 +378,6 @@ export default {
             const source = this.video.src;
             const sourceHasChanged = () => revision !== this.videoSourceRevision || source !== this.video.src;
 
-            this.mediabunnyDecodeCount++;
-            this.$emit('mediabunny-decoding', true);
             try {
                 if (sourceHasChanged() || !this.mediabunnySink) {
                     return;
@@ -361,31 +388,25 @@ export default {
                     throw new Error("Could not get a video sample at the specified time.");
                 }
 
-                const videoFrame = sample.toVideoFrame();
-                sample.close();
+                try {
+                    if (!this.video.paused || this.video.currentTime !== time || sourceHasChanged()) {
+                        return;
+                    }
 
-                if (!this.video.paused || this.video.currentTime !== time || sourceHasChanged()) {
-                    videoFrame.close();
-                    return;
+                    // Use sample.draw() instead of drawing a VideoFrame because it
+                    // respects rotation metadata like the native <video> element does.
+                    sample.draw(this.videoContext, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+                    this.videoSource.changed();
+                } finally {
+                    sample.close();
                 }
-
-                this.drawVideoFrame(videoFrame);
-                videoFrame.close();
             } catch (error) {
                 console.warn("Mediabunny frame decoding failed. Falling back to native rendering. The error was: ", error);
                 if (!sourceHasChanged()) {
                     this.renderPausedFrameNatively(time);
                 }
-            } finally {
-                this.mediabunnyDecodeCount--;
-                this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
             }
         },
-        drawVideoFrame(videoFrame) {
-            this.videoContext.drawImage(videoFrame, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-            this.videoSource.changed();
-        },
-
     },
     watch: {
         seeking(seeking) {
