@@ -93,6 +93,7 @@ class BrowserControllerTest extends ApiTestCase
         Storage::disk('test')->put('test_1/test1.txt', '');
         Storage::disk('test')->put('test_1/test2.mp4', '');
         Storage::disk('test')->put('test_1/test2.jpg', '');
+        Storage::disk('test')->put('test_1/test3.m4v', '');
 
         $this->doTestApiRoute('GET', '/api/v1/volumes/browser/videos/test', [
             'path' => 'test_1',
@@ -110,7 +111,7 @@ class BrowserControllerTest extends ApiTestCase
 
         $this->get('/api/v1/volumes/browser/videos/test?path=test_1')
             ->assertStatus(200)
-            ->assertExactJson(['test1.mp4', 'test2.mp4']);
+            ->assertExactJson(['test1.mp4', 'test2.mp4', 'test3.m4v']);
     }
 
     public function testIndexFilesEscapeRegex()
