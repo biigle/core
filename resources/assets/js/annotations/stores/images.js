@@ -7,6 +7,52 @@ export class CrossOriginTiffError extends Error {}
 
 export class DecodeTiffError extends Error {}
 
+// Maximum canvas area of Safari on iOS and iPadOS. The browser can't draw on larger
+// canvases.
+// See: https://github.com/biigle/core/issues/329
+const MAX_CANVAS_AREA = 16777216;
+
+// Check if the browser can draw on a canvas of this size.
+let canDrawOnCanvas = function (canvas) {
+    let context = canvas.getContext('2d');
+    if (!context) {
+        return false;
+    }
+
+    let x = canvas.width - 1;
+    let y = canvas.height - 1;
+    context.fillRect(x, y, 1, 1);
+    let canDraw = context.getImageData(x, y, 1, 1).data[3] !== 0;
+    context.clearRect(x, y, 1, 1);
+
+    return canDraw;
+};
+
+// Set the size of the canvas to the size of the image. If the browser can't draw on a
+// canvas this large, the canvas is scaled down. OpenLayers still displays it with the
+// extent of the full image so the coordinates of annotations are not affected.
+let setCanvasSize = function (canvas, width, height) {
+    canvas.width = width;
+    canvas.height = height;
+
+    if (canDrawOnCanvas(canvas)) {
+        return;
+    }
+
+    let scale = Math.min(1, Math.sqrt(MAX_CANVAS_AREA / (width * height)));
+    // Try even smaller canvases if the browser has a lower limit.
+    for (let i = 0; i < 5; i++, scale /= 2) {
+        canvas.width = Math.max(1, Math.floor(width * scale));
+        canvas.height = Math.max(1, Math.floor(height * scale));
+
+        if (canDrawOnCanvas(canvas)) {
+            console.warn(`The image is too large for this browser. It is displayed with ${canvas.width}x${canvas.height} px instead of ${width}x${height} px.`);
+
+            return;
+        }
+    }
+};
+
 const COLOR_ADJUSTMENT_DEFAULTS = {
     brightnessContrast: [0, 0],
     brightnessRGB: [0, 0, 0],
@@ -126,16 +172,22 @@ class Images {
             return;
         }
 
+        // The color adjustment is applied to the canvas, which may be smaller than
+        // the image (see setCanvasSize()).
+        let width = image.canvas.width;
+        let height = image.canvas.height;
+
         // If we already have a drawn image we only need to check the support
         // again if the image dimensions changed.
-        if (this.currentlyDrawnImage && this.currentlyDrawnImage.width === image.width && this.currentlyDrawnImage.height === image.height) {
+        // Tiled images don't have a canvas.
+        if (this.currentlyDrawnImage?.canvas?.width === width && this.currentlyDrawnImage?.canvas?.height === height) {
             return this.supportsColorAdjustment;
         }
 
         // Check supported texture size.
         let size = this.supportedTextureSize;
-        if (size < image.width || size < image.height) {
-            console.warn(`Insufficient WebGL texture size. Required: ${image.width}x${image.height}, available: ${size}x${size}. Color adjustment disabled.`);
+        if (size < width || size < height) {
+            console.warn(`Insufficient WebGL texture size. Required: ${width}x${height}, available: ${size}x${size}. Color adjustment disabled.`);
             this.supportsColorAdjustment = false;
             return;
         }
@@ -143,9 +195,9 @@ class Images {
         // Check supported drawing buffer size.
         // see: https://github.com/biigle/annotations/issues/44
         let tmpCanvas = fx.canvas();
-        tmpCanvas.width = image.width;
-        tmpCanvas.height = image.height;
-        if (image.width !== tmpCanvas._.gl.drawingBufferWidth || image.height !== tmpCanvas._.gl.drawingBufferHeight) {
+        tmpCanvas.width = width;
+        tmpCanvas.height = height;
+        if (width !== tmpCanvas._.gl.drawingBufferWidth || height !== tmpCanvas._.gl.drawingBufferHeight) {
             console.warn('Your browser does not allow a WebGL drawing buffer with the size of the original image. Color adjustment disabled.');
             this.supportsColorAdjustment = false;
             return;
@@ -200,11 +252,10 @@ class Images {
                 document.body.appendChild(imageWrapper.canvas);
                 imageWrapper.width = img.width;
                 imageWrapper.height = img.height;
-                imageWrapper.canvas.width = img.width;
-                imageWrapper.canvas.height = img.height;
+                setCanvasSize(imageWrapper.canvas, img.width, img.height);
                 // Draw the image to the canvas already so the switch to a cached
                 // image is as fast as possible.
-                imageWrapper.canvas.getContext('2d').drawImage(img, 0, 0);
+                imageWrapper.canvas.getContext('2d').drawImage(img, 0, 0, imageWrapper.canvas.width, imageWrapper.canvas.height);
                 imageWrapper.canvas._dirty = false;
                 document.body.removeChild(img);
                 document.body.removeChild(imageWrapper.canvas);
@@ -302,7 +353,7 @@ class Images {
             // This has to be called somehow to force the browser to respect
             // imageOrientation=none.
             image.source.width;
-            image.canvas.getContext('2d').drawImage(image.source, 0, 0);
+            image.canvas.getContext('2d').drawImage(image.source, 0, 0, image.canvas.width, image.canvas.height);
             image.canvas._dirty = false;
             document.body.removeChild(image.source);
             document.body.appendChild(image.canvas);
