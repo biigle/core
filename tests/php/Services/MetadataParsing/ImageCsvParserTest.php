@@ -169,6 +169,54 @@ class ImageCsvParserTest extends TestCase
         $this->assertNull($file->area);
         $this->assertNull($file->yaw);
     }
+
+    public function testGetMetadataClassicMacLineEndings()
+    {
+        $this->assertLineEndingsAreSupported("\r", ImageCsvParser::class);
+    }
+
+    public function testGetMetadataWindowsLineEndings()
+    {
+        $this->assertLineEndingsAreSupported("\r\n", ImageCsvParser::class);
+    }
+
+    public function testGetMetadataLineEndingsSplitAcrossChunks()
+    {
+        $this->assertLineEndingsAreSupported("\r", ImageCsvParserSmallChunksStub::class);
+        $this->assertLineEndingsAreSupported("\r\n", ImageCsvParserSmallChunksStub::class);
+        $this->assertLineEndingsAreSupported("\n", ImageCsvParserSmallChunksStub::class);
+    }
+
+    protected function assertLineEndingsAreSupported(string $eol, string $parserClass)
+    {
+        $path = tempnam(sys_get_temp_dir(), 'image_metadata_test');
+        try {
+            file_put_contents($path, implode($eol, [
+                'filename,taken_at,lng,lat',
+                'abc.jpg,2016-12-19 12:27:00,52.220,28.123',
+                'def.jpg,2016-12-19 12:28:00,52.230,28.133',
+            ]).$eol);
+
+            $parser = new $parserClass(new File($path));
+            $this->assertTrue($parser->recognizesFile());
+            $data = $parser->getMetadata();
+            $this->assertCount(2, $data->getFiles());
+
+            $file = $data->getFile('abc.jpg');
+            $this->assertNotNull($file);
+            $this->assertEquals('2016-12-19 12:27:00', $file->takenAt);
+            $this->assertEquals(52.220, $file->lng);
+            $this->assertEquals(28.123, $file->lat);
+
+            $file = $data->getFile('def.jpg');
+            $this->assertNotNull($file);
+            $this->assertEquals('2016-12-19 12:28:00', $file->takenAt);
+            $this->assertEquals(52.230, $file->lng);
+            $this->assertEquals(28.133, $file->lat);
+        } finally {
+            unlink($path);
+        }
+    }
 }
 
 class ImageCsvParserStub extends ImageCsvParser
@@ -179,4 +227,10 @@ class ImageCsvParserStub extends ImageCsvParser
     {
         return new \ArrayIterator($this->content);
     }
+}
+
+class ImageCsvParserSmallChunksStub extends ImageCsvParser
+{
+    // Use a small chunk size so line endings are split across chunks.
+    const CHUNK_SIZE = 3;
 }
