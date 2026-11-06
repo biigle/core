@@ -98,13 +98,16 @@ class UserController extends Controller
      * ]
      *
      * @param Request $request
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
     public function index(Request $request)
     {
         $this->authorize('index', User::class);
 
-        return User::select('id', 'firstname', 'lastname', 'role', 'affiliation')
+        // Use the base query builder because hydrating a model for each user can
+        // exhaust the memory if there are many users.
+        return User::toBase()
+            ->select('id', 'firstname', 'lastname', 'role', 'affiliation')
             ->when($request->user()->can('sudo'), function ($query) {
                 $query->addSelect('email');
             })
