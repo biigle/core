@@ -6,7 +6,6 @@ use Biigle\AnnotationGuideline;
 use Biigle\Enums\Role;
 use Biigle\Project;
 use Biigle\User;
-use DB;
 use Illuminate\Database\Eloquent\Collection;
 
 /**
@@ -18,37 +17,20 @@ class AnnotationGuidelineService
 {
     /**
      * Get the guidelines (enforced and informational) of the projects that the user and
-     * the volume have in common.
+     * the volume have in common and where the user can create annotations.
      *
-     * Each guideline has the additional attribute `can_annotate` (whether the user can
-     * create annotations in the project of the guideline). Guidelines that are enforced
-     * and where `can_annotate` is true can be chosen for new annotations.
+     * Guidelines of projects where the user can't create annotations (e.g. as guest) are
+     * omitted because they can't be used and their labels may not be available to the
+     * user.
      *
      * @return Collection<int, AnnotationGuideline>
      */
     public function getGuidelines(User $user, int $volumeId): Collection
     {
-        return once(function () use ($user, $volumeId) {
-            $editRoles = $this->getEditRoles();
-
-            return AnnotationGuideline::whereIn(
-                'project_id',
-                Project::inCommon($user, $volumeId)->select('id')
-            )
-                ->addSelect([
-                    'project_role' => DB::table('project_user')
-                        ->select('project_role')
-                        ->whereColumn('project_id', 'annotation_guidelines.project_id')
-                        ->where('user_id', $user->id),
-                ])
-                ->get()
-                ->each(function (AnnotationGuideline $guideline) use ($editRoles) {
-                    // The subselect is not cast so it has to be converted to the enum.
-                    $role = Role::tryFrom((int) $guideline->project_role);
-                    $guideline->can_annotate = in_array($role, $editRoles, true);
-                    unset($guideline->project_role);
-                });
-        });
+        return once(fn () => AnnotationGuideline::whereIn(
+            'project_id',
+            Project::inCommon($user, $volumeId, $this->getEditRoles())->select('id')
+        )->get());
     }
 
     /**
@@ -58,12 +40,21 @@ class AnnotationGuidelineService
      */
     public function mustUseGuideline(User $user, int $volumeId): bool
     {
-        return once(fn () => !Project::inCommon($user, $volumeId, $this->getEditRoles())
-            ->whereDoesntHave(
+        return once(function () use ($user, $volumeId) {
+            $query = Project::inCommon($user, $volumeId, $this->getEditRoles());
+
+            // Without this check, users who can't create annotations (e.g. guests)
+            // would be required to use a guideline.
+            if (!$query->clone()->exists()) {
+                return false;
+            }
+
+            return !$query->whereDoesntHave(
                 'annotationGuideline',
                 fn ($query) => $query->where('enforced', true)
             )
-            ->exists());
+                ->exists();
+        });
     }
 
     /**

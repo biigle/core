@@ -46,7 +46,9 @@ export default {
                 this.currentInteraction = null;
             } else if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                 this.requireSelectedLabel();
-            } else if (this.canAdd) {
+            // The button is disabled if polygons are not allowed but the keyboard
+            // shortcut still calls this method.
+            } else if (this.canAdd && this.isShapeAllowed('Polygon')) {
                 this.interactionMode = 'polygonBrush';
             }
         },

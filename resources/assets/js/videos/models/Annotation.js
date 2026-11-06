@@ -339,9 +339,14 @@ export default class Annotation {
             });
     }
 
-    attachAnnotationLabel(label) {
+    attachAnnotationLabel(label, guidelineId = null) {
+        let payload = {label_id: label.id};
+        if (guidelineId) {
+            payload.guideline_id = guidelineId;
+        }
+
         return VideoAnnotationApi
-            .attachLabel({id: this.id}, {label_id: label.id})
+            .attachLabel({id: this.id}, payload)
             .then(this.handleAttachedLabel.bind(this));
     }
 
@@ -395,9 +400,14 @@ export default class Annotation {
         return response;
     }
 
-    link(other) {
+    link(other, guidelineId = null) {
+        let payload = {annotation_id: other.id};
+        if (guidelineId) {
+            payload.guideline_id = guidelineId;
+        }
+
         return VideoAnnotationApi
-            .link({id: this.id}, {annotation_id: other.id})
+            .link({id: this.id}, payload)
             .then(this.handleFinishedLink.bind(this));
     }
 

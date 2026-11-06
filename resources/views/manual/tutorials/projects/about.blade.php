@@ -68,7 +68,7 @@
             Hover the mouse over a volume thumbnail and click the <button class="btn btn-default btn-xs"><i class="fa fa-chart-bar"></i></button> button in order to see some charts of this volume, such as the per-user contribution of annotations, the ratio of annotated vs. not-annotated files, or the abundance of annotation labels. For further details, have a look at the Charts section below.
         </p>
 
-        <p> Clone a volume by using the button <button class="btn btn-default btn-xs"><i class="fa fa-clone"></i></button>, which is located next to the volume charts button. Restrict files by using a pattern that matches specific filenames. Select checkboxes to copy labels and restrict them by using the label tree. By default, the cloned volumes are saved in their source projects.</p>
+        <p> Clone a volume by using the button <button class="btn btn-default btn-xs"><i class="fa fa-clone"></i></button>, which is located next to the volume charts button. Restrict files by using a pattern that matches specific filenames. Select checkboxes to copy labels and restrict them by using the label tree. By default, the cloned volumes are saved in their source projects. Cloned annotations and file labels are not checked against an enforced <a href="#enforced-guideline">annotation guideline</a> of the destination project.</p>
 
         <p>
             If a project has lots of volumes, filtering the volumes can help to find a particular volume. To filter the volumes in the project overview, type part of the name of the volume in the input field on the top left of the volumes tab. The volumes list will update as you type. You can also show only image volumes or video volumes with a click on the <button class="btn btn-default btn-xs"><i class="fa fa-image"></i></button> and <button class="btn btn-default btn-xs"><i class="fa fa-film"></i></button> buttons, respectively.
@@ -98,6 +98,41 @@
 
         <p>
             To create a guideline as a project admin, open the <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Guideline</button> tab and add general and/or label instructions. To edit the general instructions, click <button class="btn btn-default btn-xs">Edit</button>, update the instructions and save. To edit label instructions, select a label in the label trees list. Then enter a description, choose a preferred shape tool or select a reference image and click <button class="btn btn-success btn-xs"><i class="fa fa-clipboard-list"></i> Add</button>.
+        </p>
+
+        <p>
+            Click <button class="btn btn-default btn-xs"><i class="fa fa-print"></i> Print</button> in the guideline tab to open a printable version of the guideline. It contains the general instructions as well as all labels of the guideline with their description, shape and reference image. Use the print dialog of your browser to print the guideline or to save it as a PDF file.
+        </p>
+
+        <h4><a name="use-a-guideline"></a>Use a guideline</h4>
+
+        <p>
+            The image and video annotation tools, <a href="{{route('manual-tutorials', ['largo', 'getting-started'])}}">Largo</a> and the <a href="{{route('manual-tutorials', ['volumes', 'file-labels'])}}">file labelling mode</a> of the volume overview show a <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Use Guideline</button> button above the label trees. If a volume belongs to multiple projects with guidelines, the button opens a dropdown list with the guidelines of all projects of the volume. Only guidelines of projects where you are editor, expert or admin are available. Click on a guideline to select it and click on the selected guideline again to deselect it. If there is only one guideline, the button toggles this guideline instead. Your choice is remembered for each volume (or for each project in the project Largo).
+        </p>
+
+        <p>
+            The selected guideline shows its general description below the button. Labels of the guideline are marked with the <i class="fa fa-clipboard-list"></i> icon in the label trees. In the annotation tools, the description, shape and reference image of the selected label are shown at the bottom of the image or video.
+        </p>
+
+        <h4><a name="enforced-guideline"></a>Enforced guidelines</h4>
+
+        <p>
+            If you select an enforced guideline, the annotation tools only allow what the guideline allows:
+        </p>
+
+        <ul>
+            <li>Only labels of the guideline can be selected in the label trees (unless the guideline has no labels). This also applies to file labels.</li>
+            <li>Only the allowed shape tools can be used. If a label of the guideline has a shape, only this shape can be used for annotations with the label and the shape tool is selected automatically when you select the label.</li>
+            <li>The same rules apply when you change existing annotations, e.g. if you attach a new label, change the shape of an annotation or link video annotations.</li>
+            <li><a href="{{route('manual-tutorials', ['labelbot', 'labelbot'])}}">LabelBOT</a> still suggests any label but those that are not allowed by the guideline are not preselected and cannot be chosen.</li>
+        </ul>
+
+        <p>
+            If all projects of a volume where you are editor, expert or admin have an enforced guideline, you must use one of these guidelines to create annotations or file labels. If there is only one enforced guideline, it is selected automatically and can't be deselected. If at least one of these projects has no enforced guideline, you can also create annotations or file labels without a guideline.
+        </p>
+
+        <p>
+            Guidelines that are not enforced only provide information. They don't restrict the available labels or shapes.
         </p>
 
         <h3><a name="modify-a-project"></a>Pin or modify a project</h3>

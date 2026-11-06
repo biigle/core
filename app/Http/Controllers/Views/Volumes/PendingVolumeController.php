@@ -9,6 +9,8 @@ use Biigle\LabelTree;
 use Biigle\Modules\UserDisks\UserDisk;
 use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\PendingVolume;
+use Biigle\Project;
+use Biigle\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -153,6 +155,7 @@ class PendingVolumeController extends Controller
         return view('volumes.create.annotationLabels', [
             'pv' => $pv,
             'labels' => $labels,
+            'enforcedGuidelineProjects' => $this->getEnforcedGuidelineProjects($request->user(), $pv),
         ]);
     }
 
@@ -186,6 +189,7 @@ class PendingVolumeController extends Controller
         return view('volumes.create.fileLabels', [
             'pv' => $pv,
             'labels' => $labels,
+            'enforcedGuidelineProjects' => $this->getEnforcedGuidelineProjects($request->user(), $pv),
         ]);
     }
 
@@ -344,5 +348,34 @@ class PendingVolumeController extends Controller
             'labelMapOk' => $labelMapOk,
             'userMapOk' => $userMapOk,
         ]);
+    }
+
+    /**
+     * Get the names of the projects of the volume that have an enforced annotation
+     * guideline. The metadata import is exempt from the guideline (users are only
+     * notified).
+     *
+     * All projects are checked (not only the project of the pending volume) because
+     * metadata can also be imported for an existing volume that belongs to multiple
+     * projects. Only projects of the user are checked (unless global admin) to not
+     * reveal other project names.
+     *
+     * @param User $user
+     * @param PendingVolume $pv
+     *
+     * @return \Illuminate\Support\Collection<int, string>
+     */
+    protected function getEnforcedGuidelineProjects(User $user, PendingVolume $pv)
+    {
+        if ($user->can('sudo')) {
+            $query = $pv->volume->projects();
+        } else {
+            $query = Project::inCommon($user, $pv->volume_id);
+        }
+
+        return $query
+            ->whereHas('annotationGuideline', fn ($query) => $query->where('enforced', true))
+            ->orderBy('name')
+            ->pluck('name');
     }
 }

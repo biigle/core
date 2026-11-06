@@ -14,6 +14,7 @@ import { Point } from '@biigle/ol/geom';
 import { simplifyPolygon } from "@/annotations/ol/PolygonValidator";
 import { setOrUnsetProperty } from '@/utils.js';
 import { addRightClickDragPanToMap } from '@/annotations/utils.js';
+import { INTERACTION_MODE_SHAPES } from '../../utils.js';
 
 /**
  * Mixin for the videoScreen component that contains logic for the draw interactions.
@@ -115,6 +116,10 @@ export default {
                 this.resetInteractionMode();
             } else if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
                 this.requireSelectedLabel();
+            // The buttons of disallowed shapes are disabled but the keyboard shortcuts
+            // still call this method.
+            } else if (!this.isShapeAllowed(INTERACTION_MODE_SHAPES['draw' + name])) {
+                return;
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
             }
@@ -144,15 +149,7 @@ export default {
             this.draw('MagicWand');
         },
         maybeUpdateDrawInteractionMode(mode) {
-            let shape = mode.slice(4); // Remove the 'draw' prefix.
-
-            if (this.isDrawingAlignedRectangle) {
-                shape = 'Rectangle';
-            }
-
-            if (this.isDrawingMagicWand) {
-                shape = 'Polygon';
-            }
+            const shape = INTERACTION_MODE_SHAPES[mode];
 
             this.resetPendingAnnotation(shape);
 

@@ -47,6 +47,7 @@
       :initial-resolution="initialMapResolution"
       :selected-annotations="selectedAnnotations"
       :selected-label="selectedLabel"
+      :annotation-guideline="annotationGuideline"
       :show-label-tooltip="settings.showLabelTooltip"
       :show-minimap="settings.showMinimap"
       :single-annotation="settings.singleAnnotation"

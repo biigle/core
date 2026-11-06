@@ -62,6 +62,8 @@
         biigle.$declare('videos.projectIds', {{$projectIds}});
         biigle.$declare('labelbot.onnxUrl', '{{config('labelbot.onnx_url')}}');
     @endcan
+    biigle.$declare('videos.annotationGuidelines', @json($annotationGuidelines));
+    biigle.$declare('videos.mustUseAnnotationGuideline', @json($mustUseAnnotationGuideline));
     biigle.$declare('annotations.shapes', {!! $shapes !!});
     biigle.$declare('annotations.sessions', {!!$annotationSessions!!});
     biigle.$declare('videos.isEditor', @can('add-annotation', $video) true @else false @endcan);

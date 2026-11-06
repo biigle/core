@@ -40,7 +40,7 @@ return new class extends Migration {
             // Value of the Biigle\Enums\Shape enum.
             $table->integer('shape')->nullable();
 
-            $table->text('description')->nullable();
+            $table->string('description', 256)->nullable();
 
             $table->string('reference_image_path')->nullable();
 

@@ -286,6 +286,11 @@ $router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($rout
             'as'   => 'annotation-guideline',
             'uses' => 'AnnotationGuidelineController@show',
         ]);
+
+        $router->get('{id}/annotation-guideline/print', [
+            'as'   => 'annotation-guideline-print',
+            'uses' => 'AnnotationGuidelineController@printable',
+        ]);
     });
 
     $router->group(['namespace' => 'Volumes', 'prefix' => 'pending-volumes'], function ($router) {

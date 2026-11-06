@@ -51,6 +51,26 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $this->assertNotNull($guidelineLabel->pivot->uuid);
     }
 
+    public function testStoreDescriptionTooLong()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'description' => str_repeat('a', 257),
+        ])->assertStatus(422);
+
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'description' => str_repeat('a', 256),
+        ])->assertStatus(201);
+    }
+
     public function testStoreUpdatesExisting()
     {
         $guideline = AnnotationGuideline::factory()->create([

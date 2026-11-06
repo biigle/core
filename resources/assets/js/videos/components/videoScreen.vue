@@ -95,11 +95,11 @@
             <div v-if="canAdd" class="btn-group">
                 <control-button
                     icon="icon-point"
-                    :title="(singleAnnotation ? 'Set a point'  : 'Start a point annotation') + ' 𝗔'"
+                    :title="getShapeToolTitle('Point', (singleAnnotation ? 'Set a point'  : 'Start a point annotation') + ' 𝗔')"
                     :hover="false"
                     :open="isDrawingPoint"
                     :active="isDrawingPoint"
-                    :disabled="hasError || null"
+                    :disabled="hasError || !isShapeAllowed('Point') || null"
                     @click="drawPoint"
                     v-slot="{onActive}"
                     >
@@ -135,10 +135,10 @@
                 </control-button>
                 <control-button
                     icon="icon-rectangle"
-                    :title="(singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') + ' 𝗦'"
+                    :title="getShapeToolTitle('Rectangle', (singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') + ' 𝗦')"
                     :open="isDrawingRectangle || isDrawingAlignedRectangle"
                     :active="isDrawingRectangle"
-                    :disabled="hasError || null"
+                    :disabled="hasError || !isShapeAllowed('Rectangle') || null"
                     @click="drawRectangle"
                     v-slot="{onActive}"
                     >
@@ -162,19 +162,20 @@
                         </template>
                         <control-button
                             icon="fa-vector-square"
-                            :title="(singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦'"
+                            :title="getShapeToolTitle('Rectangle', (singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦')"
                             :active="isDrawingAlignedRectangle"
+                            :disabled="!isShapeAllowed('Rectangle') || null"
                             @click="drawAlignedRectangle"
                             @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
                     icon="icon-circle"
-                    :title="(singleAnnotation ? 'Draw a circle' : 'Start a circle annotation') + ' 𝗗'"
+                    :title="getShapeToolTitle('Circle', (singleAnnotation ? 'Draw a circle' : 'Start a circle annotation') + ' 𝗗')"
                     :hover="false"
                     :open="isDrawingCircle"
                     :active="isDrawingCircle"
-                    :disabled="hasError || null"
+                    :disabled="hasError || !isShapeAllowed('Circle') || null"
                     @click="drawCircle"
                     v-slot="{onActive}"
                     >
@@ -210,11 +211,11 @@
                 </control-button>
                 <control-button
                     icon="icon-linestring"
-                    :title="(singleAnnotation ? 'Draw a line string' : 'Start a line annotation') + ' 𝗙'"
+                    :title="getShapeToolTitle('LineString', (singleAnnotation ? 'Draw a line string' : 'Start a line annotation') + ' 𝗙')"
                     :hover="false"
                     :open="isDrawingLineString"
                     :active="isDrawingLineString"
-                    :disabled="hasError || null"
+                    :disabled="hasError || !isShapeAllowed('LineString') || null"
                     @click="drawLineString"
                     v-slot="{onActive}"
                     >
@@ -235,10 +236,10 @@
                 </control-button>
                 <control-button
                     icon="icon-polygon"
-                    :title="(singleAnnotation ? 'Draw a polygon' : 'Start a polygon annotation') + ' 𝗚'"
+                    :title="getShapeToolTitle('Polygon', (singleAnnotation ? 'Draw a polygon' : 'Start a polygon annotation') + ' 𝗚')"
                     :open="isDrawingPolygon"
                     :active="isDrawingPolygon"
-                    :disabled="hasError || null"
+                    :disabled="hasError || !isShapeAllowed('Polygon') || null"
                     @click="drawPolygon"
                     v-slot="{onActive}"
                     >
@@ -262,8 +263,9 @@
                         </template>
                         <control-button
                             icon="fa-paint-brush"
-                            title="Draw a polygon using the brush tool 𝗘"
+                            :title="getShapeToolTitle('Polygon', 'Draw a polygon using the brush tool 𝗘')"
                             :active="isUsingPolygonBrush"
+                            :disabled="!isShapeAllowed('Polygon') || null"
                             @click="togglePolygonBrush"
                             @active="onActive"
                             ></control-button>
@@ -283,19 +285,20 @@
                             ></control-button>
                         <control-button
                             icon="fa-magic"
-                            title="Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚"
+                            :title="getShapeToolTitle('Polygon', 'Draw a polygon using the magic wand tool 𝗦𝗵𝗶𝗳𝘁+𝗚')"
                             :active="isDrawingMagicWand"
+                            :disabled="!isShapeAllowed('Polygon') || null"
                             @click="drawMagicWand"
                             @active="onActive"
                             ></control-button>
                 </control-button>
                 <control-button
                     icon="icon-wholeframe"
-                    :title="(singleAnnotation ? 'Create a whole frame annotation' : 'Start a whole frame annotation') + ' 𝗛'"
+                    :title="getShapeToolTitle('WholeFrame', (singleAnnotation ? 'Create a whole frame annotation' : 'Start a whole frame annotation') + ' 𝗛')"
                     :hover="false"
                     :open="isDrawingWholeFrame"
                     :active="isDrawingWholeFrame"
-                    :disabled="hasError || null"
+                    :disabled="hasError || !isShapeAllowed('WholeFrame') || null"
                     @click="drawWholeFrame"
                     v-slot="{onActive}"
                     >
@@ -386,6 +389,7 @@
             <label-indicator
                 v-if="selectedLabel"
                 :label="selectedLabel"
+                :guideline="annotationGuideline"
                 ></label-indicator>
             <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
         </div>
@@ -395,6 +399,7 @@
             :focused-popup-key="focusedPopupKey"
             :annotation="annotation"
             :timeout="labelbotTimeout"
+            :guideline="annotationGuideline"
             @update="updateLabelbotLabel"
             @close="closeLabelbotPopup"
             @delete="handleDeleteLabelbotAnnotation"
@@ -404,6 +409,7 @@
 </template>
 
 <script>
+import AnnotationGuideline from '@/core/models/AnnotationGuideline.js';
 import AnnotationPlayback from './videoScreen/annotationPlayback.vue';
 import Collection from '@biigle/ol/Collection';
 import ControlButton from '@/annotations/components/controlButton.vue';
@@ -430,6 +436,7 @@ import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
+import {INTERACTION_MODE_SHAPES} from '../utils.js';
 import {markRaw} from 'vue';
 
 export default {
@@ -521,6 +528,10 @@ export default {
         selectedLabel: {
             type: Object,
         },
+        annotationGuideline: {
+            validator: AnnotationGuideline.validate,
+            default: null,
+        },
         showLabelTooltip: {
             type: Boolean,
             default: false,
@@ -610,6 +621,9 @@ export default {
         },
         isDefaultInteractionMode() {
             return this.interactionMode === 'default';
+        },
+        interactionModeShape() {
+            return INTERACTION_MODE_SHAPES[this.interactionMode];
         },
         styleObject() {
             if (this.heightOffset !== 0) {
@@ -799,6 +813,56 @@ export default {
         getDraftColor() {
             return this.draftAnnotationUsesLabelColor ? this.selectedLabel?.color : null;
         },
+        // Determine if the selected annotation guideline allows the shape for the selected
+        // label. This can also be used by plugin tools.
+        isShapeAllowed(shape) {
+            return !this.annotationGuideline
+                || this.annotationGuideline.allowsShape(shape, this.selectedLabel?.id);
+        },
+        getShapeToolTitle(shape, title) {
+            return this.isShapeAllowed(shape) ? title : 'This shape is not allowed by the annotation guideline';
+        },
+        maybeResetDisallowedTool() {
+            if (this.interactionModeShape && !this.isShapeAllowed(this.interactionModeShape)) {
+                this.resetInteractionMode();
+            }
+        },
+        maybeSwitchToAutomaticTool() {
+            // With an informational guideline, the tool is never reset but the label
+            // may have a different preferred shape. Switching the tool would discard
+            // the keyframes of a pending annotation.
+            const hasPendingAnnotation = this.interactionModeShape
+                && this.pendingAnnotation.frames?.length > 0;
+
+            if (!this.hasSelectedLabel || hasPendingAnnotation) {
+                return;
+            }
+
+            const shape = this.annotationGuideline?.getPreferredShape(this.selectedLabel.id);
+            if (!this.canAdd || !shape || shape === this.interactionModeShape) {
+                return;
+            }
+
+            // Activating the whole frame tool already starts a new annotation (or
+            // creates one in single annotation mode).
+            if (shape === 'WholeFrame') {
+                return;
+            }
+
+            // Don't interrupt modes like attach or swap, which also depend on the
+            // selected label.
+            if (!this.isDefaultInteractionMode && !this.interactionModeShape) {
+                return;
+            }
+
+            // The shape may not have a draw mode in the video annotation tool.
+            const mode = 'draw' + shape;
+            if (!INTERACTION_MODE_SHAPES.hasOwnProperty(mode)) {
+                return;
+            }
+
+            this.interactionMode = mode;
+        },
     },
     watch: {
         selectedAnnotations: {
@@ -865,7 +929,15 @@ export default {
             if (!newLabel && !this.labelbotIsActive) {
                 this.resetInteractionMode();
             }
-        }
+
+            // The allowed shapes depend on the selected label and guideline.
+            this.maybeResetDisallowedTool();
+            this.maybeSwitchToAutomaticTool();
+        },
+        annotationGuideline() {
+            this.maybeResetDisallowedTool();
+            this.maybeSwitchToAutomaticTool();
+        },
     },
     created() {
         // markRaw is essential here!

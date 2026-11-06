@@ -2,6 +2,21 @@ import { rightClick } from '@/annotations/ol/events/condition.js';
 import { noModifierKeys } from '@biigle/ol/events/condition';
 import { DragPan } from '@biigle/ol/interaction';
 
+// Interaction modes of the image annotation tool that create new annotations and the
+// shape they create. Measuring is not included because it creates an annotation only
+// after a conversion.
+export const INTERACTION_MODE_SHAPES = {
+    drawPoint: 'Point',
+    drawRectangle: 'Rectangle',
+    drawAlignedRectangle: 'Rectangle',
+    drawCircle: 'Circle',
+    drawEllipse: 'Ellipse',
+    drawLineString: 'LineString',
+    drawPolygon: 'Polygon',
+    polygonBrush: 'Polygon',
+    magicWand: 'Polygon',
+};
+
 /**
  * This function checks for invalid annotation shapes.
  *

@@ -9,6 +9,7 @@ import { never } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
 import { setOrUnsetProperty } from '@/utils.js';
+import { INTERACTION_MODE_SHAPES } from '@/annotations/utils.js';
 
 
 /**
@@ -58,6 +59,10 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
+            // The buttons of disallowed shapes are disabled but the keyboard shortcuts
+            // still call this method.
+            } else if (!this.isShapeAllowed(INTERACTION_MODE_SHAPES['draw' + name])) {
+                return;
             } else if (!this.hasSelectedLabel && !this.labelbotIsActive && this.canAdd) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {
