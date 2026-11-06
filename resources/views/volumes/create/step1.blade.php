@@ -7,6 +7,7 @@
       biigle.$declare('volumes.mediaType', '{!! $mediaType !!}');
       biigle.$declare('volumes.parsers', {!! $parsers !!});
    </script>
+   @mixin('volumesCreateScripts')
 @endpush
 
 @section('content')

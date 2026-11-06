@@ -3,6 +3,7 @@ import {Dropdown} from 'uiv';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import MetadataApi from './api/volumeMetadata.js';
 import MessageStore from '@/core/messages/store.js';
+import {getFileSelector} from './metadataFileSelectors.js';
 
 /**
  * The metadata upload of the volume edit page.
@@ -59,9 +60,12 @@ export default {
             }
         },
         handleFile(event) {
+            this.uploadFile(event.target.files[0]);
+        },
+        uploadFile(file) {
             this.startLoading();
             let data = new FormData();
-            data.append('file', event.target.files[0]);
+            data.append('file', file);
             data.append('parser', this.selectedParser.parserClass);
             MetadataApi.save({id: this.volumeId}, data)
                 .then((response) => {
@@ -86,10 +90,34 @@ export default {
             MessageStore.success('The metadata file was deleted.');
         },
         selectFile(parser) {
+            let selector = getFileSelector(parser);
+            if (selector) {
+                this.selectFileWithSelector(parser, selector);
+                return;
+            }
+
             this.selectedParser = parser;
             // Use $nextTick so the input element will have the appropriate MIME type
             // filter from the selected parser.
             this.$nextTick(() => this.$refs.fileInput.click());
+        },
+        async selectFileWithSelector(parser, selector) {
+            let file;
+            try {
+                file = await selector(parser);
+            } catch (e) {
+                this.success = false;
+                this.error = 'The metadata files could not be selected.';
+                return;
+            }
+
+            // The user cancelled the selection.
+            if (!file) {
+                return;
+            }
+
+            this.selectedParser = parser;
+            this.uploadFile(file);
         },
         importAnnotations() {
             this.importForm.importAnnotations = 1;
