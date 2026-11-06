@@ -252,8 +252,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function createSvg(Annotation $annotation): void
     {
-        $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
+        $thumbWidth = config('thumbnails.width') * 2;
+        $thumbHeight = config('thumbnails.height') * 2;
         $padding = config('largo.patch_padding');
         $pointPadding = config('largo.point_padding');
 
@@ -293,7 +293,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
     protected function getAnnotationPatch($image, $points, $shape)
     {
         $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
+        $thumbHeight = config('thumbnails.height') * 2;
 
         if ($shape === Shape::WHOLE_FRAME) {
             $image = $image->resize(floatval($thumbWidth) / $image->width);

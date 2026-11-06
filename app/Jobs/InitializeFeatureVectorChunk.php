@@ -100,8 +100,8 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
         }
 
         $disk = Storage::disk(config('largo.patch_storage_disk'));
-        $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
+        $thumbWidth = config('thumbnails.width') * 2;
+        $thumbHeight = config('thumbnails.height') * 2;
         $padding = config('largo.patch_padding');
         $pointPadding = config('largo.point_padding');
 
