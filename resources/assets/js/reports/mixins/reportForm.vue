@@ -48,20 +48,6 @@ export default {
         selectedLabelsCount() {
             return this.selectedLabels.length;
         },
-        variants() {
-            let variants = {};
-            this.reportTypes.forEach(function (type) {
-                let fragments = type.name.split('\\');
-                if (!variants.hasOwnProperty(fragments[0])) {
-                    variants[fragments[0]] = [];
-                }
-                if (fragments[1]) {
-                    variants[fragments[0]].push(fragments[1]);
-                }
-            });
-
-            return variants;
-        },
         availableReportTypes() {
             let types = {};
             this.reportTypes.forEach(function (type) {
@@ -70,21 +56,22 @@ export default {
 
             return types;
         },
-        selectedReportTypeId() {
-            if (this.selectedVariant) {
-                return this.availableReportTypes[this.selectedType + '\\' + this.selectedVariant];
-            }
+        selectedReportTypeName: {
+            get() {
+                if (this.selectedVariant) {
+                    return this.selectedType + '\\' + this.selectedVariant;
+                }
 
-            return this.availableReportTypes[this.selectedType];
+                return this.selectedType;
+            },
+            set(name) {
+                let fragments = name.split('\\');
+                this.selectedType = fragments[0];
+                this.selectedVariant = fragments[1] || '';
+            },
         },
-        availableVariants() {
-            return this.variants[this.selectedType];
-        },
-        hasAvailableVariants() {
-            return this.availableVariants.length > 0;
-        },
-        onlyOneAvailableVariant() {
-            return this.availableVariants.length === 1;
+        selectedReportTypeId() {
+            return this.availableReportTypes[this.selectedReportTypeName];
         },
         selectedOptions() {
             let options = {};
@@ -125,12 +112,6 @@ export default {
                 }
             } else {
                 this.handleErrorResponse(response);
-            }
-        },
-        selectType(type) {
-            this.selectedType = type;
-            if (this.availableVariants.indexOf(this.selectedVariant) === -1) {
-                this.selectedVariant = this.availableVariants[0] || '';
             }
         },
         wantsType(type) {
@@ -186,8 +167,7 @@ export default {
     },
     created() {
         this.reportTypes = biigle.$require('reports.reportTypes');
-        this.selectedType = Object.keys(this.variants)[0];
-        this.selectedVariant = this.availableVariants[0];
+        this.selectedReportTypeName = this.reportTypes[0].name;
         let trees = biigle.$require('reports.labelTrees');
         // The "selected" property is automatically set by the label trees component.
         // However, this may not be fast enough for very large label trees to complete

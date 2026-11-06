@@ -40,9 +40,11 @@ class ReportTypeTest extends TestCase
                     ReportType::IMAGE_LABELS_BASIC,
                     ReportType::IMAGE_LABELS_CSV,
                     ReportType::IMAGE_LABELS_IMAGE_LOCATION,
+                    ReportType::IMAGE_METADATA,
                     ReportType::VIDEO_ANNOTATIONS_CSV,
                     ReportType::VIDEO_IFDO,
                     ReportType::VIDEO_LABELS_CSV,
+                    ReportType::VIDEO_METADATA,
                 ],
             ],
 
@@ -63,6 +65,7 @@ class ReportTypeTest extends TestCase
                     ReportType::IMAGE_LABELS_BASIC,
                     ReportType::IMAGE_LABELS_CSV,
                     ReportType::IMAGE_LABELS_IMAGE_LOCATION,
+                    ReportType::IMAGE_METADATA,
                 ],
             ],
 
@@ -73,6 +76,7 @@ class ReportTypeTest extends TestCase
                     ReportType::VIDEO_ANNOTATIONS_CSV,
                     ReportType::VIDEO_IFDO,
                     ReportType::VIDEO_LABELS_CSV,
+                    ReportType::VIDEO_METADATA,
                 ],
             ],
 
