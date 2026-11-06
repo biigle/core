@@ -702,10 +702,16 @@ export default {
             // Twice the count because the next and previous images are cached.
             ImagesStore.setMaxCacheSize(count * 2);
         },
-        focussedAnnotation(annotation) {
-            if (annotation) {
-                this.selectAndFocusAnnotation(annotation, this.userUpdatedVolareResolution);
-            }
+        focussedAnnotation: {
+            handler(annotation) {
+                if (annotation) {
+                    this.selectAndFocusAnnotation(annotation, this.userUpdatedVolareResolution);
+                }
+            },
+            // Run after the annotation canvas was updated. Otherwise the canvas may
+            // not have the features of the annotations of a newly loaded image yet
+            // and can't focus the annotation.
+            flush: 'post',
         },
         annotationFilter() {
             this.maybeUpdateFocussedAnnotation();
