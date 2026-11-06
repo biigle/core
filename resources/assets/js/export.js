@@ -1,3 +1,4 @@
+import AnnotationGuidelineModel from '@/core/models/AnnotationGuideline.js';
 import AnnotationsApi from '@/core/api/annotations.js';
 import Echo from '@/core/echo.js';
 import EditorMixin from '@/core/mixins/editor.vue';
@@ -65,6 +66,7 @@ window.$biiglePostMessage = Messages.post; // Legacy support.
 biigle.$declare('core.mixins.editor', EditorMixin);
 biigle.$declare('core.mixins.loader', LoaderMixin);
 biigle.$declare('core.mixins.notificationSettings', NotificationSettingsMixin);
+biigle.$declare('core.models.AnnotationGuideline', AnnotationGuidelineModel);
 biigle.$declare('core.models.Settings', SettingsModel);
 
 biigle.$declare('utils.debounce', debounce);
