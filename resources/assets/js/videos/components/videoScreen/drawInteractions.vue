@@ -111,6 +111,10 @@ export default {
             map.addLayer(this.pendingAnnotationLayer);
         },
         draw(name) {
+            if (name === 'WholeFrame' && this.labelbotIsActive) {
+                return;
+            }
+
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
             } else if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
