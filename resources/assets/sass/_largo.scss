@@ -38,7 +38,15 @@
     // Stays visible below the scrolling label trees.
     .largo-tab__label-indicator {
         flex-shrink: 0;
-        margin-top: 1em;
+        padding: 1em 0 0 0;
+        border: none;
+        border-top: 1px solid #353535;
+        border-radius: 0;
+        background-color: transparent;
+
+        .label-indicator__guideline {
+            max-width: none;
+        }
     }
 
     .largo-tab__label-trees {
