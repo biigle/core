@@ -11,6 +11,7 @@ import LabelTreeVersionApi from '@/core/api/labelTreeVersion.js';
 import LoaderBlockComponent from '@/core/components/loaderBlock.vue';
 import LoaderComponent from '@/core/components/loader.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import MessageBox from '@/core/messageBox.js';
 import Messages from '@/core/messages/store.js';
 import NotificationsApi from '@/core/api/notifications.js';
 import NotificationSettingsMixin from '@/core/mixins/notificationSettings.vue';
@@ -61,6 +62,7 @@ biigle.$declare('core.components.typeahead', TypeaheadComponent);
 biigle.$declare('messages', Messages);
 biigle.$declare('handleErrorResponse', handleErrorResponse);
 biigle.$declare('messages.store', Messages); // Legacy support.
+biigle.$declare('messageBox', MessageBox);
 window.$biiglePostMessage = Messages.post; // Legacy support.
 biigle.$declare('core.mixins.editor', EditorMixin);
 biigle.$declare('core.mixins.loader', LoaderMixin);
