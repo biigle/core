@@ -178,6 +178,7 @@ class VolumeControllerTest extends ApiTestCase
 
         $disk = Storage::fake('editor-test');
         $disk->put('volumes/file.txt', 'abc');
+        $disk->put('other-volumes/file.txt', 'abc');
 
         $this->beAdmin();
 
@@ -197,7 +198,7 @@ class VolumeControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         $this
             ->json('PUT', '/api/v1/volumes/'.$this->volume()->id, [
-                'url' => 'editor-test://volumes',
+                'url' => 'editor-test://other-volumes',
             ])
             ->assertStatus(422);
         $this
@@ -283,6 +284,36 @@ class VolumeControllerTest extends ApiTestCase
                 'url' => 'https://dropbox.com',
             ])
             ->assertStatus(422);
+    }
+
+    public function testUpdateUnchangedUrlWithoutDiskAccess()
+    {
+        config(['volumes.admin_storage_disks' => []]);
+        config(['volumes.editor_storage_disks' => []]);
+
+        $volume = $this->volume();
+        $volume->url = 'user-disk://volumes';
+        $volume->save();
+
+        $this->beAdmin();
+        // The user has no access to the storage disk of the volume URL but can update
+        // the volume as long as the URL is not changed.
+        $this
+            ->json('PUT', "/api/v1/volumes/{$volume->id}", [
+                'name' => 'new name',
+                'url' => 'user-disk://volumes',
+            ])
+            ->assertStatus(200);
+        $this->assertSame('new name', $volume->fresh()->name);
+        $this->assertSame('user-disk://volumes', $volume->fresh()->url);
+
+        $this
+            ->json('PUT', "/api/v1/volumes/{$volume->id}", [
+                'url' => 'user-disk://other-volumes',
+            ])
+            ->assertStatus(422);
+        $this->assertSame('user-disk://volumes', $volume->fresh()->url);
+        Queue::assertNothingPushed();
     }
 
     public function testUpdateGlobalAdmin()
