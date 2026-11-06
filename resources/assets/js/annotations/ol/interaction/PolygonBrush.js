@@ -1,5 +1,5 @@
 import Circle from '@biigle/ol/geom/Circle';
-import Draw from '@biigle/ol/interaction/Draw';
+import Draw from './Draw.js';
 import Event from '@biigle/ol/events/Event.js';
 import EventType from '@biigle/ol/events/EventType';
 import Feature from '@biigle/ol/Feature';

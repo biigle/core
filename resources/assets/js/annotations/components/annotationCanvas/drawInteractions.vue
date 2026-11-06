@@ -1,6 +1,6 @@
 <script>
 import * as preventDoubleclick from '../../../prevent-doubleclick';
-import DrawInteraction, {createBox} from '@biigle/ol/interaction/Draw';
+import DrawInteraction, {createBox} from '../../ol/interaction/Draw.js';
 import Keyboard from '@/core/keyboard.js';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from '@/annotations/ol/snapInteraction.js';
