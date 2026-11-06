@@ -92,7 +92,8 @@ export default {
             }
 
             this.renderCurrentTime = this.video.currentTime;
-            this.drawVideoFrame(this.video);
+            this.videoContext.drawImage(this.video, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+            this.videoSource.changed();
         },
         startRenderLoop() {
             let render;
@@ -361,16 +362,18 @@ export default {
                     throw new Error("Could not get a video sample at the specified time.");
                 }
 
-                const videoFrame = sample.toVideoFrame();
-                sample.close();
+                try {
+                    if (!this.video.paused || this.video.currentTime !== time || sourceHasChanged()) {
+                        return;
+                    }
 
-                if (!this.video.paused || this.video.currentTime !== time || sourceHasChanged()) {
-                    videoFrame.close();
-                    return;
+                    // Use sample.draw() instead of drawing a VideoFrame because it
+                    // respects rotation metadata like the native <video> element does.
+                    sample.draw(this.videoContext, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
+                    this.videoSource.changed();
+                } finally {
+                    sample.close();
                 }
-
-                this.drawVideoFrame(videoFrame);
-                videoFrame.close();
             } catch (error) {
                 console.warn("Mediabunny frame decoding failed. Falling back to native rendering. The error was: ", error);
                 if (!sourceHasChanged()) {
@@ -381,11 +384,6 @@ export default {
                 this.$emit('mediabunny-decoding', this.mediabunnyDecodeCount > 0);
             }
         },
-        drawVideoFrame(videoFrame) {
-            this.videoContext.drawImage(videoFrame, 0, 0, this.videoCanvas.width, this.videoCanvas.height);
-            this.videoSource.changed();
-        },
-
     },
     watch: {
         seeking(seeking) {
