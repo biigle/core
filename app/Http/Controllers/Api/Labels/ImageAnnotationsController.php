@@ -22,20 +22,37 @@ class ImageAnnotationsController extends Controller
      *
      * @param Request $request
      * @param int $id Label ID
-     * @return \Illuminate\Support\Collection
+     * @return \Symfony\Component\HttpFoundation\StreamedJsonResponse
      */
     public function index(Request $request, $id)
     {
         $label = Label::findOrFail($id);
-        $this->validate($request, ['take' => 'integer']);
+        $this->validate($request, ['take' => 'integer|min:1']);
+        $user = $request->user();
 
-        return ImageAnnotation::visibleFor($request->user())
-            ->join('images', 'images.id', '=', 'image_annotations.image_id')
-            ->withLabel($label)
+        $visibleVolumeIds = fn ($query) => $query->select('project_volume.volume_id')
+            ->from('project_volume')
+            ->join('project_user', 'project_user.project_id', '=', 'project_volume.project_id')
+            ->where('project_user.user_id', $user->id);
+
+        $annotations = ImageAnnotation::join('images', 'images.id', '=', 'image_annotations.image_id')
+            ->when(!$user->can('sudo'), fn ($query) => $query->whereIn('images.volume_id', $visibleVolumeIds))
+            // Use a subquery instead of a join because an annotation can have the same
+            // label multiple times. The join would require a DISTINCT which prevents the
+            // query from stopping early if "take" is given.
+            ->whereIn('image_annotations.id', fn ($query) => $query->select('annotation_id')
+                ->from('image_annotation_labels')
+                ->where('label_id', $label->id))
             ->when($request->filled('take'), fn ($query) => $query->take($request->input('take')))
             ->select('images.uuid', 'image_annotations.id')
-            ->distinct()
-            ->orderBy('image_annotations.id', 'desc')
-            ->pluck('images.uuid', 'image_annotations.id');
+            ->toBase()
+            ->lazyByIdDesc(column: 'image_annotations.id', alias: 'id')
+            ->mapWithKeys(fn ($annotation) => [$annotation->id => $annotation->uuid])
+            // The LazyCollection itself is JsonSerializable and would be encoded at
+            // once. The iterator is streamed instead.
+            ->getIterator();
+
+        // @phpstan-ignore argument.type (StreamedJsonResponse accepts any iterable at runtime.)
+        return response()->streamJson($annotations);
     }
 }
