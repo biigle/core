@@ -366,7 +366,7 @@ class AreaReportGeneratorTest extends TestCase
     public function testGenerateReportSqm()
     {
         if (!class_exists(LImage::class)) {
-            $this->markTestSkipped('Reqires the biigle/laserpoints module.');
+            $this->markTestSkipped('Requires the biigle/laserpoints module.');
         }
 
         $volume = VolumeTest::create([
@@ -510,7 +510,7 @@ class AreaReportGeneratorTest extends TestCase
     public function testGenerateReportSqmPrefersMetadata()
     {
         if (!class_exists(LImage::class)) {
-            $this->markTestSkipped('Reqires the biigle/laserpoints module.');
+            $this->markTestSkipped('Requires the biigle/laserpoints module.');
         }
 
         $volume = VolumeTest::create([

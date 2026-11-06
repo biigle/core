@@ -364,14 +364,13 @@ class AreaReportGenerator extends AnnotationReportGenerator
             // The area in m² is known if it was imported with the image metadata or if
             // a laser point detection was performed (this requires the laserpoints
             // module). The metadata takes precedence, as in the annotation tool.
-            $isValid = fn ($area) => is_numeric($area) && $area > 0;
             $area = $image->metadata['area'] ?? null;
 
-            if (!$isValid($area) && class_exists(LImage::class)) {
+            if (!$this->isValidArea($area) && class_exists(LImage::class)) {
                 $area = LImage::convert($image)->area;
             }
 
-            if ($isValid($area)) {
+            if ($this->isValidArea($area)) {
                 $sqm = floatval($area);
             }
 
@@ -379,5 +378,17 @@ class AreaReportGenerator extends AnnotationReportGenerator
         }
 
         return $this->imageAreas[$id];
+    }
+
+    /**
+     * Determine if an image area in m² is valid.
+     *
+     * @param mixed $area
+     *
+     * @return bool
+     */
+    protected function isValidArea($area)
+    {
+        return is_numeric($area) && $area > 0;
     }
 }
