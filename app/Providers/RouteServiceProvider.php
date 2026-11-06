@@ -65,6 +65,12 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perHour(3600)->by($request->ip());
         });
 
+        RateLimiter::for('registration', fn (Request $request) => Limit::perSecond(1, 10)->by($request->ip()));
+
+        RateLimiter::for('verification', fn (Request $request) => Limit::perSecond(1, 10)->by(
+            $request->user()?->getAuthIdentifier() ?? $request->ip()
+        ));
+
         $this->routes(function () {
             // Web
             Route::middleware('web')
@@ -72,7 +78,8 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
 
             // API
-            Route::middleware(['web', 'api', 'auth:web,api'])
+            $apiMiddleware = config('biigle.email_verification') && !config('biigle.offline_mode') ? ['web', 'api', 'auth:web,api', 'verified'] : ['web', 'api', 'auth:web,api'];
+            Route::middleware($apiMiddleware)
                 ->namespace($this->namespace.'\Api')
                 ->prefix('api/v1')
                 ->group(base_path('routes/api.php'));

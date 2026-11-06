@@ -58,7 +58,7 @@ class Kernel extends HttpKernel
     protected $middlewareAliases = [
         'auth' => \Biigle\Http\Middleware\Authenticate::class,
         'reg' => \Biigle\Http\Middleware\AuthenticateRegister::class,
-        // 'auth.api' => \Biigle\Http\Middleware\AuthenticateAPI::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \Biigle\Http\Middleware\RedirectIfAuthenticated::class,

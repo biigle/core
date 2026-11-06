@@ -49,7 +49,9 @@
                     @endif
                 </td>
                 <td>
-                    @if ($u->login_at)
+                    @if (!$u->hasVerifiedEmail())
+                        <span class="text-muted">never logged in</span>
+                    @elseif ($u->login_at)
                         <time datetime="{{$u->login_at->toAtomString()}}" title="{{$u->login_at->toDateTimeString()}}">{{$u->login_at->diffForHumans()}}</time>
                     @else
                         <span class="text-muted">none</span>

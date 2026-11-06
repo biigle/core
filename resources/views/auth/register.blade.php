@@ -10,7 +10,7 @@
             <h1 class="logo  logo--standalone">
                 <a href="{{ route('home') }}" class="logo__biigle">BIIGLE</a>
             </h1>
-            <form class="well clearfix" role="form" method="POST" action="{{ url('register') }}">
+            <form class="well clearfix" role="form" method="POST" action="{{ url('register') }}" onsubmit="this.querySelector('[type=submit]').disabled=true;">
 
                 <p class="lead text-center">
                     {{ trans('biigle.new_acc') }}
@@ -112,7 +112,7 @@
                         @endif
 
                         <input type="hidden" name="_token" :value="token">
-                        <input type="submit" class="btn btn-success btn-block" value="Sign up" onclick="this.disabled=true;this.form.submit();">
+                        <input type="submit" class="btn btn-success btn-block" value="Sign up">
                     </div>
                 @endif
             </form>

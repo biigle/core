@@ -67,4 +67,6 @@ return [
     | Queries that need more parameters should be chunked to stay within this limit.
     */
     'db_param_limit' => 65535,
+
+    'email_verification' => env('BIIGLE_EMAIL_VERIFICATION', false),
 ];

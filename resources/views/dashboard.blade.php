@@ -21,7 +21,16 @@
             </div>
         </div>
     @endif
-    @if (config('biigle.user_registration_confirmation') && $user->role === \Biigle\Enums\Role::GUEST)
+    @if (config('biigle.email_verification') && !config('biigle.offline_mode') && $user->role === \Biigle\Enums\Role::GUEST && is_null($user->email_verified_at))
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="text-info text-center">
+                    Please verify your email address to unlock all features.
+                    <a href="{{ route('verification.notice') }}">Resend the verification email</a>.
+                </p>
+            </div>
+        </div>
+    @elseif (config('biigle.user_registration_confirmation') && $user->role === \Biigle\Enums\Role::GUEST)
         <div class="row">
             <div class="col-xs-12">
                     <p class="text-info text-center">

@@ -12,6 +12,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Notification;
 use Ramsey\Uuid\Uuid;
 use Validator;
@@ -98,7 +99,7 @@ class RegisterController extends Controller
         $user->email = $data['email'];
         $user->password = Hash::make($data['password']);
         $user->uuid = Uuid::uuid4();
-        if ($this->isAdminConfirmationEnabled()) {
+        if ($this->isEmailVerificationEnabled() || $this->isAdminConfirmationEnabled()) {
             $user->role = Role::GUEST;
         } else {
             $user->role = Role::EDITOR;
@@ -140,6 +141,13 @@ class RegisterController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        $limit = RateLimiter::limiter('registration')($request);
+        if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
+            return redirect()->route('register')->withInput()
+                ->with('message', 'Please wait before submitting the form again.')
+                ->with('messageType', 'danger');
+        }
+
         return $this->baseRegister($request);
     }
 
@@ -172,6 +180,15 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
+        $limit = RateLimiter::limiter('registration')($request);
+        RateLimiter::hit($limit->key, $limit->decaySeconds);
+
+        if ($this->isEmailVerificationEnabled()) {
+            return redirect()->route('verification.notice')
+                ->with('messageType', 'info')
+                ->with('message', 'Please verify your email address before continuing.');
+        }
+
         if ($this->isAdminConfirmationEnabled()) {
             $notifiable = Notification::route('mail', config('biigle.admin_email'));
             Notification::send($notifiable, new RegistrationConfirmation($user));
@@ -180,5 +197,10 @@ class RegisterController extends Controller
         // Redirect to the intended path in case users came from a project invitation.
         return redirect()->intended($this->redirectPath())
             ->with('welcomeMessage', true);
+    }
+
+    protected function isEmailVerificationEnabled()
+    {
+        return config('biigle.email_verification') && !config('biigle.offline_mode');
     }
 }
