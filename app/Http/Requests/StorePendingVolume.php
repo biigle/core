@@ -86,7 +86,7 @@ class StorePendingVolume extends FormRequest
                 }
 
                 $parser = new $parserClass($file);
-                if (!$parser->recognizesFile()) {
+                if (!$parser->recognizesFileSafely()) {
                     $validator->errors()->add('metadata_file', 'Unknown metadata file format.');
                     return;
                 }
