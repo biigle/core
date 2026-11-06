@@ -30,6 +30,7 @@ class EnumRangeConstraintTest extends TestCase
             ['pending_volumes', 'media_type', MediaType::class],
             ['image_annotations', 'shape', Shape::class],
             ['video_annotations', 'shape', Shape::class],
+            ['annotation_guideline_label', 'shape', Shape::class],
             ['label_trees', 'visibility', Visibility::class],
             ['reports', 'type', ReportType::class],
         ];
