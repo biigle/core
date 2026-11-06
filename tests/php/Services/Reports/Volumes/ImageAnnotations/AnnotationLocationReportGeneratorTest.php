@@ -104,7 +104,7 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$volume->id}-my-cool-volume.ndjson");
+            ->with('abc', "{$volume->id}_annotation_location_image_annotation_report/{$volume->id}-my-cool-volume.ndjson");
 
         $mock->shouldReceive('close')->once();
 
@@ -496,11 +496,11 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$tree1->id}-{$tree1->name}.ndjson");
+            ->with('abc', "{$image->volume->id}_annotation_location_image_annotation_report/{$tree1->id}-{$tree1->name}.ndjson");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$tree2->id}-{$tree2->name}.ndjson");
+            ->with('def', "{$image->volume->id}_annotation_location_image_annotation_report/{$tree2->id}-{$tree2->name}.ndjson");
 
         $mock->shouldReceive('close')->once();
 
@@ -600,11 +600,11 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$al1->user->id}-john-jack-user.ndjson");
+            ->with('abc', "{$image->volume->id}_annotation_location_image_annotation_report/{$al1->user->id}-john-jack-user.ndjson");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$al2->user->id}-jane-user.ndjson");
+            ->with('def', "{$image->volume->id}_annotation_location_image_annotation_report/{$al2->user->id}-jane-user.ndjson");
 
         $mock->shouldReceive('close')->once();
 
@@ -699,11 +699,11 @@ class AnnotationLocationReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$al1->user->id}-john-jack-user.ndjson");
+            ->with('abc', "{$image->volume->id}_annotation_location_image_annotation_report/{$al1->user->id}-john-jack-user.ndjson");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', 'deleted-users.ndjson');
+            ->with('def', "{$image->volume->id}_annotation_location_image_annotation_report/deleted-users.ndjson");
 
         $mock->shouldReceive('close')->once();
 

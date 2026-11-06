@@ -132,7 +132,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$volume->id}-my-cool-volume.csv");
+            ->with('abc', "{$volume->id}_csv_video_annotation_report/{$volume->id}-my-cool-volume.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -228,11 +228,11 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$tree1->id}-{$tree1->name}.csv");
+            ->with('abc', "{$video->volume->id}_csv_video_annotation_report/{$tree1->id}-{$tree1->name}.csv");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$tree2->id}-{$tree2->name}.csv");
+            ->with('def', "{$video->volume->id}_csv_video_annotation_report/{$tree2->id}-{$tree2->name}.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -334,11 +334,11 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+            ->with('abc', "{$video->volume->id}_csv_video_annotation_report/{$user1->id}-joe-jack-user.csv");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', "{$user2->id}-jane-user.csv");
+            ->with('def', "{$video->volume->id}_csv_video_annotation_report/{$user2->id}-jane-user.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -435,11 +435,11 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$user1->id}-joe-jack-user.csv");
+            ->with('abc', "{$video->volume->id}_csv_video_annotation_report/{$user1->id}-joe-jack-user.csv");
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('def', 'deleted-users.csv');
+            ->with('def', "{$video->volume->id}_csv_video_annotation_report/deleted-users.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -634,7 +634,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$video->volume->id}-{$volName}.csv");
+            ->with('abc', "{$video->volume->id}_csv_video_annotation_report/{$video->volume->id}-{$volName}.csv");
 
         $mock->shouldReceive('close')->once();
 
@@ -711,7 +711,7 @@ class CsvReportGeneratorTest extends TestCase
 
         $mock->shouldReceive('addFile')
             ->once()
-            ->with('abc', "{$volume->id}-my-cool-volume.csv");
+            ->with('abc', "{$volume->id}_csv_video_annotation_report/{$volume->id}-my-cool-volume.csv");
 
         $mock->shouldReceive('close')->once();
 

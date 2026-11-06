@@ -9,7 +9,7 @@
         </p>
         <h3>Project and volume reports</h3>
         <p>
-            Most report types can be requested for a whole project as well as for individual volumes. A project report is a convenience feature which requests reports for all individual volumes of the project at once and provides a ZIP file containing the volume reports for download. However, not all configuration options may be available for project reports.
+            Most report types can be requested for a whole project as well as for individual volumes. A project report is a convenience feature which requests reports for all individual volumes of the project at once and provides a ZIP file containing the volume reports for download. All files in a ZIP file of a report are located in a directory with the same name as the ZIP file. However, not all configuration options may be available for project reports.
         </p>
         <p>
             The following sections describe the different types of volume reports but, per definition, apply for project reports as well.
