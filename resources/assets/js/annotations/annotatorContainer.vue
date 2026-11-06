@@ -510,6 +510,11 @@ export default {
             this.$refs.canvas.refreshSingleAnnotation(annotation);
         },
         handleAttachAllSelected() {
+            if (!this.selectedLabel) {
+                this.handleRequiresSelectedLabel();
+                return;
+            }
+
             this.selectedAnnotations.forEach(this.handleAttachLabel);
         },
         emitImageChanged() {
