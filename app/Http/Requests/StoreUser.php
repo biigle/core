@@ -3,6 +3,7 @@
 namespace Biigle\Http\Requests;
 
 use Biigle\Enums\Role;
+use Biigle\Rules\Utf8;
 use Biigle\Rules\Uuid4;
 use Biigle\User;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,11 +31,11 @@ class StoreUser extends FormRequest
         return [
             'email' => 'required|string|email|unique:users|max:256',
             'password' => 'required|string|min:8',
-            'firstname' => 'required|string|max:128',
-            'lastname' => 'required|string|max:128',
+            'firstname' => ['required', 'string', 'max:128', new Utf8],
+            'lastname' => ['required', 'string', 'max:128', new Utf8],
             'role' => ['integer', Rule::enum(Role::class)],
             'uuid' => ['nullable', new Uuid4],
-            'affiliation' => 'nullable|max:255',
+            'affiliation' => ['nullable', 'max:255', new Utf8],
         ];
     }
 

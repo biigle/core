@@ -44,6 +44,20 @@ class PasswordControllerTest extends TestCase
         $this->assertNotNull(DB::table('password_resets')->where('email', $user->email)->first());
     }
 
+    public function testPostEmailInvalidUtf8()
+    {
+        Notification::fake();
+        $this->get('password/reset');
+        UserTest::create(['email' => 'test@test.com']);
+
+        // Invalid UTF-8 byte sequences must not produce a database error. Don't use
+        // postJson() here because it would remove the invalid sequences.
+        $this->post('password/email', ['email' => "test@test.com\xc0\xa7%2527%2522'\""])
+            ->assertRedirect('password/reset')
+            ->assertSessionHasErrors('email');
+        Notification::assertNothingSent();
+    }
+
     public function testPostEmailOfflineMode()
     {
         config(['biigle.offline_mode' => true]);
@@ -88,6 +102,25 @@ class PasswordControllerTest extends TestCase
         ]);
 
         $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
+    }
+
+    public function testPostResetInvalidUtf8()
+    {
+        $user = UserTest::create(['email' => 'test@test.com']);
+        $this->get('password/reset');
+
+        // Invalid UTF-8 byte sequences must not produce a database error. Don't use
+        // postJson() here because it would remove the invalid sequences.
+        $this->post('password/reset', [
+            'token' => 'abc',
+            'email' => "test@test.com\xc0\xa7",
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ])
+            ->assertRedirect('password/reset')
+            ->assertSessionHasErrors('email');
+
+        $this->assertFalse(Hash::check('new-password', $user->fresh()->password));
     }
 
     public function testPostResetCaseInsensitive()
