@@ -7,6 +7,8 @@ use Biigle\Enums\MediaType;
 use Biigle\Jobs\UpdateVolumeMetadata;
 use Biigle\Services\MetadataParsing\ImageCsvParser;
 use Biigle\Services\MetadataParsing\VideoCsvParser;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\VideoTest;
 use Illuminate\Http\UploadedFile;
 use Queue;
 use Storage;
@@ -51,6 +53,7 @@ class MetadataControllerTest extends ApiTestCase
     {
         Storage::fake('metadata');
         $id = $this->volume()->id;
+        ImageTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
 
         $this->doTestApiRoute('POST', "/api/v1/volumes/{$id}/metadata");
 
@@ -100,6 +103,47 @@ class MetadataControllerTest extends ApiTestCase
         });
     }
 
+    public function testStoreImageMetadataNoMatchingFile()
+    {
+        Storage::fake('metadata');
+        $id = $this->volume()->id;
+        ImageTest::create(['volume_id' => $id, 'filename' => 'def.jpg']);
+        // A matching file in another volume does not count.
+        ImageTest::create(['filename' => 'abc.jpg']);
+
+        $csv = new UploadedFile(__DIR__."/../../../../../files/image-metadata.csv", 'image-metadata.csv', 'text/csv', null, true);
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => ImageCsvParser::class,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('file');
+
+        $this->assertNull($this->volume()->fresh()->metadata_parser);
+        Queue::assertNotPushed(UpdateVolumeMetadata::class);
+    }
+
+    public function testStoreVideoMetadataNoMatchingFile()
+    {
+        Storage::fake('metadata');
+        $id = $this->volume()->id;
+        $this->volume()->media_type = MediaType::VIDEO;
+        $this->volume()->save();
+        VideoTest::create(['volume_id' => $id, 'filename' => 'def.mp4']);
+
+        $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata.csv", 'metadata.csv', 'text/csv', null, true);
+        $this->beAdmin();
+        $this->postJson("/api/v1/volumes/{$id}/metadata", [
+            'file' => $csv,
+            'parser' => VideoCsvParser::class,
+        ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('file');
+
+        Queue::assertNotPushed(UpdateVolumeMetadata::class);
+    }
+
     public function testStoreImageMetadataInvalid()
     {
         $id = $this->volume()->id;
@@ -130,6 +174,7 @@ class MetadataControllerTest extends ApiTestCase
         $id = $this->volume()->id;
         $this->volume()->media_type = MediaType::VIDEO;
         $this->volume()->save();
+        VideoTest::create(['volume_id' => $id, 'filename' => 'abc.mp4']);
 
         $csv = new UploadedFile(__DIR__."/../../../../../files/video-metadata.csv", 'metadata.csv', 'text/csv', null, true);
 
