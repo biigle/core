@@ -172,7 +172,9 @@ export default {
             return this.computedData.annotationLabels.length > 0;
         },
         showNetMap() {
-            return this.computedData.annotationLabels.length > 0 && Object.keys(this.computedData.sourceTargetLabels).length > 0;
+            // Show the NetMap even if no labels occur together. The NetMap displays a
+            // message in this case.
+            return this.computedData.annotationLabels.length > 0;
         },
     },
     methods: {
