@@ -100,6 +100,7 @@
             :focused-popup-key="focusedPopupKey"
             :labelbot-timeout="labelbotTimeout"
             :draft-annotation-uses-label-color="draftAnnotationUsesLabelColor"
+            v-on:create-restored-labelbot-annotation="handleNewAnnotation"
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
             v-on:close-labelbot-popup="closeLabelbotPopup"
             v-on:moveend="handleMapMoveend"

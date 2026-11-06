@@ -8,6 +8,7 @@ import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import { isInvalidShape } from '@/annotations/utils.js';
+import {markRaw} from 'vue';
 import { never, primaryAction } from '@biigle/ol/events/condition';
 import { penTouchXorShift, penTouchOrShift } from '@/annotations/ol/events/condition.js';
 import { Point } from '@biigle/ol/geom';
@@ -238,7 +239,9 @@ export default {
             if (lastFrame === undefined) {
                 return;
             }
-
+            // We need to pause the video otherwise no annotation would be
+            // visible as an anchor for the LabelBOT popup.
+            this.pause();
             this.$emit('seek', lastFrame);
         },
         finishDrawAnnotation() {
@@ -246,7 +249,7 @@ export default {
                 if (this.hasPendingAnnotation) {
                     if (this.labelbotIsActive) {
                         // If we don't seek to the last frame, no annotation would be
-                        // visible as an anchor for the  labelbot popup.
+                        // visible as an anchor for the LabelBOT popup.
                         this.seekToLastFrame(this.pendingAnnotation);
                     }
                     if (this.isDrawingWholeFrame && !this.pendingAnnotation.frames.includes(this.video.currentTime)) {
@@ -265,6 +268,11 @@ export default {
         finishTrackAnnotation() {
             if (this.isDrawing) {
                 if (this.hasPendingAnnotation) {
+                    if (this.labelbotIsActive) {
+                        // If we don't seek to the last frame, no annotation would be
+                        // visible as an anchor for the LabelBOT popup.
+                        this.seekToLastFrame(this.pendingAnnotation);
+                    }
                     this.$emit('track-annotation', this.pendingAnnotation);
                     this.resetPendingAnnotation(this.pendingAnnotation.shape);
                 }
@@ -338,6 +346,12 @@ export default {
             this.pendingAnnotation.frames.push(this.video.currentTime);
             const points = this.getPointsFromGeometry(e.feature.getGeometry());
             this.pendingAnnotation.points.push(points);
+
+            // We add temporarily the feature to the pending annotation
+            // so in case LabelBOT did not return any results, the unique id of 
+            // the feature could be used as LabelBOT popup id and also we need the geometry of the feature
+            // to place the LabelBOT's empty overlay/popup correctly.
+            this.pendingAnnotation.feature = markRaw(e.feature);
 
             // The LabelBOT image is always created because the user could decide to
             // enable LabelBOT while they draw the pending annotation.

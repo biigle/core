@@ -154,7 +154,7 @@ export default {
                 let sum = 0;
                 Object.values(entry[1]).forEach(val => {
                     sum += val;
-                })
+                });
                 let name = users[entry[0]];
                 let userid = entry[0];
                 // case of deleted account
@@ -185,7 +185,7 @@ export default {
                     data: this.sourcedata[idx].slice(2, end),
                     itemStyle: { "color": IDToColor(this.sourcedata[idx][end]) },
                 };
-                series.push(snippet)
+                series.push(snippet);
             }
             return series;
         },
@@ -246,7 +246,7 @@ export default {
                     right: '5%'
                 },
                 series: seriesObj
-            }
+            };
         }
     },
     watch: {

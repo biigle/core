@@ -18,7 +18,7 @@ import SettingsTab from './components/settingsTab.vue';
 import Sidebar from '@/core/components/sidebar.vue';
 import SidebarTab from '@/core/components/sidebarTab.vue';
 import VolumeImageAreaApi from './api/volumes.js';
-import {computed, defineAsyncComponent} from 'vue'
+import {computed, defineAsyncComponent} from 'vue';
 import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
@@ -202,7 +202,7 @@ export default {
             return (index + this.imagesIds.length - 1) % this.imagesIds.length;
         },
         handleNext() {
-            if (this.loading) {
+            if (this.loading || this.labelbotIsComputing) {
                 return;
             }
 
@@ -242,7 +242,7 @@ export default {
             this.imageIndex = this.getNextIndex(this.imageIndex);
         },
         handlePrevious() {
-            if (this.loading) {
+            if (this.loading || this.labelbotIsComputing) {
                 return;
             }
 
@@ -439,28 +439,45 @@ export default {
             annotation.confidence = 1;
 
             let promise;
-
-            if (this.labelbotIsActive) {
-                let imageId = this.imageId;
+            let labelBotReturnedNoResults = false;
+            // We check for label_id in case LabelBOT returns no results
+            // and the user inputs a label in the typeahead, so we skip this step
+            // and save the annotation with its label.
+            if (!annotation.label_id && this.labelbotIsActive) {
+                annotation.removeCallback = removeCallback;
                 promise = this.saveLabelbotAnnotation(
                     annotation,
-                    (annotation) => AnnotationsStore.create(imageId, annotation)
-                );
-
-                promise.then((annotation) => {
-                    if (imageId === this.imageId) {
-                        this.showLabelbotPopup(annotation);
-                    }
+                    (annotation) => AnnotationsStore.create(this.imageId, annotation)
+                ).then((annotation) => {
+                    labelBotReturnedNoResults = annotation.labels?.length === 0;
+                    this.showLabelbotPopup(annotation);
+                    return annotation;
                 });
             } else {
-                annotation.label_id = this.selectedLabel.id;
-                promise = AnnotationsStore.create(this.imageId, annotation);
+                if (!annotation.label_id) {
+                    annotation.label_id = this.selectedLabel.id;
+                }
+                promise = AnnotationsStore.create(this.imageId, annotation)
+                    .then((annotation) => {
+                        return annotation;
+                    });
             }
 
-            promise.then(this.setLastCreatedAnnotation)
+            promise
+                .then((annotation) => {
+                    if (!labelBotReturnedNoResults) {
+                        this.setLastCreatedAnnotation(annotation);
+                    }
+                })
                 .catch(handleErrorResponse)
                 // Remove the temporary annotation if saving succeeded or failed.
-                .finally(removeCallback);
+                // But we ignore removing if LabelBOT returns no results because we need the temporary
+                // feature element to create the empty LabelBOT's popup
+                .finally(() => {
+                    if (!labelBotReturnedNoResults) {
+                        removeCallback();
+                    }
+                });
         },
         handleAttachLabel(annotation, label) {
             label = label || this.selectedLabel;
@@ -641,7 +658,7 @@ export default {
                     Messages.danger('Invalid shape. Circle needs non-zero radius');
                     return;
                 case 'LineString':
-                    shape = 'Line'
+                    shape = 'Line';
                     count = 2;
                     break;
                 case 'Polygon':

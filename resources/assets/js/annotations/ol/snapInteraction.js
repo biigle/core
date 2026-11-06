@@ -10,7 +10,7 @@ export default {
             snapLineFeatures: new Collection(),
             snappingCoords: [0, 0],
             shouldSnap: false
-        }
+        };
     },
     computed: {
         drawsOnImage() {
@@ -86,7 +86,7 @@ export default {
                 res[1] = angle === 0 ? [this.width, res[1][1]] : [0, res[1][1]];
             }
             else {
-                res[1] = angle === 90 ? [res[1][0], this.height] : [res[1][0], 0]
+                res[1] = angle === 90 ? [res[1][0], this.height] : [res[1][0], 0];
             }
             return res;
         },
@@ -136,6 +136,6 @@ export default {
             if (e.key === 'Control' && !this.drawEnded && !this.shouldSnap) {
                 this.shouldSnap = true;
             }
-        })
+        });
     }
-}
+};

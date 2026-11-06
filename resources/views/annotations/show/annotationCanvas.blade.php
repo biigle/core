@@ -34,13 +34,13 @@
             <control-button
                 icon="fa-step-backward"
                 :title="previousButtonTitle + ' 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
-                :disabled="modifyInProgress"
+                :disabled="modifyInProgress || labelbotIsComputing"
                 v-on:click="handlePrevious"
                 ></control-button>
             <control-button
                 icon="fa-step-forward"
                 :title="nextButtonTitle + ' 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄/𝗦𝗽𝗮𝗰𝗲'"
-                :disabled="modifyInProgress"
+                :disabled="modifyInProgress || labelbotIsComputing"
                 v-on:click="handleNext"
                 ></control-button>
         </div>
@@ -211,10 +211,11 @@
     </div>
     <labelbot-popup
         v-for="annotation in labelbotOverlays"
-        :key="annotation.id"
+        :key="annotation.id ?? annotation.feature.ol_uid"
         :focused-popup-key="focusedPopupKey"
         :annotation="annotation"
         :timeout="labelbotTimeout"
+        @create-restored-labelbot-annotation="createRestoredLabelbotAnnotation"
         @update="updateLabelbotLabel"
         @close="closeLabelbotPopup"
         @delete="handleDeleteLabelbotAnnotation"

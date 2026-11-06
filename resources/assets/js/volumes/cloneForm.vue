@@ -3,7 +3,7 @@ import LoaderMixin from '@/core/mixins/loader.vue';
 import Typeahead from '@/core/components/typeahead.vue';
 import FileItem from './components/filePanelItem.vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
-import VolumeApi from '@/volumes/api/volumes.js'
+import VolumeApi from '@/volumes/api/volumes.js';
 import LabelTrees from '@/label-trees/components/labelTrees.vue';
 import {urlParams as UrlParams} from '@/core/utils.js';
 
@@ -49,7 +49,7 @@ export default {
             return this.destinationProjects;
         },
         selectedFileLabels() {
-            return this.flatLabels(this.fileLabelTrees).filter(label => label.selected)
+            return this.flatLabels(this.fileLabelTrees).filter(label => label.selected);
         },
         selectedFileLabelIds() {
             if (!this.filterFileLabels) {
@@ -109,7 +109,7 @@ export default {
                 .then(values => {
                     let [id2filenames, ids] = values;
                     this.setMatchedFiles(ids.map(id => {
-                        return {id: id, filename: id2filenames[id]}
+                        return {id: id, filename: id2filenames[id]};
                     }));
                 })
                 .catch(handleErrorResponse)
@@ -169,7 +169,7 @@ export default {
                         for (let i = 0; i < nbrFiles; i++) {
                             this.selectedFiles.push({id: ids[i], filename: filenames[Number(ids[i])]});
                         }
-                    })
+                    });
             }
         },
     },

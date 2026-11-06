@@ -186,4 +186,4 @@ export default {
 
         return styleCache.editing[color];
     }
-}
+};

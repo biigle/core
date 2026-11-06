@@ -175,18 +175,18 @@ export default {
         },
         showStatistics() {
             if (this.loading) {
-                return
+                return;
             }
 
             // If statistics modal has been opened before, use cached data
             if (this.statisticsData !== null) {
-                this.$emit('statistics', this.statisticsData)
+                this.$emit('statistics', this.statisticsData);
             } else {
                 this.startLoading();
                 // api request to get data for specific volume
                 volumeStatisticsApi.get({id: this.id})
                     .then((response) => {
-                        this.$emit('statistics', response.data)
+                        this.$emit('statistics', response.data);
                         this.statisticsData = response.data;
                     }, handleErrorResponse)
                     .finally(this.finishLoading);

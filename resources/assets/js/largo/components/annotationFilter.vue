@@ -142,7 +142,7 @@ export default {
             data.filterValues["Volume"] = {};
             data.filterToKeyMapping["Volume"] = "volume_id";
         }
-        return data
+        return data;
     },
 
     computed: {

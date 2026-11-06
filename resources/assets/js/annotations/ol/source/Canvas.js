@@ -19,7 +19,7 @@ class Canvas extends Image {
       projection: options.projection,
       resolutions: options.resolutions,
       state: options.state
-    })
+    });
 
     let resolution = getHeight(options.canvasExtent) / options.canvas.height;
 
