@@ -16,6 +16,7 @@ use Biigle\Services\MetadataParsing\Label;
 use Biigle\Services\MetadataParsing\LabelAndUser;
 use Biigle\Services\MetadataParsing\User;
 use Biigle\Services\MetadataParsing\VideoAnnotation;
+use Biigle\Services\MetadataParsing\VideoMetadata;
 use Biigle\Services\MetadataParsing\VolumeMetadata;
 use Biigle\User as DbUser;
 use Biigle\Video;
@@ -537,6 +538,110 @@ class ImportVolumeMetadataTest extends TestCase
         (new ImportVolumeMetadata($pv))->handle();
 
         $this->assertEquals(2, $image->annotations()->count());
+    }
+
+    public function testHandleWithinParamLimit()
+    {
+        $image = Image::factory()->create();
+        $dbUser = DbUser::factory()->create();
+        $dbLabels = DbLabel::factory()->count(3)->create();
+
+        $metadata = new VolumeMetadata;
+        $file = new ImageMetadata($image->filename);
+        $metadata->addFile($file);
+        $user = new User(321, 'joe user');
+        $labels = [
+            new LabelAndUser(new Label(1, 'label 1'), $user),
+            new LabelAndUser(new Label(2, 'label 2'), $user),
+            new LabelAndUser(new Label(3, 'label 3'), $user),
+        ];
+        for ($i = 0; $i < 3; $i++) {
+            $file->addAnnotation(new ImageAnnotation(
+                shape: Shape::POINT,
+                points: [$i, $i],
+                labels: $labels,
+            ));
+        }
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'media_type' => MediaType::IMAGE,
+            'metadata_file_path' => 'mymeta.csv',
+            'import_annotations' => true,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [
+                1 => $dbLabels[0]->id,
+                2 => $dbLabels[1]->id,
+                3 => $dbLabels[2]->id,
+            ],
+            'volume_id' => $image->volume_id,
+        ]);
+
+        // Annotations and annotation labels are inserted in chunks of two.
+        config(['biigle.db_param_limit' => 12]);
+        $this->assertQueriesWithinParamLimit();
+        (new ImportVolumeMetadata($pv))->handle();
+
+        $annotations = $image->annotations()->with('labels')->orderBy('id')->get();
+        $this->assertSame([[0, 0], [1, 1], [2, 2]], $annotations->pluck('points')->all());
+        $expect = $dbLabels->pluck('id')->all();
+        foreach ($annotations as $annotation) {
+            $this->assertSame($expect, $annotation->labels->sortBy('id')->pluck('label_id')->values()->all());
+        }
+    }
+
+    public function testHandleVideoWithinParamLimit()
+    {
+        $video = Video::factory()->create();
+        $dbUser = DbUser::factory()->create();
+        $dbLabels = DbLabel::factory()->count(3)->create();
+
+        $metadata = new VolumeMetadata;
+        $file = new VideoMetadata($video->filename);
+        $metadata->addFile($file);
+        $user = new User(321, 'joe user');
+        $labels = [
+            new LabelAndUser(new Label(1, 'label 1'), $user),
+            new LabelAndUser(new Label(2, 'label 2'), $user),
+            new LabelAndUser(new Label(3, 'label 3'), $user),
+        ];
+        for ($i = 0; $i < 3; $i++) {
+            $file->addAnnotation(new VideoAnnotation(
+                shape: Shape::POINT,
+                points: [[$i, $i]],
+                frames: [$i],
+                labels: $labels,
+            ));
+        }
+
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'media_type' => MediaType::VIDEO,
+            'metadata_file_path' => 'mymeta.csv',
+            'import_annotations' => true,
+            'user_map' => [321 => $dbUser->id],
+            'label_map' => [
+                1 => $dbLabels[0]->id,
+                2 => $dbLabels[1]->id,
+                3 => $dbLabels[2]->id,
+            ],
+            'volume_id' => $video->volume_id,
+        ]);
+
+        // Annotations and annotation labels are inserted in chunks of two.
+        config(['biigle.db_param_limit' => 12]);
+        $this->assertQueriesWithinParamLimit();
+        (new ImportVolumeMetadata($pv))->handle();
+
+        $annotations = $video->annotations()->with('labels')->orderBy('id')->get();
+        $this->assertSame([[[0, 0]], [[1, 1]], [[2, 2]]], $annotations->pluck('points')->all());
+        $this->assertSame([[0], [1], [2]], $annotations->pluck('frames')->all());
+        $expect = $dbLabels->pluck('id')->all();
+        foreach ($annotations as $annotation) {
+            $this->assertSame($expect, $annotation->labels->sortBy('id')->pluck('label_id')->values()->all());
+        }
     }
 
     /*

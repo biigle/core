@@ -568,6 +568,91 @@ class VolumeImportTest extends TestCase
         $this->assertEquals($videoAnnotationLabel->label->name, $newVideoAnnotationLabels[0]->label->name);
     }
 
+    public function testPerformWithinParamLimit()
+    {
+        $user = UserTest::create();
+        $labels = [LabelTest::create(), LabelTest::create(), LabelTest::create()];
+
+        $images = [$this->image];
+        $videos = [$this->video];
+        for ($i = 0; $i < 4; $i++) {
+            $images[] = ImageTest::create([
+                'volume_id' => $this->imageVolume->id,
+                'filename' => "{$i}.jpg",
+            ]);
+            $videos[] = VideoTest::create([
+                'volume_id' => $this->videoVolume->id,
+                'filename' => "{$i}.mp4",
+            ]);
+        }
+
+        foreach ($images as $image) {
+            foreach (array_slice($labels, 0, 2) as $label) {
+                ImageLabelTest::create([
+                    'image_id' => $image->id,
+                    'label_id' => $label->id,
+                    'user_id' => $user->id,
+                ]);
+            }
+            for ($i = 0; $i < 2; $i++) {
+                $annotation = ImageAnnotationTest::create([
+                    'image_id' => $image->id,
+                    'points' => [$i, $i],
+                ]);
+                foreach ($labels as $label) {
+                    ImageAnnotationLabelTest::create([
+                        'annotation_id' => $annotation->id,
+                        'label_id' => $label->id,
+                        'user_id' => $user->id,
+                    ]);
+                }
+            }
+        }
+
+        foreach ($videos as $video) {
+            foreach (array_slice($labels, 0, 2) as $label) {
+                VideoLabelTest::create([
+                    'video_id' => $video->id,
+                    'label_id' => $label->id,
+                    'user_id' => $user->id,
+                ]);
+            }
+            for ($i = 0; $i < 2; $i++) {
+                $annotation = VideoAnnotationTest::create([
+                    'video_id' => $video->id,
+                    'points' => [[$i, $i]],
+                    'frames' => [$i],
+                ]);
+                foreach ($labels as $label) {
+                    VideoAnnotationLabelTest::create([
+                        'annotation_id' => $annotation->id,
+                        'label_id' => $label->id,
+                        'user_id' => $user->id,
+                    ]);
+                }
+            }
+        }
+
+        $import = $this->getDefaultImport();
+        $project = ProjectTest::create();
+
+        // Files are inserted in chunks of four and all labels and annotations in chunks
+        // of two.
+        config(['biigle.db_param_limit' => 12]);
+        $this->assertQueriesWithinParamLimit();
+        $map = $import->perform($project, $project->creator);
+
+        $newVolume = Volume::find($map['volumes'][$this->imageVolume->id]);
+        $expect = $this->getVolumeContents($this->imageVolume);
+        $this->assertCount(5, $expect);
+        $this->assertSame($expect, $this->getVolumeContents($newVolume));
+
+        $newVolume = Volume::find($map['volumes'][$this->videoVolume->id]);
+        $expect = $this->getVolumeContents($this->videoVolume);
+        $this->assertCount(5, $expect);
+        $this->assertSame($expect, $this->getVolumeContents($newVolume));
+    }
+
     public function testPerformOnly()
     {
         $project = ProjectTest::create();
@@ -930,6 +1015,23 @@ class VolumeImportTest extends TestCase
 
         $newVideoAnnotations = $newVideos[0]->annotations;
         $this->assertNull($newVideoAnnotations[0]->labels[0]->user_id);
+    }
+
+    protected function getVolumeContents(Volume $volume)
+    {
+        return $volume->files()
+            ->with('labels', 'annotations.labels')
+            ->orderBy('id')
+            ->get()
+            ->map(fn ($file) => [
+                'filename' => $file->filename,
+                'labels' => $file->labels->sortBy('id')->pluck('label_id')->values()->all(),
+                'annotations' => $file->annotations->sortBy('id')->map(fn ($a) => [
+                    'points' => $a->points,
+                    'labels' => $a->labels->sortBy('id')->pluck('label_id')->values()->all(),
+                ])->values()->all(),
+            ])
+            ->all();
     }
 
     protected function getDefaultImport()

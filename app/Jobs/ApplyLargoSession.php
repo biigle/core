@@ -7,6 +7,7 @@ use Biigle\Events\LargoSessionSaved;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\Label;
+use Biigle\Traits\ChunksInserts;
 use Biigle\User;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
@@ -19,7 +20,7 @@ use Throwable;
 
 class ApplyLargoSession extends Job implements ShouldQueue
 {
-    use InteractsWithQueue;
+    use InteractsWithQueue, ChunksInserts;
 
     /**
      * The queue to push this job to.
@@ -404,22 +405,17 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // possible because all this happens inside a DB transaction (see above).
         $startId = $labelModel::orderBy('id', 'desc')->select('id')->first()->id;
 
-        collect($newAnnotationLabels)
-            // Chunk for huge requests which may run into the 65535 parameters limit of a
-            // single database call.
-            // See: https://github.com/biigle/largo/issues/76
-            ->chunk(5000)
-            ->each(function ($chunk) use ($labelModel) {
-                if ($labelModel === ImageAnnotationLabel::class) {
-                    $chunk = $chunk->map(function ($item) {
-                        $item['confidence'] = 1;
+        if ($labelModel === ImageAnnotationLabel::class) {
+            foreach ($newAnnotationLabels as &$item) {
+                $item['confidence'] = 1;
+            }
+            unset($item);
+        }
 
-                        return $item;
-                    });
-                }
-
-                $labelModel::insert($chunk->toArray());
-            });
+        // Chunk for huge requests which may run into the parameter limit of a single
+        // database call.
+        // See: https://github.com/biigle/largo/issues/76
+        $this->insertInChunks($labelModel, $newAnnotationLabels);
 
         // Free memory.
         unset($newAnnotationLabels);
