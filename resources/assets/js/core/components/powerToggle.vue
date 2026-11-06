@@ -48,9 +48,13 @@ export default {
             type: String,
             default: 'info',
         },
-        icon: {
+        iconOn: {
             type: String,
             default: 'power-off',
+        },
+        iconOff: {
+            type: String,
+            default: 'power-off'
         },
         disabled: {
             type: Boolean,
@@ -72,7 +76,11 @@ export default {
             return obj;
         },
         iconClass() {
-            return `fa-${this.icon}`;
+            if (this.active) {
+                return `fa-${this.iconOn}`;
+            } else {
+                return `fa-${this.iconOff}`;
+            }
         },
     },
     methods: {
