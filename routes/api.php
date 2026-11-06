@@ -50,9 +50,14 @@ $router->resource('api-tokens', 'ApiTokenController', [
     'parameters' => ['api-tokens' => 'id'],
 ]);
 
-$router->get('export/users', 'Export\UserExportController@show');
-$router->get('export/label-trees', 'Export\LabelTreeExportController@show');
-$router->get('export/volumes', 'Export\VolumeExportController@show');
+$router->post('export/users', 'Export\UserExportController@store');
+$router->post('export/label-trees', 'Export\LabelTreeExportController@store');
+$router->post('export/volumes', 'Export\VolumeExportController@store');
+
+$router->resource('export-files', 'Export\ExportFileController', [
+    'only' => ['show', 'destroy'],
+    'parameters' => ['export-files' => 'id'],
+]);
 
 $router->resource('federated-search-instances', 'FederatedSearchInstanceController', [
     'only' => ['store', 'update', 'destroy'],

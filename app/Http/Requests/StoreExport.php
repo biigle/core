@@ -4,7 +4,7 @@ namespace Biigle\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShowExport extends FormRequest
+class StoreExport extends FormRequest
 {
     public function authorize()
     {
@@ -14,11 +14,27 @@ class ShowExport extends FormRequest
     public function rules()
     {
         return [
-            'except' => 'required_without:only|prohibits:only|array',
-            'only' => 'required_without:except|array',
+            'except' => 'sometimes|prohibits:only|array',
+            'only' => 'sometimes|prohibits:except|array|min:1',
             'except.*' => 'integer|min:1',
             'only.*' => 'integer|min:1',
+            'description' => 'nullable|string|max:255',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if (!$this->exists('except') && !$this->exists('only')) {
+                $validator->errors()->add('only', 'The only field is required when except is not present.');
+            }
+        });
     }
 
     protected function prepareForValidation()

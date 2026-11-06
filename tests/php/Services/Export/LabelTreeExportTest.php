@@ -90,6 +90,7 @@ class LabelTreeExportTest extends TestCase
         $this->assertCount(1, $exports);
         $content = $exports[0]->getContent();
         $this->assertEquals($user->uuid, $content[0]['uuid']);
+        $this->assertArrayNotHasKey('password', $content[0]);
     }
 
     public function testGetAdditionalExportsVersion()

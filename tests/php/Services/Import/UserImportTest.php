@@ -9,6 +9,7 @@ use Biigle\User;
 use DB;
 use Exception;
 use File;
+use Illuminate\Support\Facades\Hash;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use TestCase;
@@ -57,6 +58,7 @@ class UserImportTest extends TestCase
         $import->validateFiles();
 
         $content = json_decode(File::get("{$this->destination}/users.json"), true);
+        $this->assertArrayNotHasKey('password', $content[0]);
         unset($content[0]['uuid']);
         File::put("{$this->destination}/users.json", json_encode($content));
 
@@ -93,6 +95,24 @@ class UserImportTest extends TestCase
         $this->assertNotNull($user->created_at);
         $this->assertNotNull($user->updated_at);
         $this->assertEquals(['ab' => 'cd'], $user->settings);
+        $this->assertFalse(Hash::check('password', $user->password));
+        $this->assertNotSame($this->user->password, $user->password);
+    }
+
+    public function testPerformReplacesPasswordFromOldArchive()
+    {
+        $content = json_decode(File::get("{$this->destination}/users.json"), true);
+        $content[0]['password'] = $this->user->password;
+        File::put("{$this->destination}/users.json", json_encode($content));
+
+        $import = new UserImport($this->destination);
+        $import->validateFiles();
+        DB::table('users')->delete();
+        $map = $import->perform();
+
+        $imported = User::findOrFail($map[$this->user->id]);
+        $this->assertNotSame($this->user->password, $imported->password);
+        $this->assertFalse(Hash::check('password', $imported->password));
     }
 
     public function testPerformConflicts()

@@ -28,6 +28,9 @@
                 @include("search.annotations-tab")
                 @include("search.videos-tab")
                 @include("search.reports-tab")
+                @can('sudo')
+                    @include("search.exports-tab")
+                @endcan
                 @foreach (Modules::getViewMixins('searchTab') as $module => $nested)
                     @include("{$module}::searchTab")
                 @endforeach
@@ -39,6 +42,9 @@
                 @include("search.annotations-content")
                 @include("search.videos-content")
                 @include("search.reports-content")
+                @can('sudo')
+                    @include("search.exports-content")
+                @endcan
                 @foreach (Modules::getViewMixins('searchTabContent') as $module => $nested)
                     @include("{$module}::searchTabContent")
                 @endforeach

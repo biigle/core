@@ -1,7 +1,9 @@
 <script>
 import EntityChooser from './components/entityChooser.vue';
+import ExportApi from './api/export.js';
 import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import Messages from '@/core/messages/store.js';
 import UsersApi from '@/core/api/users.js';
 import VolumesApi from '@/core/api/volumes.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
@@ -17,6 +19,12 @@ let fetchEntitiesApi = {
     users: UsersApi,
 };
 
+let storeExportApi = {
+    volumes: (data) => ExportApi.saveVolumes(data),
+    labelTrees: (data) => ExportApi.saveLabelTrees(data),
+    users: (data) => ExportApi.saveUsers(data),
+};
+
 export default {
     mixins: [LoaderMixin],
     components: {
@@ -26,7 +34,6 @@ export default {
     },
     data() {
         return {
-            exportApiUrl: null,
             allowedExports: [],
             entities: {
                 volumes: [],
@@ -39,6 +46,11 @@ export default {
                 users: [],
             },
             currentTab: 0,
+            descriptions: {
+                volumes: '',
+                labelTrees: '',
+                users: '',
+            },
             volumeIconMap: {},
         };
     },
@@ -93,15 +105,6 @@ export default {
         hasNoChosenUsers() {
             return this.chosenEntities.users.length === 0;
         },
-        volumeRequestUrl() {
-            return this.exportApiUrl + '/volumes' + this.getQueryString('volumes');
-        },
-        labelTreeRequestUrl() {
-            return this.exportApiUrl + '/label-trees' + this.getQueryString('labelTrees');
-        },
-        userRequestUrl() {
-            return this.exportApiUrl + '/users' + this.getQueryString('users');
-        },
     },
     methods: {
         handleSwitchedTab(index) {
@@ -118,27 +121,51 @@ export default {
         handleChosenVolumes(volumes) {
             this.chosenEntities.volumes = volumes;
         },
+        getEntitySelection(type) {
+            let entities = this.entities[type];
+            let chosenEntities = this.chosenEntities[type];
+
+            if ((entities.length / 2) > chosenEntities.length) {
+                return {only: chosenEntities.map((e) => e.id)};
+            }
+
+            return {
+                except: entities
+                    .filter((e) => chosenEntities.indexOf(e) === -1)
+                    .map((e) => e.id),
+            };
+        },
+        requestVolumeExport() {
+            return this.requestExport('volumes');
+        },
+        requestLabelTreeExport() {
+            return this.requestExport('labelTrees');
+        },
+        requestUserExport() {
+            return this.requestExport('users');
+        },
+        requestExport(type) {
+            if (this.chosenEntities[type].length === 0) {
+                return Promise.resolve();
+            }
+
+            this.startLoading();
+            const name = type === 'labelTrees' ? 'label tree' : type.slice(0, -1);
+            let data = {
+                description: this.descriptions[type],
+                ...this.getEntitySelection(type),
+            };
+
+            return storeExportApi[type](data)
+                .then(() => Messages.success(`The ${name} export was requested. You will be notified when it is ready.`), handleErrorResponse)
+                .finally(this.finishLoading);
+        },
         handleChosenLabelTrees(labelTrees) {
             this.chosenEntities.labelTrees = labelTrees;
         },
         handleChosenUsers(users) {
             this.chosenEntities.users = users;
         },
-        getQueryString(name) {
-            let entities = this.entities[name];
-            let chosenEntities = this.chosenEntities[name];
-
-            if ((entities.length / 2) > chosenEntities.length) {
-                return '?only=' + (chosenEntities.map((e) => e.id).join(',') || -1);
-            } else if (entities.length > chosenEntities.length) {
-                return '?except=' + entities
-                    .filter((e) => chosenEntities.indexOf(e) === -1)
-                    .map((e) => e.id)
-                    .join(',');
-            }
-
-            return '';
-        }
     },
     watch: {
         currentTab(index) {
@@ -146,7 +173,6 @@ export default {
         },
     },
     created() {
-        this.exportApiUrl = biigle.$require('sync.exportApiUrl');
         this.allowedExports = biigle.$require('sync.allowedExports');
         let mediaTypes = biigle.$require('sync.mediaTypes');
         this.volumeIconMap[mediaTypes.image] = 'image';

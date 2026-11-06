@@ -2,6 +2,7 @@
 
 namespace Biigle\Observers;
 
+use Biigle\ExportFile;
 use Biigle\Report;
 
 class UserObserver
@@ -18,5 +19,8 @@ class UserObserver
     {
         Report::where('user_id', $user->id)
             ->eachById(fn ($report) => $report->deleteFile());
+
+        ExportFile::where('user_id', $user->id)
+            ->eachById(fn ($export) => $export->deleteFile());
     }
 }

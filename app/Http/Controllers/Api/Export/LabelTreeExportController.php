@@ -3,19 +3,19 @@
 namespace Biigle\Http\Controllers\Api\Export;
 
 use Biigle\LabelTree;
-use Biigle\Services\Export\LabelTreeExport;
 
 class LabelTreeExportController extends Controller
 {
     /**
-     * @api {get} export/label-trees Get a label tree export
+     * @api {post} export/label-trees Request a label tree export
      * @apiGroup Sync
-     * @apiName ShowLabelTreeExport
-     *
-     * @apiParam (Optional arguments) {String} except Comma separated IDs of the label trees that should not be included in the export file.
-     * @apiParam (Optional arguments) {String} only Comma separated IDs of the label trees that should only be included in the export file.
-     * @apiDescription Exactly one of `except` or `only` must be provided (not both). The response is a ZIP archive that can be used for the label tree import.
+     * @apiName StoreLabelTreeExport
      * @apiPermission admin
+     * @apiDescription Exactly one of `except` or `only` must be provided (not both). The export file is generated in the background and the user is notified when it is ready. Responds with the new export file object.
+     *
+     * @apiParam (Optional arguments) {Number[]} except IDs of the label trees that should not be included in the export file.
+     * @apiParam (Optional arguments) {Number[]} only IDs of the label trees that should only be included in the export file.
+     * @apiParam (Optional arguments) {String} description A description of the export file (max. 255 characters).
      */
 
     /**
@@ -29,24 +29,8 @@ class LabelTreeExportController extends Controller
     /**
      * {@inheritdoc}
      */
-    protected function getExport(array $ids)
+    protected function getType(): string
     {
-        return new LabelTreeExport($ids);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getExportFilename()
-    {
-        return 'biigle_label_tree_export.zip';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function isAllowed()
-    {
-        return in_array('labelTrees', config('sync.allowed_exports'));
+        return 'labelTrees';
     }
 }

@@ -89,6 +89,11 @@ return [
             'root' => storage_path('reports'),
         ],
 
+        'exports' => [
+            'driver' => 'local',
+            'root' => storage_path('exports'),
+        ],
+
         'largo' => [
             'driver' => 'local',
             'root' => storage_path('app/public/largo-patches'),

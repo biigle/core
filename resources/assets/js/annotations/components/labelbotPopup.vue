@@ -433,7 +433,7 @@ export default {
             Keyboard.off('2', this.selectLabel2, 'labelbot');
             Keyboard.off('3', this.selectLabel3, 'labelbot');
 
-            // If the popup is closed and no event is sent, 
+            // If the popup is closed and no event is sent,
             // then send the event of chose label_1
             // This also works if the image/video was changed while the popup was open
             if (!this.labelEventEmitted) {

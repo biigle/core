@@ -2,31 +2,48 @@
 
 namespace Biigle\Http\Controllers\Api\Export;
 
+use Biigle\ExportFile;
 use Biigle\Http\Controllers\Api\Controller as BaseController;
-use Biigle\Http\Requests\ShowExport;
+use Biigle\Http\Requests\StoreExport;
+use Biigle\Jobs\GenerateExportJob;
 
 abstract class Controller extends BaseController
 {
-    /**
-     * Creates a new instance.
-     */
     public function __construct()
     {
         $this->middleware('can:sudo');
     }
 
     /**
-     * Handle a generic export request.
+     * Request a new export file.
      *
-     * @param ShowExport $request
-     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @param StoreExport $request
+     * @return ExportFile
      */
-    public function show(ShowExport $request)
+    public function store(StoreExport $request)
     {
         if (!$this->isAllowed()) {
             abort(404);
         }
 
+        $export = new ExportFile;
+        $export->user()->associate($request->user());
+        $export->type = $this->getType();
+        $export->description = $request->input('description');
+        $export->entity_ids = $this->getIds($request);
+        $export->ready_at = null;
+        $export->save();
+
+        GenerateExportJob::dispatch($export)
+            ->onQueue(config('sync.generate_export_queue'));
+
+        $export->unsetRelation('user');
+
+        return $export;
+    }
+
+    protected function getIds(StoreExport $request): array
+    {
         $query = $this->getQuery();
 
         if ($request->filled('except')) {
@@ -35,44 +52,15 @@ abstract class Controller extends BaseController
             $query = $query->whereIn('id', $request->input('only'));
         }
 
-        $export = $this->getExport($query->pluck('id')->toArray());
-
-        return response()
-            ->download($export->getArchive(), $this->getExportFilename(), [
-                'Content-Type' => 'application/zip',
-            ])
-            ->deleteFileAfterSend(true);
+        return $query->pluck('id')->toArray();
     }
 
-    /**
-     * Get the query for the model to export.
-     *
-     * @return \Illuminate\Database\Query\Builder
-     */
     abstract protected function getQuery();
 
-    /**
-     * Get the new export instance.
-     *
-     * @param array $ids
-     * @return \Biigle\Services\Export\Export
-     */
-    abstract protected function getExport(array $ids);
+    abstract protected function getType(): string;
 
-    /**
-     * Get the filename of the export archive.
-     *
-     * @return string
-     */
-    abstract protected function getExportFilename();
-
-    /**
-     * Determine if this kind of export is allowed by the config.
-     *
-     * @return bool
-     */
     protected function isAllowed()
     {
-        return false;
+        return in_array($this->getType(), config('sync.allowed_exports'));
     }
 }
