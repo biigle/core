@@ -17,7 +17,7 @@
     The CSV image annotation report is intended for subsequent processing and lists the annotation labels at the highest possible resolution (as CSV files in a ZIP archive). See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-csv-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'Area')">
-    The image annotation area report lists all rectangle, circle, ellipse or polygon annotations with their dimensions and area in pixels (as XLSX). If a laser point detection was performed, the dimensions in m and area in m² is included, too. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-area-report">report schema</a>.
+    The image annotation area report lists all rectangle, circle, ellipse or polygon annotations with their dimensions and area in pixels (as XLSX). The area of the image is included, too. If the image area is known from the image metadata or a laser point detection, the dimensions in m and area in m² are included as well. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-area-report">report schema</a>.
 </div>
 <div class="help-block" v-cloak v-if="wantsCombination('ImageAnnotations', 'AnnotationLocation')">
     The image annotation annotation location report returns the estimated annotation positions on a world map in the newline delimited GeoJSON format. See the manual for the <a target="_blank" href="{{route('manual-tutorials', ['reports', 'reports-schema'])}}#annotation-location-report">report schema</a>.
