@@ -14,6 +14,62 @@ const FILE_SOURCE = {
 
 const numberFormatter = new Intl.NumberFormat();
 
+/**
+ * Parse a comma separated list of filenames. Filenames that contain a comma can be
+ * enclosed in double quotes like in a CSV file. This works like
+ * Volume::parseFilesQueryString() in the backend.
+ */
+function parseFilenames(string) {
+    let filenames = [];
+    let current = '';
+    let quoted = false;
+
+    for (let i = 0; i < string.length; i++) {
+        let char = string[i];
+        if (quoted) {
+            if (char !== '"') {
+                current += char;
+            } else if (string[i + 1] === '"') {
+                // Escaped double quote.
+                current += char;
+                i++;
+            } else {
+                quoted = false;
+            }
+        } else if (char === '"' && current.trim() === '') {
+            quoted = true;
+            current = '';
+        } else if (char === ',') {
+            filenames.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+
+    filenames.push(current);
+
+    // Remove whitespace as well as enclosing '' or "".
+    return filenames
+        .map(f => f.replace(/^[\s'"]+|[\s'"]+$/g, ''))
+        .filter(f => f);
+}
+
+/**
+ * Join filenames to a comma separated list that can be parsed with parseFilenames().
+ */
+function joinFilenames(filenames) {
+    return filenames
+        .map(function (filename) {
+            if (filename.includes(',') || filename.includes('"')) {
+                return `"${filename.replace(/"/g, '""')}"`;
+            }
+
+            return filename;
+        })
+        .join(',');
+}
+
 export default {
     mixins: [LoaderMixin],
     components: {
@@ -89,7 +145,7 @@ export default {
             return this.name === '' || this.url === '' || this.filenames === '' || this.loading;
         },
         fileCount() {
-            return this.filenames.split(',').filter(f => f).length;
+            return parseFilenames(this.filenames).length;
         },
         fileCountText() {
             return numberFormatter.format(this.fileCount);
@@ -167,7 +223,7 @@ export default {
                 .then(this.parseBrowserResponses);
         },
         setFiles(response) {
-            this.filenames = response.body.join(', ');
+            this.filenames = joinFilenames(response.body);
         },
         resetFileSource() {
             this.selectRemoteFileSource();
@@ -275,7 +331,7 @@ export default {
         setUrlAndFilenames(path, files) {
             // Add only one slash, as path already has a leading slash.
             this.url = `${this.storageDisk}:/${path}`;
-            this.filenames = files.map(file => file.name).join(',');
+            this.filenames = joinFilenames(files.map(file => file.name));
         },
         unselectDirectory(directory) {
             this.unselectAllDirectories(directory);
@@ -304,7 +360,7 @@ export default {
             });
         },
         initializeSelectedFilesAfterError(directory, path) {
-            let files = this.filenames.split(',').map(f => f.trim())
+            let files = parseFilenames(this.filenames);
             if (files.length === directory.files.length) {
                 this.selectDirectory(directory, path);
             } else {
@@ -418,7 +474,7 @@ export default {
         this.mediaType = biigle.$require('volumes.mediaType');
         this.filenames = biigle.$require('volumes.filenames');
         if (biigle.$require('volumes.filenamesFromMeta')) {
-            this.metadataFilenames = this.filenames.split(',');
+            this.metadataFilenames = parseFilenames(this.filenames);
         }
 
         if (this.url) {

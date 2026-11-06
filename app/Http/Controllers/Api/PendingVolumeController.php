@@ -150,7 +150,7 @@ class PendingVolumeController extends Controller
      *
      * @apiParam (Required attributes) {String} name The name of the new volume.
      * @apiParam (Required attributes) {String} url The base URL of the image/video files. Can be a path to a storage disk like `local://volumes/1` or a remote path like `https://example.com/volumes/1`.
-     * @apiParam (Required attributes) {Array} files Array of file names of the images/videos that can be found at the base URL. Example: With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used. This can also be a plain string of comma-separated filenames.
+     * @apiParam (Required attributes) {Array} files Array of file names of the images/videos that can be found at the base URL. Example: With the base URL `local://volumes/1` and the image `1.jpg`, the file `volumes/1/1.jpg` of the `local` storage disk will be used. This can also be a plain string of comma-separated filenames (filenames that contain a comma must be enclosed in double quotes).
      *
      * @apiParam (Optional attributes) {String} handle Handle or DOI of the dataset that is represented by the new volume.
      * @apiParam (Optional attributes) {Boolean} import_annotations Set to `true` to keep the pending volume for annotation import. Otherwise the pending volume will be deleted after this request.

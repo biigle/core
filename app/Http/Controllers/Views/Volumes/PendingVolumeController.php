@@ -9,6 +9,7 @@ use Biigle\LabelTree;
 use Biigle\Modules\UserDisks\UserDisk;
 use Biigle\Modules\UserStorage\UserStorageServiceProvider;
 use Biigle\PendingVolume;
+use Biigle\Volume;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -95,9 +96,12 @@ class PendingVolumeController extends Controller
 
         $filenamesFromMeta = false;
         if ($filenames = old('files')) {
-            $filenames = str_replace(["\r", "\n", '"', "'"], '', old('files'));
+            // Keep quotes because they are required for filenames with commas.
+            $filenames = str_replace(["\r", "\n"], '', old('files'));
         } elseif ($metadata) {
-            $filenames = $metadata->getFiles()->pluck('name')->join(',');
+            $filenames = Volume::joinFilesQueryString(
+                $metadata->getFiles()->pluck('name')->all()
+            );
             $filenamesFromMeta = !empty($filenames);
         }
 
