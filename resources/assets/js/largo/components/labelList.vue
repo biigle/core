@@ -13,6 +13,7 @@
                  v-for="item in labels"
                  :key="item.id"
                  :label="item"
+                 :filtered-count="filteredCount(item)"
                  @select="handleSelectedLabel"
                  @deselect="handleDeselectedLabel"
                  ></label-item>
@@ -39,15 +40,36 @@ export default {
                 return [];
             },
         },
+        filteredCounts: {
+            type: Object,
+            default: null,
+        },
     },
     computed: {
         annotationBadgeCount() {
-            return this.labels.reduce((acc, l) => {
+            let count = this.labels.reduce((acc, l) => {
                 return acc + l.count;
             }, 0);
+
+            if (this.filteredCounts) {
+                let filteredCount = this.labels.reduce((acc, l) => {
+                    return acc + this.filteredCount(l);
+                }, 0);
+
+                return `${filteredCount}/${count}`;
+            }
+
+            return count;
         },
     },
     methods: {
+        filteredCount(label) {
+            if (this.filteredCounts) {
+                return this.filteredCounts[label.id] || 0;
+            }
+
+            return null;
+        },
         handleSelectedLabel(label) {
             this.$emit('select', label);
         },

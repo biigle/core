@@ -4,11 +4,13 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 
 use ApiTestCase;
 use Biigle\Enums\MediaType;
+use Biigle\Enums\Shape;
 use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
 use Biigle\Tests\LabelTest;
+use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
@@ -502,5 +504,61 @@ class VolumeAnnotationLabelsTest extends ApiTestCase
                     "count" => 1
                 ],
             ]);
+    }
+
+    public function testGetImageVolumeAnnotationLabelsFilter()
+    {
+        $id = $this->volume()->id;
+        $img1 = ImageTest::create(['volume_id' => $id, 'filename' => 'abc.jpg']);
+        $img2 = ImageTest::create(['volume_id' => $id, 'filename' => 'def.jpg']);
+        $u = UserTest::create();
+        $l = LabelTest::create();
+        $a1 = ImageAnnotationTest::create(['image_id' => $img1->id, 'shape' => Shape::POINT->value]);
+        $a2 = ImageAnnotationTest::create(['image_id' => $img1->id, 'shape' => Shape::CIRCLE->value]);
+        $a3 = ImageAnnotationTest::create(['image_id' => $img2->id, 'shape' => Shape::CIRCLE->value]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l->id, 'user_id' => $u->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l->id]);
+        ImageAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $l->id]);
+
+        $this->beEditor();
+        $this->getJson("/api/v1/volumes/{$id}/label-count?shape[]=".Shape::CIRCLE->value)
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 2]);
+
+        $this->getJson("/api/v1/volumes/{$id}/label-count?user_id[]={$u->id}")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 1]);
+
+        $this->getJson("/api/v1/volumes/{$id}/label-count?filename[]=def*")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 1]);
+
+        $this->getJson("/api/v1/volumes/{$id}/label-count?shape[]=".Shape::CIRCLE->value."&filename[]=abc*&union=0")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 1]);
+
+        $this->getJson("/api/v1/volumes/{$id}/label-count?shape[]=".Shape::CIRCLE->value."&filename[]=abc*&union=1")
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 3]);
+
+        $this->getJson("/api/v1/volumes/{$id}/label-count?shape[]=".Shape::LINE->value)
+            ->assertStatus(200)
+            ->assertJsonCount(0);
+    }
+
+    public function testGetVideoVolumeAnnotationLabelsFilter()
+    {
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
+        $vid = VideoTest::create(['volume_id' => $id, 'filename' => 'abc.mp4']);
+        $l = LabelTest::create();
+        $a1 = VideoAnnotationTest::create(['video_id' => $vid->id, 'shape' => Shape::POINT->value]);
+        $a2 = VideoAnnotationTest::create(['video_id' => $vid->id, 'shape' => Shape::CIRCLE->value]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a1->id, 'label_id' => $l->id]);
+        VideoAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l->id]);
+
+        $this->beEditor();
+        $this->getJson("/api/v1/volumes/{$id}/label-count?shape[]=".Shape::CIRCLE->value)
+            ->assertStatus(200)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 1]);
     }
 }

@@ -62,6 +62,7 @@ export default {
             labels: [],
             filtersCache: {},
             fetchedLabelCount: false,
+            filteredLabelCounts: null,
         };
     },
     provide() {
@@ -599,13 +600,18 @@ export default {
             }
         },
         getLabelCount() {
+            let promises = [this.fetchLabelCount()];
+            if (this.activeFilters.length > 0) {
+                promises.push(this.fetchLabelCount(this.compileFilters(this.activeFilters, this.union)));
+            }
+
             this.startLoading();
-            this.fetchLabelCount()
+            Promise.all(promises)
                 .then(this.parseResponse)
                 .catch(handleErrorResponse)
                 .finally(this.finishLoading);
         },
-        parseResponse(res) {
+        parseResponse([res, filteredRes]) {
             this.labels = res.body.reduce((labels, l) => {
                 if (this.labelTreesIndex.hasOwnProperty(l.label_tree_id)) {
                     let tIdx = this.labelTreesIndex[l.label_tree_id].index;
@@ -619,6 +625,10 @@ export default {
                 }
                 return labels;
             }, []);
+            this.filteredLabelCounts = filteredRes ? filteredRes.body.reduce((counts, l) => {
+                counts[l.id] = l.count;
+                return counts;
+            }, {}) : null;
             this.fetchedLabelCount = true;
         },
         resetLabelCount() {
@@ -681,11 +691,13 @@ export default {
             }
         },
         union() {
+            this.fetchedLabelCount = false;
             this.handleSelectedFilters();
         },
         activeFilters: {
             deep: true,
             handler() {
+                this.fetchedLabelCount = false;
                 if (this.isInDismissStep) {
                     this.handleSelectedFilters();
                 }

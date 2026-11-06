@@ -52,8 +52,8 @@ export default {
 
             return response;
         },
-        fetchLabelCount() {
-            return VolumesApi.fetchVolumeAnnotationLabelCount({ id: this.volumeId });
+        fetchLabelCount(filters = []) {
+            return VolumesApi.fetchVolumeAnnotationLabelCount({ ...filters, id: this.volumeId });
         }
     },
 

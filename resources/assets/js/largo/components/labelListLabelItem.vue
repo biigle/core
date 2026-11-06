@@ -22,6 +22,10 @@ export default {
                 return {};
             },
         },
+        filteredCount: {
+            type: Number,
+            default: null,
+        },
     },
     computed: {
         title() {
@@ -33,12 +37,20 @@ export default {
             };
         },
         countTitle() {
+            if (this.filteredCount !== null) {
+                return `${this.filteredCount} of ${this.label.count} annotations with label ${this.label.name} match the filters`;
+            }
+
             return `There are ${this.count} annotations with label ${this.label.name}`;
         },
         colorStyle() {
             return 'background-color: #' + this.label.color;
         },
         count() {
+            if (this.filteredCount !== null) {
+                return `${this.filteredCount}/${this.label.count}`;
+            }
+
             return this.label.count;
         },
     },
