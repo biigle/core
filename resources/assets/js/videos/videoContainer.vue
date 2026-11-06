@@ -64,7 +64,7 @@ export default {
             selectedLabel: null,
             pendingAnnotation: null,
             annotations: [],
-            seeking: false,
+            videoSeeking: false,
             mediabunnyDecoding: false,
             settings: {
                 annotationOpacity: 1,
@@ -129,6 +129,12 @@ export default {
         };
     },
     computed: {
+        // The native "seeked" event fires before mediabunny has drawn the frame that
+        // belongs to currentTime. Until then, the displayed frame may not be the one
+        // that annotations would be created at.
+        seeking() {
+            return this.videoSeeking || this.mediabunnyDecoding;
+        },
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.isSelected);
         },
@@ -246,13 +252,13 @@ export default {
                 this.video.addEventListener('seeked', resolve);
                 this.video.addEventListener('error', reject);
             });
-            this.seeking = true;
+            this.videoSeeking = true;
             this.video.currentTime = time;
 
             return promise;
         },
         startSeeking() {
-            this.seeking = true;
+            this.videoSeeking = true;
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -458,7 +464,7 @@ export default {
             }
         },
         handleVideoSeeked() {
-            this.seeking = false;
+            this.videoSeeking = false;
         },
         modifyAnnotations(event) {
             event.forEach(this.modifyAnnotation);
@@ -715,7 +721,7 @@ export default {
                 .finally(() => {
                     this.finishLoading();
                     // Avoid spinning wheel continuing to be displayed after moving fast through videos
-                    this.seeking = false;
+                    this.videoSeeking = false;
                 });
 
             return promise;
@@ -752,7 +758,7 @@ export default {
         },
         reset() {
             this.annotations = [];
-            this.seeking = false;
+            this.videoSeeking = false;
             this.initialCurrentTime = 0;
             this.initialFocussedAnnotation = 0;
             this.$refs.videoTimeline.reset();
