@@ -12,7 +12,9 @@ class CachedPolicy
     /**
      * Time to store the cached values.
      *
-     * (is irrelevant for the array store)
+     * The array store honors this, but it is irrelevant in practice because policies
+     * are only checked during short-lived requests. In long-running processes like
+     * queue workers, the array store keeps its values across jobs until they expire.
      *
      * @var int
      */

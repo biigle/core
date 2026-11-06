@@ -69,7 +69,7 @@
                     <option :value="true">Yes</option>
                 </select>
                 <p class="help-block">
-                    Enforce a guideline to restrict the available labels and shapes for new annotations.
+                    Enforce a guideline to restrict the available labels and shapes for annotations and file labels.
                 </p>
             </div>
 
