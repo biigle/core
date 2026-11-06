@@ -51,8 +51,8 @@
                 </tr>
                 <tr>
                     <td><code>labelTooltip</code></td>
-                    <td>Show or hide the annotation tooltip when you hover over an annotation.</td>
-                    <td><code>true</code>, <code>false</code></td>
+                    <td>Choose whether label tooltips are shown on hover, always, or not at all.</td>
+                    <td><code>hover</code>, <code>always</code>, <code>off</code> (<code>true</code> and <code>false</code> remain aliases for <code>hover</code> and <code>off</code>)</td>
                 </tr>
                 <tr>
                     <td><code>minimap</code></td>

@@ -1,5 +1,6 @@
 import Settings from '@/core/models/Settings.js';
 import {TIMEOUTS} from '../components/labelbotPopup.vue';
+import {LABEL_TOOLTIP_MODES} from '../utils.js';
 
 /**
  * Store for annotator settings
@@ -14,7 +15,7 @@ let defaults = {
     mousePosition: false,
     zoomLevel: false,
     scaleLine: false,
-    labelTooltip: false,
+    labelTooltip: LABEL_TOOLTIP_MODES.OFF,
     measureTooltip: false,
     minimap: true,
     progressIndicator: true,

@@ -22,6 +22,7 @@ import {computed, defineAsyncComponent} from 'vue'
 import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
+import {LABEL_TOOLTIP_MODES} from './utils.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
@@ -80,7 +81,7 @@ export default {
             annotationModeCarry: null,
             showMousePosition: false,
             showZoomLevel: false,
-            showLabelTooltip: false,
+            showLabelTooltip: LABEL_TOOLTIP_MODES.OFF,
             showMeasureTooltip: false,
             showMinimap: true,
             showScaleLine: false,
