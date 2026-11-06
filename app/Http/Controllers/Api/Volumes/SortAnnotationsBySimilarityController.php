@@ -4,11 +4,16 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\IndexVolumeAnnotationsSimilarity;
+use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\Traits\RestrictsToAnnotationSession;
+use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 
 class SortAnnotationsBySimilarityController extends Controller
 {
+    use RestrictsToAnnotationSession;
+
     /**
      * Sort annotations with specific label by similarity.
      *
@@ -19,7 +24,7 @@ class SortAnnotationsBySimilarityController extends Controller
      * @apiParam (Required arguments) {Number} label_id The Label ID
      * @apiParam (Required arguments) {Number} annotation_id The reference annotation to sort by similarity
      * @apiPermission projectMember
-     * @apiDescription Returns a list of image/video annotation IDs with the most similar first (without the reference annotation ID).
+     * @apiDescription Returns a list of image/video annotation IDs with the most similar first (without the reference annotation ID). Annotations that are hidden by an active annotation session are not included.
      *
      * @param  IndexVolumeAnnotationsSimilarity  $request
      * @return \Illuminate\Support\Collection
@@ -38,6 +43,13 @@ class SortAnnotationsBySimilarityController extends Controller
                 ->where('label_id', $r->label_id)
                 ->where('id', '!=', $r->id)
                 ->orderByRaw('vector <=> ?, annotation_id DESC', [$r->vector]);
+        }
+
+        $user = $request->user();
+        $session = $request->volume->getActiveAnnotationSession($user);
+        if ($session) {
+            $annotation = $request->volume->isVideoVolume() ? new VideoAnnotation : new ImageAnnotation;
+            $this->restrictFeatureVectorsToSession($query, $session, $user, $annotation);
         }
 
         return $query->pluck('annotation_id')
