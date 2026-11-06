@@ -160,6 +160,25 @@ class ReportTest extends ModelTestCase
         $this->assertEquals($volume->name, $this->model->fresh()->source_name);
     }
 
+    public function testLongSourceName()
+    {
+        // Project and volume names can be up to 512 characters long.
+        $project = ProjectTest::create(['name' => str_repeat('a', 512)]);
+        $projectReport = static::create([
+            'source_id' => $project->id,
+            'source_type' => $project::class,
+        ]);
+        $this->assertSame($project->name, $projectReport->fresh()->source_name);
+        $project->delete();
+        $this->assertSame($project->name, $projectReport->fresh()->source_name);
+
+        $volume = VolumeTest::create(['name' => str_repeat('b', 512)]);
+        $volumeReport = static::create(['source_id' => $volume->id]);
+        $this->assertSame($volume->name, $volumeReport->fresh()->source_name);
+        $volume->delete();
+        $this->assertSame($volume->name, $volumeReport->fresh()->source_name);
+    }
+
     public function testCastsReadyAt()
     {
         $this->model->ready_at = new Carbon;

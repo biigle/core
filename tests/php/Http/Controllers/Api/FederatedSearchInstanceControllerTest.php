@@ -43,6 +43,14 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this
             ->postJson('/api/v1/federated-search-instances', [
                 'name' => 'my instance',
+                'url' => 'https://example.com/'.str_repeat('a', 493),
+            ])
+            // url too long
+            ->assertStatus(422);
+
+        $this
+            ->postJson('/api/v1/federated-search-instances', [
+                'name' => 'my instance',
                 'url' => 'https://example.com',
             ])
             ->assertStatus(201);
@@ -78,6 +86,13 @@ class FederatedSearchInstanceControllerTest extends ApiTestCase
         $this->putJson("/api/v1/federated-search-instances/{$id}")->assertStatus(403);
 
         $this->beGlobalAdmin();
+        $this
+            ->putJson("/api/v1/federated-search-instances/{$id}", [
+                'url' => 'https://example.com/'.str_repeat('a', 493),
+            ])
+            // url too long
+            ->assertStatus(422);
+
         $this
             ->putJson("/api/v1/federated-search-instances/{$id}", [
                 'name' => 'my updated instance',

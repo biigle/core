@@ -140,6 +140,15 @@ class LabelTreeLabelControllerTest extends ApiTestCase
         // source_id not given
         $response->assertStatus(422);
 
+        $response = $this->json('POST', "/api/v1/label-trees/{$tree->id}/labels", [
+            'name' => 'new label',
+            'color' => 'bada55',
+            'label_source_id' => $source->id,
+            'source_id' => str_repeat('a', 256),
+        ]);
+        // source_id too long
+        $response->assertStatus(422);
+
         $mock = Mockery::mock();
 
         $labels = collect([LabelTest::create()])->toArray();

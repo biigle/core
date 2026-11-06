@@ -34,7 +34,7 @@ class UpdateLabelTreeVersion extends FormRequest
     public function rules()
     {
         return [
-            'doi' => 'required|min:10',
+            'doi' => 'required|min:10|max:512',
         ];
     }
 }
