@@ -5,11 +5,13 @@ namespace Biigle\Jobs;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
+use Biigle\Exceptions\CantCreateTemporaryFileException;
 use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFProbe;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Jcupitt\Vips\Exception as VipsException;
@@ -129,6 +131,13 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                     // that attempts to rewind for a bit to get a frame but this may not
                     // always work.
                     continue;
+                } catch (\Throwable $e) {
+                    Log::error('Unexpected error while extracting a video frame.', [
+                        'exception' => $e,
+                        'source_path' => $sourcePath,
+                        'time' => $frame,
+                    ]);
+                    continue;
                 }
 
                 if (!$this->skipPatches) {
@@ -208,7 +217,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             // We only return the buffer anyways, the file can be safely deleted later
             $tmpFile = tempnam(sys_get_temp_dir(), 'largo_video_frame');
             if ($tmpFile === false) {
-                throw new RuntimeException('Could not create a temporary file.');
+                throw new CantCreateTemporaryFileException('Could not create a temporary file.');
             }
 
             $outputPath = "{$tmpFile}.jpg";

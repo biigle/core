@@ -976,6 +976,31 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertEmpty($job->capturedCropBoxes);
     }
 
+    public function testHandleUnexpectedFrameException()
+    {
+        $disk = Storage::fake('test');
+        $video = $this->getFrameMock(0);
+        $annotation = VideoAnnotationTest::create([
+            'points' => [[100, 100]],
+            'frames' => [1],
+            'shape' => Shape::POINT,
+        ]);
+        $job = new ProcessAnnotatedVideoStub($annotation->video);
+        $job->mock = $video;
+        $job->throwGetFrame = \Biigle\Exceptions\CantCreateTemporaryFileException::class;
+
+        Log::shouldReceive('error')
+            ->once()
+            ->withArgs(fn ($message, $context) => $message === 'Unexpected error while extracting a video frame.'
+                && $context['source_path'] === 'abc'
+                && $context['time'] === 1);
+
+        $video->shouldReceive('crop')->never();
+        $video->shouldReceive('writeToBuffer')->never();
+        $job->handleFile($annotation->video, 'abc');
+        $this->assertEmpty($job->capturedCropBoxes);
+    }
+
     public function testHandleFlatLineStringVector()
     {
         $videoMock = $this->getFrameMock(0);
