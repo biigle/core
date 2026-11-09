@@ -453,9 +453,11 @@ export default {
                 // If the video screen is shown in the popup and the video is already
                 // loaded.
                 if (this.video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-                    this.renderVideo();
-
-                    if (!this.video.paused) {
+                    if (this.video.paused) {
+                        // Draw the first frame using Mediabunny which is also
+                        // important to initialize the video popout correctly.
+                        this.renderPausedFrame();
+                    } else {
                         this.setPlaying();
                     }
                 }
