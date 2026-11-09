@@ -87,6 +87,7 @@
       v-on:attaching-active="handleAttachingLabelActive"
       v-on:swapping-active="handleSwappingLabelActive"
       v-on:force-swapping-active="handleForceSwappingLabelActive"
+      v-on:mediabunny-decoding="setMediabunnyDecoding"
       v-on:seek="seek"
       v-on:start-seeking="startSeeking"
       v-on:is-invalid-shape="handleInvalidShape"
