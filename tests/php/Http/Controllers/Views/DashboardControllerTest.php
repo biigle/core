@@ -36,7 +36,7 @@ class DashboardControllerTest extends TestCase
 
         $this->actingAs($user)->get('/')
             ->assertOk()
-            ->assertSee('Please verify your email address')
+            ->assertSee('You should have received a verification email')
             ->assertSee(route('verification.notice'));
     }
 
@@ -68,6 +68,25 @@ class DashboardControllerTest extends TestCase
             ->assertOk()
             ->assertSee('You will be able to create new projects')
             ->assertDontSee('Please verify your email address');
+    }
+
+    public function testDashboardShowsBothRegistrationNoticesInOrder()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'You will be able to create new projects',
+                'You should have received a verification email',
+            ]);
     }
 
     public function testLandingPage()

@@ -125,7 +125,7 @@ class RegisterControllerTest extends TestCase
             'lastname'  => 'b',
             'affiliation' => 'something',
             'homepage' => 'honeypotvalue',
-        ])->assertRedirect(route('verification.notice'));
+        ])->assertRedirect('/');
 
         /** @var User $user */
         $user = User::where('email', 'e@ma.il')->first();
@@ -154,10 +154,14 @@ class RegisterControllerTest extends TestCase
             'lastname'  => 'b',
             'affiliation' => 'something',
             'homepage' => 'honeypotvalue',
-        ]);
+        ])->assertRedirect('/');
 
         /** @var User $user */
         $user = User::where('email', 'e@ma.il')->first();
+        Notification::assertSentTo(
+            new AnonymousNotifiable,
+            RegistrationConfirmation::class,
+        );
         $user->markEmailAsVerified();
         event(new Verified($user));
 

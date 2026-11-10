@@ -183,15 +183,14 @@ class RegisterController extends Controller
         $limit = RateLimiter::limiter('registration')($request);
         RateLimiter::hit($limit->key, $limit->decaySeconds);
 
-        if ($this->isEmailVerificationEnabled()) {
-            return redirect()->route('verification.notice')
-                ->with('messageType', 'info')
-                ->with('message', 'Please verify your email address before continuing.');
-        }
-
         if ($this->isAdminConfirmationEnabled()) {
             $notifiable = Notification::route('mail', config('biigle.admin_email'));
             Notification::send($notifiable, new RegistrationConfirmation($user));
+        }
+
+        if ($this->isEmailVerificationEnabled()) {
+            return redirect()->intended($this->redirectPath())
+                ->with('welcomeMessage', true);
         }
 
         // Redirect to the intended path in case users came from a project invitation.
