@@ -2,8 +2,8 @@
 
 namespace Biigle\Listeners;
 
-use Biigle\User;
 use Biigle\Notifications\RegistrationConfirmation;
+use Biigle\User;
 use Illuminate\Auth\Events\Verified;
 use Notification;
 
