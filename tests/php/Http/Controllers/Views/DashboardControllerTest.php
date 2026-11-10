@@ -37,7 +37,7 @@ class DashboardControllerTest extends TestCase
         $this->actingAs($user)->get('/')
             ->assertOk()
             ->assertSee('You should have received a verification email')
-            ->assertSee(route('verification.notice'));
+            ->assertSee(route('verification.resend'));
     }
 
     public function testDashboardAllowsLegacyUnverifiedEditor()

@@ -49,16 +49,20 @@ class VerificationController extends Controller
         $limit = RateLimiter::limiter('verification')($request);
         if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
             return back()
-                ->with('message', 'Please wait before submitting the form again.')
+                ->with('message', 'Verification emails are rate limited. Please wait before requesting another email.')
                 ->with('messageType', 'danger');
         }
 
-        $response = $this->baseResend($request);
-        if (!$request->user()->hasVerifiedEmail()) {
-            RateLimiter::hit($limit->key, $limit->decaySeconds);
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('home');
         }
 
-        return $response;
+        $this->baseResend($request);
+        RateLimiter::hit($limit->key, $limit->decaySeconds);
+
+        return redirect()->route('home')
+            ->with('message', 'A fresh verification link has been sent to your email address.')
+            ->with('messageType', 'info');
     }
 
     protected function verificationResponse(string $message, string $messageType)

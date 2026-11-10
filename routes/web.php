@@ -11,7 +11,16 @@
 |
 */
 
-Auth::routes(['verify' => true]);
+Auth::routes(['verify' => false]);
+
+$router->get('email/verify/{id}/{hash}', [
+    'as' => 'verification.verify',
+    'uses' => 'Auth\\VerificationController@verify',
+]);
+$router->post('email/resend', [
+    'as' => 'verification.resend',
+    'uses' => 'Auth\\VerificationController@resend',
+]);
 
 // PUBLIC ROUTES --------------------------------------------------------------
 $router->post('heartbeat', 'Views\HeartbeatController@store');

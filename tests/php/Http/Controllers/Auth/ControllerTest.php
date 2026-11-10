@@ -138,11 +138,13 @@ class ControllerTest extends TestCase
         $this->actingAs($user);
 
         $this->post(route('verification.resend'))
-            ->assertStatus(302);
+            ->assertRedirect('/')
+            ->assertSessionHas('message', 'A fresh verification link has been sent to your email address.')
+            ->assertSessionHas('messageType', 'info');
 
         $this->post(route('verification.resend'))
             ->assertRedirect()
-            ->assertSessionHas('message', 'Please wait before submitting the form again.')
+            ->assertSessionHas('message', 'Verification emails are rate limited. Please wait before requesting another email.')
             ->assertSessionHas('messageType', 'danger');
     }
 

@@ -35,8 +35,11 @@
             <div class="col-xs-12">
                 <p class="text-info text-center">
                     You should have received a verification email. Please verify your email address to unlock all features.
-                    <a href="{{ route('verification.notice') }}">Resend the verification email</a>.
                 </p>
+                <form method="POST" action="{{ route('verification.resend') }}" class="text-center">
+                    @csrf
+                    <button type="submit" class="btn btn-link">Resend the verification email</button>
+                </form>
             </div>
         </div>
     @endif
