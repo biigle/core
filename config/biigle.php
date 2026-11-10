@@ -68,5 +68,5 @@ return [
     */
     'db_param_limit' => 65535,
 
-    'email_verification' => env('BIIGLE_EMAIL_VERIFICATION', false),
+    'email_verification' => env('BIIGLE_EMAIL_VERIFICATION', false) && !env('BIIGLE_OFFLINE_MODE', false),
 ];
