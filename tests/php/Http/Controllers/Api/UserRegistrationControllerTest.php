@@ -7,6 +7,7 @@ use Biigle\Enums\Role;
 use Biigle\Notifications\RegistrationAccepted;
 use Biigle\Notifications\RegistrationRejected;
 use Biigle\Tests\UserTest;
+use Illuminate\Auth\Events\Verified;
 use Notification;
 
 class UserRegistrationControllerTest extends ApiTestCase
@@ -14,7 +15,10 @@ class UserRegistrationControllerTest extends ApiTestCase
     public function testAcceptRegistration()
     {
         Notification::fake();
-        config(['biigle.user_registration_confirmation' => true]);
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
         $user = UserTest::create(['role' => Role::GUEST]);
         $this->doTestApiRoute('GET', "/api/v1/accept-user-registration/{$user->id}");
 
@@ -22,14 +26,40 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(403);
 
+        $this->globalReviewer()->markEmailAsVerified();
         $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(200);
+        $this->assertSame(Role::GUEST, $user->fresh()->role);
+        $this->assertNotNull($user->fresh()->registration_approved_at);
+
+        $user = $user->fresh();
+        $user->markEmailAsVerified();
+        event(new Verified($user));
         $this->assertSame(Role::EDITOR, $user->fresh()->role);
 
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(404);
         Notification::assertSentTo($user, RegistrationAccepted::class);
+    }
+
+    public function testAcceptVerifiedRegistration()
+    {
+        Notification::fake();
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create(['role' => Role::GUEST]);
+        $user->markEmailAsVerified();
+        event(new Verified($user));
+        $this->assertSame(Role::GUEST, $user->fresh()->role);
+
+        $this->globalReviewer()->markEmailAsVerified();
+        $this->beGlobalReviewer();
+        $this->getJson("/api/v1/accept-user-registration/{$user->id}")
+            ->assertStatus(200);
+        $this->assertSame(Role::EDITOR, $user->fresh()->role);
     }
 
     public function testAcceptRedirectReviewer()
@@ -54,8 +84,12 @@ class UserRegistrationControllerTest extends ApiTestCase
 
     public function testAcceptRegistrationDisabled()
     {
-        config(['biigle.user_registration_confirmation' => false]);
+        config([
+            'biigle.email_verification' => false,
+            'biigle.user_registration_confirmation' => false,
+        ]);
         $user = UserTest::create(['role' => Role::GUEST]);
+        $this->globalReviewer()->markEmailAsVerified();
         $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(404);

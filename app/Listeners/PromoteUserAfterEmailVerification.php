@@ -10,13 +10,21 @@ class PromoteUserAfterEmailVerification
 {
     public function handle(Verified $event): void
     {
-        if (config('biigle.user_registration_confirmation') || config('biigle.offline_mode')) {
+        if (config('biigle.offline_mode')) {
             return;
         }
 
-        if ($event->user instanceof User && $event->user->role === Role::GUEST) {
-            $event->user->role = Role::EDITOR;
-            $event->user->save();
+        $user = $event->user;
+        if (!$user instanceof User) {
+            return;
+        }
+
+        if (
+            $user->role === Role::GUEST
+            && (!config('biigle.user_registration_confirmation') || $user->registration_approved_at)
+        ) {
+            $user->role = Role::EDITOR;
+            $user->save();
         }
     }
 }
