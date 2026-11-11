@@ -37,7 +37,12 @@
                 <td>
                     <a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a>
                 </td>
-                <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
+                <td>
+                    <a href="mailto:{{$u->email}}">{{$u->email}}</a>
+                    @if (config('biigle.email_verification') && !$u->hasVerifiedEmail())
+                        <span class="text-muted">[unverified]</span>
+                    @endif
+                </td>
                 <td>
                     <span class="label label-{{$roleClass[$u->role->value]}}" title="{{$roleNames[$u->role->value]}}">{{$roleNames[$u->role->value][0]}}</span>
                 </td>
@@ -49,9 +54,7 @@
                     @endif
                 </td>
                 <td>
-                    @if (!$u->hasVerifiedEmail())
-                        <span class="text-muted">never logged in</span>
-                    @elseif ($u->login_at)
+                    @if ($u->login_at)
                         <time datetime="{{$u->login_at->toAtomString()}}" title="{{$u->login_at->toDateTimeString()}}">{{$u->login_at->diffForHumans()}}</time>
                     @else
                         <span class="text-muted">none</span>
