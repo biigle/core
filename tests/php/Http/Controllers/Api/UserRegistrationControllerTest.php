@@ -19,7 +19,7 @@ class UserRegistrationControllerTest extends ApiTestCase
             'biigle.email_verification' => true,
             'biigle.user_registration_confirmation' => true,
         ]);
-        $user = UserTest::create(['role' => Role::GUEST]);
+        $user = UserTest::create(['role' => Role::GUEST, 'email_verified_at' => null]);
         $this->doTestApiRoute('GET', "/api/v1/accept-user-registration/{$user->id}");
 
         $this->beAdmin();

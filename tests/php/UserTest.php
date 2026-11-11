@@ -37,6 +37,8 @@ class UserTest extends ModelTestCase
 
     public function testCastsLoginAt()
     {
+        config(['biigle.email_verification' => false]);
+
         $this->be($this->model);
         // make sure the login_at attribute is populated
         $response = $this->get('/');
