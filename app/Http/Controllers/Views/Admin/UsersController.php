@@ -39,7 +39,10 @@ class UsersController extends Controller
             // users with login_at=NULL at the end.
             ->orderByRaw('login_at IS NULL, login_at DESC')
             ->orderBy('created_at', 'desc')
-            ->paginate(100);
+            ->paginate(100)
+            // Keep the search query and the "recently joined" filter in the
+            // pagination links.
+            ->withQueryString();
 
         $roleNames = [
             Role::ADMIN->value => 'Admin',
