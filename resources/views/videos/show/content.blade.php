@@ -101,6 +101,7 @@
       :height-offset="timelineHeightOffset"
       :pending-annotation="pendingAnnotation"
       :show-thumbnail-preview="settings.showThumbnailPreview"
+      :show-max-n="settings.showMaxN"
       :video-uuid="videoUuid"
       :has-error="hasError"
       :collapsed="isVideoPopout"

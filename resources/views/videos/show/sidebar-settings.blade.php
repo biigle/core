@@ -78,6 +78,10 @@
     </div>
 
     <div class="sidebar-tab__section">
+        <power-toggle :active="showMaxN" title-off="Show the maximum number of annotations per label in a single frame" title-on="Hide the maximum number of annotations per label in a single frame" v-on:on="handleShowMaxN" v-on:off="handleHideMaxN">MaxN</power-toggle>
+    </div>
+
+    <div class="sidebar-tab__section">
         <power-toggle :disabled="jumpByFrameNotSupported" :active="enableJumpByFrame" title-off="Enable jump by frame" title-on="Disable jump by frame" v-on:on="handleEnableJumpByFrame" v-on:off="handleDisableJumpByFrame">Jump by frame</power-toggle>
         <a href="{{route('manual-tutorials', ['videos', 'sidebar'])}}#jump-by-frame">(experimental)</a>
     </div>

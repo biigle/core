@@ -1,12 +1,21 @@
 <template>
     <div class="track-headers">
         <div class="track-header" v-for="track in tracks">
-            <div
-                class="label-name"
-                v-text="track.label.name"
-                :title="track.label.name"
-                :class="{'text-muted': track.label.pending}"
-                ></div>
+            <div class="header-info">
+                <div
+                    class="label-name"
+                    v-text="track.label.name"
+                    :title="track.label.name"
+                    :class="{'text-muted': track.label.pending}"
+                    ></div>
+                <!-- With only one lane the max is obviously 1 and there is no space for the pill. -->
+                <span
+                    v-if="showMaxN && track.lanes.length > 1"
+                    class="max-n label label-default"
+                    :title="`Maximum ${track.lanes.length} annotations in a single frame`"
+                    v-text="`max: ${track.lanes.length}`"
+                    ></span>
+            </div>
             <!-- eslint-disable-next-line vue/no-unused-vars -->
             <div class="lane-dummy" v-for="lane in track.lanes"></div>
         </div>
@@ -23,6 +32,10 @@ export default {
         scrollTop: {
             type: Number,
             default: 0,
+        },
+        showMaxN: {
+            type: Boolean,
+            default: true,
         },
     },
     watch: {

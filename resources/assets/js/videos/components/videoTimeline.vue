@@ -16,6 +16,7 @@
                 ref="trackheaders"
                 :tracks="annotationTracks"
                 :scroll-top="scrollTop"
+                :show-max-n="showMaxN"
                 ></track-headers>
             <current-time
                 v-if="fullHeight"
@@ -100,6 +101,10 @@ export default {
             },
         },
         showThumbnailPreview: {
+            type: Boolean,
+            default: true,
+        },
+        showMaxN: {
             type: Boolean,
             default: true,
         },
