@@ -150,7 +150,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $job->handle();
 
         $box = $job->capturedCropBoxes[0];
-        $this->assertSame([23, 0, 135, 135], $box);
+        $this->assertSame([47, 47, 266, 266], $box);
     }
 
     public function testHandleCircle()
@@ -170,7 +170,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $job->handle();
 
         $box = $job->capturedCropBoxes[0];
-        $this->assertSame([70, 47, 40, 40], $box);
+        $this->assertSame([144, 144, 72, 72], $box);
     }
 
     public function testHandlePolygon()
@@ -190,7 +190,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $job->handle();
 
         $box = $job->capturedCropBoxes[0];
-        $this->assertSame([70, 47, 40, 40], $box);
+        $this->assertSame([144, 144, 72, 72], $box);
     }
 
     public function testHandleWholeFrame()
@@ -209,7 +209,7 @@ class InitializeFeatureVectorChunkTest extends TestCase
         $job->handle();
 
         $box = $job->capturedCropBoxes[0];
-        $this->assertSame([0, 0, 180, 135], $box);
+        $this->assertSame([0, 0, 360, 270], $box);
     }
 }
 

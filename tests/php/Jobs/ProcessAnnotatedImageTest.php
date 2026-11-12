@@ -94,7 +94,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($image);
 
@@ -149,7 +149,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(190, 190, 120, 120)
+            ->with(150, 150, 200, 200)
             ->once()
             ->andReturn($image);
 
@@ -175,7 +175,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(190, 190, 120, 120)
+            ->with(150, 150, 200, 200)
             ->once()
             ->andReturn($image);
 
@@ -256,7 +256,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $image->shouldReceive('crop')
             ->once()
-            ->with(0, 0, 148, 148)
+            ->with(0, 0, 200, 200)
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
@@ -277,7 +277,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $image->shouldReceive('crop')
             ->once()
-            ->with(852, 602, 148, 148)
+            ->with(800, 550, 200, 200)
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
@@ -321,7 +321,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(10, 10, 100, 100)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($image);
 

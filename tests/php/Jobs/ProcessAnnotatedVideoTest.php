@@ -109,7 +109,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -178,7 +178,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(90, 90, 120, 120)
+            ->with(50, 50, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -211,7 +211,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(90, 90, 120, 120)
+            ->with(50, 50, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -301,7 +301,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -332,7 +332,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(0, 0, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -358,7 +358,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(852, 602, 148, 148)
+            ->with(800, 550, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -413,7 +413,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(10, 10, 100, 100)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 

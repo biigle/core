@@ -292,8 +292,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function getAnnotationPatch($image, $points, $shape)
     {
-        $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
+        $thumbWidth = config('thumbnails.width') * 2;
+        $thumbHeight = config('thumbnails.height') * 2;
 
         if ($shape === Shape::WHOLE_FRAME) {
             $image = $image->resize(floatval($thumbWidth) / $image->width);
