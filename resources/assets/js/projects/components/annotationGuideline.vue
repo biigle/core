@@ -175,7 +175,7 @@
                         </p>
                     </div>
 
-                    <div class="form-group">
+                    <div v-if="canChooseLabelShape" class="form-group">
                         <label>Label shape</label>
                         <div class="btn-group btn-group-justified">
                             <div
@@ -256,7 +256,7 @@
                         ></textarea>
                     </div>
 
-                    <div v-if="selectedShape" class="form-group">
+                    <div v-if="selectedShape && canChooseLabelShape" class="form-group">
                         <label>Label shape</label>
                         <div class="btn-group btn-group-justified">
                             <div
@@ -407,6 +407,11 @@ export default {
         },
         allowedShapeOptions() {
             return this.getShapeOptions(this.allowedShapes, this.alignedRectangleAllowed);
+        },
+        // A label shape has no effect if the guideline allows only a single shape (or
+        // tool) anyway.
+        canChooseLabelShape() {
+            return this.allowedShapeOptions.length > 1;
         },
         availableShapeOptions() {
             return this.getShapeOptions(this.availableShapes, true);
