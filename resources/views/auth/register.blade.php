@@ -104,9 +104,6 @@
                         @include('auth.partials.privacy-checkbox')
                         @include('auth.partials.terms-checkbox')
 
-                        @if ($errors->has('homepage'))
-                            <p class="text-danger">{{ $errors->first('homepage') }}</p>
-                        @endif
                         @if ($errors->has('website'))
                             <p class="text-danger">{{ $errors->first('website') }}</p>
                         @endif

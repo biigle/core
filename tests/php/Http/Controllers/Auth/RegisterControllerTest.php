@@ -73,11 +73,6 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ];
 
-        $this->get('register');
-        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
-            ->post('register', ['_token' => Session::token()])
-            ->assertRedirect('register');
-
         $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
             ->post('register', $data)
             ->assertRedirect('/');
@@ -179,6 +174,7 @@ class RegisterControllerTest extends TestCase
             'firstname' => 'a',
             'lastname'  => 'b',
             'affiliation' => 'something',
+            'website' => 'spam',
             'homepage' => 'honeypotvalue',
         ])->assertRedirect('register');
 
@@ -197,6 +193,40 @@ class RegisterControllerTest extends TestCase
         ])->assertRedirect('/');
 
         $this->assertTrue(User::where('email', 'e@ma.il')->exists());
+    }
+
+    public function testRegisterImmediatelyWithHoneypotEnabled()
+    {
+        Honeypot::enable();
+        RateLimiter::for('registration', fn ($request) => Limit::perSecond(1, 10)->by($request->ip()));
+
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.2'])
+            ->post('register', [
+                '_token' => Session::token(),
+                'email' => 'immediate@ma.il',
+                'password' => 'password',
+                'firstname' => 'a',
+                'lastname' => 'b',
+                'affiliation' => 'something',
+                'website' => '',
+            ])->assertRedirect('/');
+
+        $this->assertTrue(User::where('email', 'immediate@ma.il')->exists());
+
+        $this->post('logout');
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.2'])
+            ->post('register', [
+                '_token' => Session::token(),
+                'email' => 'second@ma.il',
+                'password' => 'password',
+                'firstname' => 'a',
+                'lastname' => 'b',
+                'affiliation' => 'something',
+                'website' => '',
+            ])
+            ->assertRedirect('register')
+            ->assertSessionHas('message', 'Please wait before submitting the form again.')
+            ->assertSessionHas('messageType', 'danger');
     }
 
     public function testRegisterEmailTaken()

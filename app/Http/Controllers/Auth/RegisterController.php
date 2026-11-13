@@ -69,7 +69,6 @@ class RegisterController extends Controller
         $rules = (new StoreUser)->rules();
         $additionalRules = [
             'website' => 'honeypot',
-            'homepage' => 'honeytime:10|required',
             'affiliation' => 'required|max:255',
         ];
 
@@ -147,6 +146,7 @@ class RegisterController extends Controller
                 ->with('message', 'Please wait before submitting the form again.')
                 ->with('messageType', 'danger');
         }
+        RateLimiter::hit($limit->key, $limit->decaySeconds);
 
         return $this->baseRegister($request);
     }
@@ -180,9 +180,6 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
-        $limit = RateLimiter::limiter('registration')($request);
-        RateLimiter::hit($limit->key, $limit->decaySeconds);
-
         if ($this->isAdminConfirmationEnabled()) {
             $notifiable = Notification::route('mail', config('biigle.admin_email'));
             Notification::send($notifiable, new RegistrationConfirmation($user));
