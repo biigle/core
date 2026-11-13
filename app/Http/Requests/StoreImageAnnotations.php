@@ -9,6 +9,7 @@ use Biigle\Label;
 use Biigle\Rules\AnnotationPoints;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class StoreImageAnnotations extends FormRequest
 {
@@ -105,8 +106,11 @@ class StoreImageAnnotations extends FormRequest
     public function withValidator($validator)
     {
         if (count($this->all()) > self::LIMIT) {
-            $validator->errors()->add('limit', 'No more than 100 annotations can be created with a single request.');
-            $this->failedValidation($validator);
+            // Don't use $validator->errors() here because it would run all rules on the
+            // oversized input first.
+            throw ValidationException::withMessages([
+                'limit' => 'No more than 100 annotations can be created with a single request.',
+            ]);
         }
 
         $validator->after(function ($validator) {

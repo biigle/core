@@ -31,6 +31,8 @@ class AreaReportGeneratorTest extends TestCase
         'annotation_width_px',
         'annotation_height_px',
         'annotation_area_sqpx',
+        'image_area_sqm',
+        'image_area_sqpx',
     ];
 
     public function testProperties()
@@ -126,6 +128,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 200, 10000 * M_PI,
+                '', '',
             ]);
 
         $mock->shouldReceive('close')
@@ -179,6 +182,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
+                '', '',
             ]);
 
         $mock->shouldReceive('close')
@@ -233,6 +237,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 100, 200, 10000,
+                '', '',
             ]);
 
         $mock->shouldReceive('close')
@@ -287,6 +292,62 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 5000 * M_PI,
+                '', '',
+            ]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportImageArea()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'attrs' => ['width' => 1000, 'height' => 500],
+        ]);
+
+        $a = ImageAnnotationTest::create([
+            'shape' => Shape::RECTANGLE,
+            'image_id' => $image->id,
+            'points' => [100, 100, 100, 300, 200, 300, 200, 100],
+        ]);
+
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $a->id,
+                Shape::RECTANGLE->value, 'Rectangle',
+                $al->label_id, $al->label->name,
+                $image->id, $image->filename,
+                '', '', '',
+                200, 100, 20000,
+                '', 500000,
             ]);
 
         $mock->shouldReceive('close')
@@ -305,7 +366,7 @@ class AreaReportGeneratorTest extends TestCase
     public function testGenerateReportSqm()
     {
         if (!class_exists(LImage::class)) {
-            $this->markTestSkipped('Reqires the biigle/laserpoints module.');
+            $this->markTestSkipped('Requires the biigle/laserpoints module.');
         }
 
         $volume = VolumeTest::create([
@@ -345,6 +406,156 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 0.2, 0.1, 0.02,
                 200, 100, 20000,
+                1, 1000000,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSqmFromMetadata()
+    {
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => 'a.jpg',
+            'attrs' => ['metadata' => ['area' => 1], 'width' => 1000, 'height' => 1000],
+        ]);
+
+        // An invalid area is ignored.
+        $image2 = ImageTest::create([
+            'volume_id' => $volume->id,
+            'filename' => 'b.jpg',
+            'attrs' => ['metadata' => ['area' => 0], 'width' => 1000, 'height' => 1000],
+        ]);
+
+        $a = ImageAnnotationTest::create([
+            'shape' => Shape::RECTANGLE,
+            'image_id' => $image->id,
+            'points' => [100, 100, 100, 300, 200, 300, 200, 100],
+        ]);
+
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $a2 = ImageAnnotationTest::create([
+            'shape' => Shape::RECTANGLE,
+            'image_id' => $image2->id,
+            'points' => [100, 100, 100, 300, 200, 300, 200, 100],
+        ]);
+
+        $al2 = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $a->id,
+                Shape::RECTANGLE->value, 'Rectangle',
+                $al->label_id, $al->label->name,
+                $image->id, $image->filename,
+                0.2, 0.1, 0.02,
+                200, 100, 20000,
+                1, 1000000,
+            ]);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $a2->id,
+                Shape::RECTANGLE->value, 'Rectangle',
+                $al2->label_id, $al2->label->name,
+                $image2->id, $image2->filename,
+                '', '', '',
+                200, 100, 20000,
+                '', 1000000,
+            ]);
+
+        $mock->shouldReceive('close')
+            ->once();
+
+        App::singleton(CsvFile::class, fn () => $mock);
+
+        $generator = new AreaReportGenerator;
+        $generator->setSource($volume);
+        $mock = Mockery::mock();
+        $mock->shouldReceive('run')->once();
+        $generator->setPythonScriptRunner($mock);
+        $generator->generateReport('my/path');
+    }
+
+    public function testGenerateReportSqmPrefersMetadata()
+    {
+        if (!class_exists(LImage::class)) {
+            $this->markTestSkipped('Requires the biigle/laserpoints module.');
+        }
+
+        $volume = VolumeTest::create([
+            'name' => 'My Cool Volume',
+        ]);
+
+        $image = ImageTest::create([
+            'volume_id' => $volume->id,
+            'attrs' => [
+                'metadata' => ['area' => 1],
+                'laserpoints' => ['area' => 4],
+                'width' => 1000,
+                'height' => 1000,
+            ],
+        ]);
+
+        $a = ImageAnnotationTest::create([
+            'shape' => Shape::RECTANGLE,
+            'image_id' => $image->id,
+            'points' => [100, 100, 100, 300, 200, 300, 200, 100],
+        ]);
+
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+        ]);
+
+        $mock = Mockery::mock();
+        $mock->shouldReceive('put')
+            ->once()
+            ->with($volume->name);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with($this->columns);
+
+        $mock->shouldReceive('putCsv')
+            ->once()
+            ->with([
+                $a->id,
+                Shape::RECTANGLE->value, 'Rectangle',
+                $al->label_id, $al->label->name,
+                $image->id, $image->filename,
+                0.2, 0.1, 0.02,
+                200, 100, 20000,
+                1, 1000000,
             ]);
 
         $mock->shouldReceive('close')
@@ -404,6 +615,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
+                '', '',
             ]);
 
         $mock->shouldReceive('putCsv')
@@ -415,6 +627,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
+                '', '',
             ]);
 
         $mock->shouldReceive('close')
@@ -471,6 +684,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
+                '', '',
             ]);
 
         $mock->shouldReceive('putCsv')
@@ -482,6 +696,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
+                '', '',
             ]);
 
         $mock->shouldReceive('close')
@@ -539,6 +754,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
+                '', '',
             ]);
 
         $mock->shouldReceive('putCsv')
@@ -550,6 +766,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 200, 100, 20000,
+                '', '',
             ]);
 
         $mock->shouldReceive('close')
@@ -606,6 +823,7 @@ class AreaReportGeneratorTest extends TestCase
                 $image->id, $image->filename,
                 '', '', '',
                 300, 0, 0,
+                '', '',
             ]);
 
         $mock->shouldReceive('close')
