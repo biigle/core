@@ -42,6 +42,8 @@ class StoreAnnotationGuidelineLabel extends FormRequest
 
             if (!$belongsToProject) {
                 $validator->errors()->add('label_id', 'The label does not belong to a label tree of this project.');
+
+                return;
             }
 
             $this->validateShape($validator);
