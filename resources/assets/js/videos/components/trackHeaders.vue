@@ -10,10 +10,10 @@
                     ></div>
                 <!-- With only one lane the max is obviously 1 and there is no space for the pill. -->
                 <span
-                    v-if="showMaxN && track.lanes.length > 1"
+                    v-if="showMaxN && track.maxN > 1"
                     class="max-n label label-default"
-                    :title="`Maximum ${track.lanes.length} annotations in a single frame`"
-                    v-text="`max: ${track.lanes.length}`"
+                    :title="`Maximum ${track.maxN} annotations in a single frame`"
+                    v-text="`max: ${track.maxN}`"
                     ></span>
             </div>
             <!-- eslint-disable-next-line vue/no-unused-vars -->

@@ -89,7 +89,7 @@
         </p>
 
         <p>
-            The MaxN switch controls the display of a <span class="label label-default">max: N</span> label below the label names on the left of the video timeline. N is the maximum number of annotations with this label that exist in the same video frame (i.e. the number of lanes of the label). The label is hidden if N is 1.
+            The Label MaxN switch controls the display of a <span class="label label-default">max: N</span> label below the label names on the left of the video timeline. N is the maximum number of annotations with this label that exist in the same video frame. The label is hidden if N is 1.
         </p>
 
         <p>

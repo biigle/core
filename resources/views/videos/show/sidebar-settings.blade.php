@@ -78,7 +78,7 @@
     </div>
 
     <div class="sidebar-tab__section">
-        <power-toggle :active="showMaxN" title-off="Show the maximum number of annotations per label in a single frame" title-on="Hide the maximum number of annotations per label in a single frame" v-on:on="handleShowMaxN" v-on:off="handleHideMaxN">MaxN</power-toggle>
+        <power-toggle :active="showMaxN" title-off="Show the maximum number of annotations per label in a single frame" title-on="Hide the maximum number of annotations per label in a single frame" v-on:on="handleShowMaxN" v-on:off="handleHideMaxN">Label MaxN</power-toggle>
     </div>
 
     <div class="sidebar-tab__section">

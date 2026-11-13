@@ -230,7 +230,8 @@ export default {
                 return {
                     id: labelId,
                     label: this.labelMap[labelId],
-                    lanes: this.getAnnotationTrackLanes(map[labelId])
+                    lanes: this.getAnnotationTrackLanes(map[labelId]),
+                    maxN: this.getAnnotationTrackMaxN(map[labelId]),
                 };
             });
         },
@@ -326,6 +327,25 @@ export default {
             });
 
             return lanes;
+        },
+
+        getAnnotationTrackMaxN(annotations) {
+            let maxN = 0;
+            let frameCounts = {};
+
+            annotations.forEach((annotation) => {
+                if (!frameCounts.hasOwnProperty(annotation.startFrame)) {
+                    frameCounts[annotation.startFrame] = 0;
+                }
+
+                frameCounts[annotation.startFrame] += 1;
+
+                if (frameCounts[annotation.startFrame] > maxN) {
+                    maxN = frameCounts[annotation.startFrame];
+                }
+            });
+
+            return maxN;
         },
         updateHoverTime(time) {
             this.hoverTime = time;
