@@ -27,6 +27,10 @@
         </p>
 
         <p>
+            If a project of the volume has an annotation guideline, you can select it with the <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Use Guideline</button> button above the label trees. If the guideline is enforced, only its labels can be attached to files. Read more about this in the <a href="{{route('manual-tutorials', ['projects', 'about'])}}#use-a-guideline">annotation guideline</a> section of the projects article.
+        </p>
+
+        <p>
             To show all labels that are attached to the files activate the "Show labels of each image/video" switch in the <i class="fa fa-tags"></i> image/video labels tab. This will show the list of all attached labels on each file. Click the <button class="close" style="float: none;">×</button> button next to a file label to detach it.
         </p>
 

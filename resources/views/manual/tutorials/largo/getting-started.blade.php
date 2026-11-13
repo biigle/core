@@ -92,7 +92,28 @@
         </ul>
 
         <p>
-            When the Largo session has been saved, Largo is reset and you can start a new session.
+            In the following cases, changes may not be applied:
+        </p>
+
+        <ul>
+            <li>
+                If a label should be detached from an annotation but the label was <i>not</i> attached by you and "Force delete/relabel" is <i>not</i> enabled, the annotation remains unchanged.
+            </li>
+            <li>
+                If the annotation was relabeled but an enforced annotation guideline (see below) does not allow the new label for the annotation shape, the annotation remains unchanged.
+            </li>
+        </ul>
+
+        <p>
+            When the Largo session has been saved and all changes were applied, Largo is reset and you can start a new session.
+        </p>
+
+        <p>
+            If some changes were not applied, Largo is not reset. Instead, the annotations that were not changed are shown again in the relabel step together with a message that explains why. You can review these annotations, relabel them and save again. Go <button class="btn btn-default btn-xs">Back</button> to discard the review and start a new session.
+        </p>
+
+        <p>
+            If a project has an <a href="{{route('manual-tutorials', ['projects', 'about'])}}#use-a-guideline">annotation guideline</a>, you can select it with the <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Use Guideline</button> button in the label trees <button class="btn btn-xs btn-default"><span class="fa fa-tags" aria-hidden="true"></span></button> tab. Labels of the guideline are marked in the label trees and the description and reference image of the selected label are shown at the bottom of the tab. If the guideline is enforced, only labels of the guideline can be selected in the relabel step. You can still choose any label in the first step to review its annotations. In the project Largo, the enforced guideline of the project always applies.
         </p>
 
 

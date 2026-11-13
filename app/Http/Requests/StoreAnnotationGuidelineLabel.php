@@ -42,8 +42,38 @@ class StoreAnnotationGuidelineLabel extends FormRequest
 
             if (!$belongsToProject) {
                 $validator->errors()->add('label_id', 'The label does not belong to a label tree of this project.');
+
+                return;
             }
+
+            $this->validateShape($validator);
         });
+    }
+
+    /**
+     * Check if the shape (and annotation tool) is allowed by the guideline.
+     */
+    protected function validateShape(Validator $validator): void
+    {
+        if (!$this->guideline->enforced || !$this->filled('shape')) {
+            return;
+        }
+
+        $shape = $this->integer('shape');
+
+        // The aligned rectangle tool doesn't depend on only_shapes.
+        if ($shape === Shape::RECTANGLE->value && $this->boolean('use_aligned_rectangle')) {
+            if (!$this->guideline->allow_aligned_rectangle) {
+                $validator->errors()->add('shape', 'The aligned rectangle tool is not allowed by the annotation guideline.');
+            }
+
+            return;
+        }
+
+        $onlyShapes = $this->guideline->only_shapes;
+        if (!is_null($onlyShapes) && !in_array($shape, $onlyShapes, true)) {
+            $validator->errors()->add('shape', 'The shape is not allowed by the annotation guideline.');
+        }
     }
 
     /**
@@ -55,13 +85,9 @@ class StoreAnnotationGuidelineLabel extends FormRequest
     {
         return [
             'label_id' => ['required', 'integer', 'exists:labels,id'],
-            'description' => ['nullable', 'string'],
-            'shape' => [
-                'nullable',
-                'integer',
-                Rule::enum(Shape::class),
-                Rule::when($this->guideline->enforced && !is_null($this->guideline->only_shapes), [Rule::in($this->guideline->only_shapes)]),
-            ],
+            'description' => ['nullable', 'string', 'max:256'],
+            'shape' => ['nullable', 'integer', Rule::enum(Shape::class)],
+            'use_aligned_rectangle' => ['boolean'],
             'reference_image' => [
                 'nullable',
                 'file',

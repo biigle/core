@@ -10,4 +10,21 @@
         border: 2px solid white;
         border-radius: 50%;
     }
+
+    .label-indicator__guideline {
+        max-width: 250px;
+        margin-top: .25em;
+    }
+
+    .label-indicator__description {
+        margin: .25em 0 0 0;
+        white-space: pre-wrap;
+    }
+
+    .label-indicator__image {
+        display: block;
+        max-width: 100%;
+        max-height: 200px;
+        margin-top: .25em;
+    }
 }

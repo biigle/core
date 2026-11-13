@@ -27,6 +27,8 @@
 
         @can('edit-in', $volume)
             biigle.$declare('volumes.labelTrees', {!!$labelTrees!!});
+            biigle.$declare('volumes.annotationGuidelines', @json($annotationGuidelines));
+            biigle.$declare('volumes.mustUseAnnotationGuideline', @json($mustUseAnnotationGuideline));
         @endcan
     </script>
     @mixin('volumesScripts')
@@ -97,6 +99,7 @@
             :images="filesToShow"
             :initial-offset="initialOffset"
             :selected-label="selectedLabel"
+            :guideline-id="annotationGuidelineId"
             :show-filenames="showFilenames"
             :show-labels="showLabels"
             :width="{{config('thumbnails.width')}}"

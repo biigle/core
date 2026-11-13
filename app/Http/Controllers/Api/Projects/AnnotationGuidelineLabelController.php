@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Api\Projects;
 
 use Biigle\AnnotationGuideline;
 use Biigle\AnnotationGuidelineLabel;
+use Biigle\Enums\Shape;
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\Http\Requests\StoreAnnotationGuidelineLabel;
 use Biigle\Label;
@@ -24,6 +25,7 @@ class AnnotationGuidelineLabelController extends Controller
      * @apiParam {Integer} id The ID of the annotation guideline
      * @apiParam {Integer} label_id The ID of the label
      * @apiParam {Integer} shape (optional) The ID of the preferred shape for the label
+     * @apiParam {Boolean} use_aligned_rectangle (optional) Only relevant if shape is a rectangle. If true, the aligned rectangle tool should be used for the label, otherwise (default) the regular rectangle tool. Always stored as false for other shapes.
      * @apiParam {String} description (optional) A description of the label
      * @apiParam {File|null} reference_image (optional) The reference image for the label (JPEG, max. 5 MB, max. 300x300 px). Set to null to delete the previous reference image.
      */
@@ -34,7 +36,11 @@ class AnnotationGuidelineLabelController extends Controller
             $validated = $request->validated();
 
             $labelId = $validated['label_id'];
-            $shape = $validated['shape'] ?? null;
+            // Multipart requests send the shape as string.
+            $shape = $request->filled('shape') ? $request->integer('shape') : null;
+            // The flag must only be set for rectangles so it is unambiguous.
+            $useAlignedRectangle = $shape === Shape::RECTANGLE->value
+                && ($validated['use_aligned_rectangle'] ?? false);
             $description = $validated['description'] ?? null;
 
             $label = $request->guideline->labels()
@@ -45,6 +51,7 @@ class AnnotationGuidelineLabelController extends Controller
                 $guidelineLabel = $label->pivot;
                 $guidelineLabel->update([
                     'shape' => $shape,
+                    'use_aligned_rectangle' => $useAlignedRectangle,
                     'description' => $description,
                 ]);
             } else {
@@ -52,6 +59,7 @@ class AnnotationGuidelineLabelController extends Controller
                     'annotation_guideline_id' => $guidelineId,
                     'label_id' => $labelId,
                     'shape' => $shape,
+                    'use_aligned_rectangle' => $useAlignedRectangle,
                     'description' => $description,
                     'uuid' => Str::uuid(),
                 ]);

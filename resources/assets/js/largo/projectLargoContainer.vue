@@ -22,6 +22,8 @@ export default {
 
             return Promise.all([imagePromise, videoPromise]);
         },
+        // The guideline is not sent because project Largo always applies the enforced
+        // guideline of the project.
         performSave(payload) {
             return ProjectsApi.save({id: this.projectId}, payload);
         },
@@ -50,6 +52,8 @@ export default {
         this.projectId = biigle.$require('largo.projectId');
         this.projectIds = [this.projectId];
         this.labelTrees = biigle.$require('largo.labelTrees');
+        this.canForceEdit = biigle.$require('largo.canForceEdit');
+        this.initAnnotationGuidelines();
     },
 };
 </script>
