@@ -64,7 +64,7 @@
                             {{ $label->name }}
                         </td>
                         <td>
-                            @if ($label->pivot->shape === \Biigle\Enums\Shape::RECTANGLE->value && $label->pivot->allow_aligned_rectangle)
+                            @if ($label->pivot->use_aligned_rectangle)
                                 AlignedRectangle
                             @elseif ($label->pivot->shape)
                                 {{ $shapes[$label->pivot->shape] }}

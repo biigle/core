@@ -459,7 +459,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $alignedLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'shape' => Shape::RECTANGLE->value,
-            'allow_aligned_rectangle' => true,
+            'use_aligned_rectangle' => true,
         ]);
         $circleLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
@@ -518,12 +518,12 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $alignedLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'shape' => Shape::RECTANGLE->value,
-            'allow_aligned_rectangle' => true,
+            'use_aligned_rectangle' => true,
         ]);
         $rectangleLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'shape' => Shape::RECTANGLE->value,
-            'allow_aligned_rectangle' => false,
+            'use_aligned_rectangle' => false,
         ]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
@@ -546,12 +546,12 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $alignedLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'shape' => Shape::RECTANGLE->value,
-            'allow_aligned_rectangle' => true,
+            'use_aligned_rectangle' => true,
         ]);
         $rectangleLabel = AnnotationGuidelineLabel::factory()->create([
             'annotation_guideline_id' => $guideline->id,
             'shape' => Shape::RECTANGLE->value,
-            'allow_aligned_rectangle' => false,
+            'use_aligned_rectangle' => false,
         ]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}";
 
@@ -561,7 +561,9 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             'allow_aligned_rectangle' => false,
         ])->assertStatus(200);
 
-        $this->assertNull($alignedLabel->fresh()->shape);
+        $alignedLabel->refresh();
+        $this->assertNull($alignedLabel->shape);
+        $this->assertFalse($alignedLabel->use_aligned_rectangle);
         $this->assertSame(Shape::RECTANGLE->value, $rectangleLabel->fresh()->shape);
     }
 

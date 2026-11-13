@@ -45,9 +45,9 @@ return new class extends Migration {
 
             // Value of the Biigle\Enums\Shape enum.
             $table->integer('shape')->nullable();
-            // Only relevant for the Rectangle shape. If true, the aligned rectangle tool
-            // must be used, otherwise the regular rectangle tool.
-            $table->boolean('allow_aligned_rectangle')->default(true);
+            // True if and only if the shape is Rectangle and the aligned rectangle tool
+            // must be used instead of the regular rectangle tool.
+            $table->boolean('use_aligned_rectangle')->default(false);
 
             $table->string('description', 256)->nullable();
 

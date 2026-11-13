@@ -125,9 +125,8 @@ class AnnotationGuidelineController extends Controller
 
         if (!$allowAlignedRectangle) {
             $labels->clone()
-                ->where('shape', Shape::RECTANGLE->value)
-                ->where('allow_aligned_rectangle', true)
-                ->update(['shape' => null]);
+                ->where('use_aligned_rectangle', true)
+                ->update(['shape' => null, 'use_aligned_rectangle' => false]);
         }
 
         if (!is_null($onlyShapes)) {
@@ -135,8 +134,7 @@ class AnnotationGuidelineController extends Controller
                 // If only_shapes is empty, this matches all labels with a shape.
                 ->whereNotIn('shape', $onlyShapes)
                 // Labels with the aligned rectangle tool don't depend on only_shapes.
-                ->where(fn ($query) => $query->where('shape', '!=', Shape::RECTANGLE->value)
-                    ->orWhere('allow_aligned_rectangle', false))
+                ->where('use_aligned_rectangle', false)
                 ->update(['shape' => null]);
         }
     }

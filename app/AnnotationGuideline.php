@@ -77,7 +77,7 @@ class AnnotationGuideline extends Model
     {
         return $this->belongsToMany(Label::class)
             ->using(AnnotationGuidelineLabel::class)
-            ->withPivot('shape', 'allow_aligned_rectangle', 'description', 'uuid', 'reference_image_path');
+            ->withPivot('shape', 'use_aligned_rectangle', 'description', 'uuid', 'reference_image_path');
     }
 
     /**

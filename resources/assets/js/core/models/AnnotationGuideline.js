@@ -88,13 +88,12 @@ export default class AnnotationGuideline {
      */
     getLabelShape(labelId) {
         const label = this.getLabel(labelId);
-        const shape = this.shapeNames[label?.shape];
 
-        if (shape === 'Rectangle' && label.allow_aligned_rectangle !== false) {
+        if (label?.use_aligned_rectangle) {
             return 'AlignedRectangle';
         }
 
-        return shape;
+        return this.shapeNames[label?.shape];
     }
 
     /**

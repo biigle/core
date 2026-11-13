@@ -336,7 +336,7 @@ export default {
             labelDescription: '',
             selectedShape: null,
             // Only relevant if the selected shape is a rectangle.
-            labelAllowAlignedRectangle: true,
+            labelUseAlignedRectangle: false,
             referenceImage: null,
             referenceImagePreview: null,
             isDirty: false,
@@ -435,7 +435,7 @@ export default {
             if (guidelineLabel) {
                 this.labelDescription = guidelineLabel.description || '';
                 this.selectedShape = guidelineLabel.shape || null;
-                this.labelAllowAlignedRectangle = guidelineLabel.allow_aligned_rectangle !== false;
+                this.labelUseAlignedRectangle = guidelineLabel.use_aligned_rectangle === true;
                 this.referenceImagePreview = guidelineLabel.reference_image_url;
                 this.isDirty = false;
             }
@@ -496,7 +496,8 @@ export default {
             this.selectedLabel = label;
         },
         // The aligned rectangle is a separate option next to the rectangle, although it
-        // is stored as rectangle shape with the allow_aligned_rectangle flag.
+        // is stored as rectangle shape with the allow_aligned_rectangle flag (guideline)
+        // or the use_aligned_rectangle flag (guideline label).
         getShapeOptions(shapes, withAlignedRectangle) {
             const options = [];
             this.availableShapes.forEach((name, id) => {
@@ -588,15 +589,16 @@ export default {
                 return false;
             }
 
-            return option.id !== this.rectangleId || this.labelAllowAlignedRectangle === (option.key === 'AlignedRectangle');
+            return option.id !== this.rectangleId || this.labelUseAlignedRectangle === (option.key === 'AlignedRectangle');
         },
         selectLabelShape(option) {
             this.isDirty = true;
             if (this.isLabelShapeOptionActive(option)) {
                 this.selectedShape = null;
+                this.labelUseAlignedRectangle = false;
             } else {
                 this.selectedShape = option.id;
-                this.labelAllowAlignedRectangle = option.key === 'AlignedRectangle';
+                this.labelUseAlignedRectangle = option.key === 'AlignedRectangle';
             }
         },
         async deselectLabel() {
@@ -610,7 +612,7 @@ export default {
         resetForm() {
             this.labelDescription = '';
             this.selectedShape = null;
-            this.labelAllowAlignedRectangle = true;
+            this.labelUseAlignedRectangle = false;
             this.referenceImage = null;
             if (this.referenceImagePreview) {
                 if (this.referenceImagePreview.startsWith('blob:')) {
@@ -698,7 +700,7 @@ export default {
                 formData.append('shape', this.selectedShape);
             }
             if (this.selectedShape === this.rectangleId) {
-                formData.append('allow_aligned_rectangle', this.labelAllowAlignedRectangle ? '1' : '0');
+                formData.append('use_aligned_rectangle', this.labelUseAlignedRectangle ? '1' : '0');
             }
             if (this.referenceImage !== null) {
                 formData.append('reference_image', this.referenceImage);
@@ -781,9 +783,10 @@ export default {
                     return;
                 }
 
-                if (label.shape === this.rectangleId && label.allow_aligned_rectangle !== false) {
+                if (label.use_aligned_rectangle) {
                     if (!this.alignedRectangleAllowed) {
                         label.shape = null;
+                        label.use_aligned_rectangle = false;
                     }
                 } else if (this.hasOnlyShapes && !this.onlyShapeIds.has(label.shape)) {
                     label.shape = null;

@@ -39,7 +39,7 @@ class AnnotationGuidelineController extends Controller
      *           "annotation_guideline_id": 1,
      *           "label_id": 4,
      *           "shape": 1,
-     *           "allow_aligned_rectangle": true,
+     *           "use_aligned_rectangle": false,
      *           "description": "description of a label",
      *           "reference_image_url": null
      *         }

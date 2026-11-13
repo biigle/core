@@ -35,7 +35,7 @@ class AnnotationGuidelineLabel extends Pivot
         // of the guideline.
         'shape' => 'int',
         'annotation_guideline_id' => 'int',
-        'allow_aligned_rectangle' => 'boolean',
+        'use_aligned_rectangle' => 'boolean',
     ];
 
     protected static function booted(): void

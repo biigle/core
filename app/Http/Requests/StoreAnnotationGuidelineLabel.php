@@ -60,7 +60,7 @@ class StoreAnnotationGuidelineLabel extends FormRequest
         $shape = $this->integer('shape');
 
         // The aligned rectangle tool doesn't depend on only_shapes.
-        if ($shape === Shape::RECTANGLE->value && $this->boolean('allow_aligned_rectangle', true)) {
+        if ($shape === Shape::RECTANGLE->value && $this->boolean('use_aligned_rectangle')) {
             if (!$this->guideline->allow_aligned_rectangle) {
                 $validator->errors()->add('shape', 'The aligned rectangle tool is not allowed by the annotation guideline.');
             }
@@ -85,7 +85,7 @@ class StoreAnnotationGuidelineLabel extends FormRequest
             'label_id' => ['required', 'integer', 'exists:labels,id'],
             'description' => ['nullable', 'string', 'max:256'],
             'shape' => ['nullable', 'integer', Rule::enum(Shape::class)],
-            'allow_aligned_rectangle' => ['boolean'],
+            'use_aligned_rectangle' => ['boolean'],
             'reference_image' => [
                 'nullable',
                 'file',
