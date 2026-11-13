@@ -114,12 +114,12 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
-                this.requireSelectedLabel();
             // The buttons of disallowed shapes are disabled but the keyboard shortcuts
             // still call this method.
             } else if (!this.isShapeAllowed(getGuidelineShape('draw' + name))) {
                 return;
+            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
+                this.requireSelectedLabel();
             } else if (this.canAdd) {
                 this.interactionMode = 'draw' + name;
             }
