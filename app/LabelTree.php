@@ -4,8 +4,10 @@ namespace Biigle;
 
 use Biigle\Enums\Role;
 use Biigle\Enums\Visibility;
+use Biigle\Observers\LabelTreeObserver;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Ramsey\Uuid\Uuid;
@@ -22,6 +24,7 @@ use Ramsey\Uuid\Uuid;
  * @property Visibility $visibility
  */
 #[Hidden(['pivot', 'uuid', 'version_id'])]
+#[ObservedBy(LabelTreeObserver::class)]
 class LabelTree extends Model
 {
     use HasFactory;

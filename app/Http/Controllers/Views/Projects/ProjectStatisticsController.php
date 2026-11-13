@@ -61,6 +61,7 @@ class ProjectStatisticsController extends Controller
             ->where('media_type', MediaType::VIDEO)
             ->get();
 
+
         return view('projects.show.statistics', [
             'project' => $project,
             'isMember' => $isMember,

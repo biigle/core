@@ -22,6 +22,10 @@
         &:not(:first-child) {
             margin-left: 10px;
         }
+
+        &:not(:last-child) {
+            margin-right: 10px;
+        }
     }
 
     .label-tree {
