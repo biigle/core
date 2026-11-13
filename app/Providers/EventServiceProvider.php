@@ -47,4 +47,9 @@ class EventServiceProvider extends ServiceProvider
     {
         return false;
     }
+
+    // BIIGLE registers its own settings-aware verification listener.
+    protected function configureEmailVerification(): void
+    {
+    }
 }

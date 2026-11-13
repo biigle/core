@@ -8,6 +8,7 @@ use Biigle\Tests\UserTest;
 use Biigle\User;
 use Honeypot;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Notifications\AnonymousNotifiable;
@@ -126,6 +127,7 @@ class RegisterControllerTest extends TestCase
         $user = User::where('email', 'e@ma.il')->first();
         $this->assertSame(Role::GUEST, $user->role);
         $this->assertNull($user->email_verified_at);
+        $this->assertCount(1, Notification::sent($user, VerifyEmail::class));
 
         $user->markEmailAsVerified();
         event(new Verified($user));
