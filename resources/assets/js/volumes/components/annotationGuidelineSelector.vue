@@ -148,7 +148,11 @@ export default {
             return `Project: ${guideline.project.name} (not enforced)`;
         },
         choose(id) {
-            localStorage.setItem(this.storageKey, JSON.stringify(id));
+            try {
+                localStorage.setItem(this.storageKey, JSON.stringify(id));
+            } catch {
+                // The choice is still applied, it is only not remembered.
+            }
             this.select(id);
         },
         toggle() {
@@ -166,12 +170,19 @@ export default {
             this.$emit('update:modelValue', guideline);
         },
         getStoredId() {
-            let stored = localStorage.getItem(this.storageKey);
-            if (stored === null) {
+            let id;
+            try {
+                let stored = localStorage.getItem(this.storageKey);
+                if (stored === null) {
+                    return undefined;
+                }
+
+                id = JSON.parse(stored);
+            } catch {
+                // Blocked storage or a corrupted value falls back to the default choice.
                 return undefined;
             }
 
-            let id = JSON.parse(stored);
             if (id === null && !this.mustUseGuideline) {
                 return null;
             }
@@ -180,7 +191,11 @@ export default {
                 return id;
             }
 
-            localStorage.removeItem(this.storageKey);
+            try {
+                localStorage.removeItem(this.storageKey);
+            } catch {
+                // Nothing to clean up if the storage is not accessible.
+            }
 
             return undefined;
         },
