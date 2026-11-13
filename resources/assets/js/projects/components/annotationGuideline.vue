@@ -507,12 +507,6 @@ export default {
             return options;
         },
         getShapeOptionIcon(option, active) {
-            if (option.key === 'AlignedRectangle') {
-                // The font icon has the text color, so it must be muted explicitly to
-                // match the image icons of the other shapes.
-                return ['fa fa-vector-square', {'text-muted': !active}];
-            }
-
             return ['icon', `icon-${option.key.toLowerCase()}`, {'icon-white': active}];
         },
         isGuidelineShapeOptionActive(option) {

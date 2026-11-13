@@ -135,7 +135,7 @@
                 </control-button>
                 <control-button
                     v-if="onlyAlignedRectangleAllowed"
-                    icon="fa-vector-square"
+                    icon="icon-alignedrectangle"
                     :title="getShapeToolTitle('AlignedRectangle', (singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦')"
                     :open="isDrawingAlignedRectangle"
                     :active="isDrawingAlignedRectangle"
@@ -191,7 +191,7 @@
                                 ></control-button>
                         </template>
                         <control-button
-                            icon="fa-vector-square"
+                            icon="icon-alignedrectangle"
                             :title="getShapeToolTitle('AlignedRectangle', (singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦')"
                             :active="isDrawingAlignedRectangle"
                             :disabled="!isShapeAllowed('AlignedRectangle') || null"

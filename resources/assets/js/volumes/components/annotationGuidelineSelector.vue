@@ -43,19 +43,13 @@
             <p v-text="getOptionText(modelValue)"></p>
             <p v-if="restrictedShapes.length > 0">
                 Allowed shapes:
-                <template v-for="shape in restrictedShapes" :key="shape">
-                    <i
-                        v-if="shape === 'AlignedRectangle'"
-                        class="fa fa-vector-square shape"
-                        title="Aligned rectangle"
-                        ></i>
-                    <i
-                        v-else
-                        class="icon shape"
-                        :class="`icon-${shape.toLowerCase()}`"
-                        :title="shape"
-                        ></i>
-                </template>
+                <i
+                    v-for="shape in restrictedShapes"
+                    :key="shape"
+                    class="icon shape"
+                    :class="`icon-${shape.toLowerCase()}`"
+                    :title="shape"
+                    ></i>
             </p>
             <p v-if="modelValue.description" v-text="modelValue.description"></p>
             <p v-else class="text-muted">The guideline has no description.</p>

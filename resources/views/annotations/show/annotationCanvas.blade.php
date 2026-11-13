@@ -54,7 +54,7 @@
                 ></control-button>
             <control-button
                 v-if="onlyAlignedRectangleAllowed"
-                icon="fa-vector-square"
+                icon="icon-alignedrectangle"
                 :title="getShapeToolTitle('AlignedRectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
                 :disabled="!isShapeAllowed('AlignedRectangle')"
                 :active="isDrawingAlignedRectangle"
@@ -70,7 +70,7 @@
                 v-slot="{onActive}"
                 >
                 <control-button
-                    icon="fa-vector-square"
+                    icon="icon-alignedrectangle"
                     :title="getShapeToolTitle('AlignedRectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
                     :disabled="!isShapeAllowed('AlignedRectangle')"
                     :active="isDrawingAlignedRectangle"
