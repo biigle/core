@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
 use Biigle\Tests\ImageAnnotationLabelTest;
@@ -23,6 +24,69 @@ class DashboardControllerTest extends TestCase
         $this->get('/')->assertRedirect('login');
         $user = UserTest::create();
         $this->actingAs($user)->get('/')->assertSee('Signed in as');
+    }
+
+    public function testDashboardShowsEmailVerificationNotice()
+    {
+        config(['biigle.email_verification' => true]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSee('You should have received a verification email')
+            ->assertSee(route('verification.resend'));
+    }
+
+    public function testDashboardAllowsLegacyUnverifiedEditor()
+    {
+        config(['biigle.email_verification' => true]);
+        $user = UserTest::create([
+            'role' => Role::EDITOR,
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertDontSee('Please verify your email address');
+    }
+
+    public function testDashboardShowsAdminConfirmationNoticeAfterVerification()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => now(),
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSee('You will be able to create new projects')
+            ->assertDontSee('Please verify your email address');
+    }
+
+    public function testDashboardShowsBothRegistrationNoticesInOrder()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'You will be able to create new projects',
+                'You should have received a verification email',
+            ]);
     }
 
     public function testLandingPage()

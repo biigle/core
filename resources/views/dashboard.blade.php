@@ -30,6 +30,19 @@
             </div>
         </div>
     @endif
+    @if (config('biigle.email_verification') && !config('biigle.offline_mode') && $user->role === \Biigle\Enums\Role::GUEST && is_null($user->email_verified_at))
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="text-info text-center">
+                    You should have received a verification email. Please verify your email address to unlock all features.
+                </p>
+                <form method="POST" action="{{ route('verification.resend') }}" class="text-center">
+                    @csrf
+                    <button type="submit" class="btn btn-link">Resend the verification email</button>
+                </form>
+            </div>
+        </div>
+    @endif
     <div class="row">
         <div class="col-xs-12">
             <div class="pull-right">

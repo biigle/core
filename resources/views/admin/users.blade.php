@@ -37,7 +37,12 @@
                 <td>
                     <a href="{{route('admin-users-show', $u->id)}}">{{$u->firstname}} {{$u->lastname}}</a>
                 </td>
-                <td><a href="mailto:{{$u->email}}">{{$u->email}}</a></td>
+                <td>
+                    <a href="mailto:{{$u->email}}">{{$u->email}}</a>
+                    @if (config('biigle.email_verification') && !$u->hasVerifiedEmail())
+                        <span class="text-muted">[unverified]</span>
+                    @endif
+                </td>
                 <td>
                     <span class="label label-{{$roleClass[$u->role->value]}}" title="{{$roleNames[$u->role->value]}}">{{$roleNames[$u->role->value][0]}}</span>
                 </td>

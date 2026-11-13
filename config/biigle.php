@@ -40,9 +40,10 @@ return [
     /*
     | Enable user registration confirmation by admins. Whenever a new user is registered,
     | they are created with the global "guest" role and an email notification is sent to
-    | the admin_email. If admins approve the registration, the global role of the new user
-    | is changed to "editor". If they reject the registration, the new user is deleted.
-    | If this is disabled, all new users immediately get the global "editor" role.
+    | the admin_email. If admins approve the registration and the user verifies their
+    | email, the global role of the new user is changed to "editor". If they reject the
+    | registration, the new user is deleted. If this is disabled, all new users immediately
+    | get the global "editor" role after email verification, if enabled.
     |
     | This feature cannot be enabled in offline mode as it relies on emails.
     */
@@ -67,4 +68,6 @@ return [
     | Queries that need more parameters should be chunked to stay within this limit.
     */
     'db_param_limit' => 65535,
+
+    'email_verification' => env('BIIGLE_EMAIL_VERIFICATION', false) && !env('BIIGLE_OFFLINE_MODE', false),
 ];

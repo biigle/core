@@ -2,6 +2,8 @@
 
 namespace Biigle\Providers;
 
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -12,6 +14,13 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
+        Registered::class => [
+            \Biigle\Listeners\SendEmailVerificationIfEnabled::class,
+        ],
+        Verified::class => [
+            \Biigle\Listeners\PromoteUserAfterEmailVerification::class,
+            \Biigle\Listeners\SendRegistrationConfirmationIfEnabled::class,
+        ],
         \Biigle\Events\ImagesDeleted::class => [
             \Biigle\Listeners\CleanupImageThumbnails::class,
             \Biigle\Listeners\CleanupImageAnnotations::class,
@@ -37,5 +46,10 @@ class EventServiceProvider extends ServiceProvider
     public function shouldDiscoverEvents(): bool
     {
         return false;
+    }
+
+    // BIIGLE registers its own settings-aware verification listener.
+    protected function configureEmailVerification(): void
+    {
     }
 }

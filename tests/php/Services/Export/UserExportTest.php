@@ -20,9 +20,11 @@ class UserExportTest extends TestCase
             'lastname' => $user1->lastname,
             'password' => $user1->password,
             'email' => $user1->email,
+            'email_verified_at' => $user1->email_verified_at->toJSON(),
             'settings' => ['a' => 'b'],
             'uuid' => $user1->uuid,
             'affiliation' => $user1->affiliation,
+            'registration_approved_at' => null,
         ];
 
         $content = $export->getContent();

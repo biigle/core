@@ -52,6 +52,33 @@ class UsersControllerTest extends TestCase
             ->assertDontSee('jane@user.com');
     }
 
+    public function testGetShowsUnverifiedStatusAndActivity()
+    {
+        config(['biigle.email_verification' => true]);
+        try {
+            $loginAt = now()->subDay();
+            $user = UserTest::create([
+                'email' => 'unverified@user.com',
+                'email_verified_at' => null,
+                'role' => Role::GUEST,
+            ]);
+            $user->login_at = $loginAt;
+            $user->save();
+            $admin = UserTest::create([
+                'role' => Role::ADMIN,
+                'email_verified_at' => now(),
+            ]);
+
+            $this->be($admin);
+            $response = $this->get('admin/users');
+
+            $response->assertSeeText('[unverified]')
+                ->assertDontSeeText('never logged in');
+        } finally {
+            config(['biigle.email_verification' => false]);
+        }
+    }
+
     public function testGetPaginationKeepsSearch()
     {
         $admin = UserTest::create();
