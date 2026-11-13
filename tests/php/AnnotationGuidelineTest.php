@@ -19,6 +19,7 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->assertNull($this->model->description);
         $this->assertFalse($this->model->enforced);
         $this->assertNull($this->model->only_shapes);
+        $this->assertTrue($this->model->fresh()->allow_aligned_rectangle);
         $this->assertNotNull($this->model->created_at);
         $this->assertNotNull($this->model->updated_at);
     }
@@ -135,6 +136,7 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->model->update([
             'enforced' => true,
             'only_shapes' => [Shape::POINT->value, Shape::CIRCLE->value],
+            'allow_aligned_rectangle' => false,
         ]);
         $label = LabelTest::create();
 
@@ -149,6 +151,7 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->model->update([
             'enforced' => true,
             'only_shapes' => [Shape::POINT->value, Shape::CIRCLE->value],
+            'allow_aligned_rectangle' => false,
         ]);
         $label = LabelTest::create();
         $labelWithoutShape = LabelTest::create();
@@ -195,6 +198,7 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->model->update([
             'enforced' => true,
             'only_shapes' => [Shape::POINT->value, Shape::CIRCLE->value],
+            'allow_aligned_rectangle' => false,
         ]);
         $label = LabelTest::create();
         $labelWithoutShape = LabelTest::create();
@@ -215,5 +219,56 @@ class AnnotationGuidelineTest extends ModelTestCase
         $this->assertSame($onlyShapes, $this->model->allowedShapes($labelWithoutShape->id));
         // Labels outside of the guideline fall back to only_shapes, too.
         $this->assertSame($onlyShapes, $this->model->allowedShapes($otherLabel->id));
+    }
+
+    public function testAllowedShapesAlignedRectangle()
+    {
+        $this->model->update([
+            'enforced' => true,
+            'only_shapes' => [Shape::POINT->value],
+            'allow_aligned_rectangle' => true,
+        ]);
+        $label = LabelTest::create();
+
+        $expect = [Shape::POINT->value, Shape::RECTANGLE->value];
+        $this->assertSame($expect, $this->model->allowedShapes());
+        $this->assertSame($expect, $this->model->allowedShapes($label->id));
+        $this->assertTrue($this->model->allowsShape(Shape::RECTANGLE));
+        $this->assertFalse($this->model->allowsShape(Shape::CIRCLE));
+    }
+
+    public function testAllowedShapesAlignedRectangleWithRectangle()
+    {
+        $this->model->update([
+            'enforced' => true,
+            'only_shapes' => [Shape::RECTANGLE->value],
+            'allow_aligned_rectangle' => true,
+        ]);
+
+        $this->assertSame([Shape::RECTANGLE->value], $this->model->allowedShapes());
+    }
+
+    public function testAllowedShapesOnlyAlignedRectangle()
+    {
+        $this->model->update([
+            'enforced' => true,
+            'only_shapes' => [],
+            'allow_aligned_rectangle' => true,
+        ]);
+
+        $this->assertSame([Shape::RECTANGLE->value], $this->model->allowedShapes());
+        $this->assertTrue($this->model->allowsShape(Shape::RECTANGLE));
+        $this->assertFalse($this->model->allowsShape(Shape::POINT));
+    }
+
+    public function testAllowedShapesAlignedRectangleWithoutOnlyShapes()
+    {
+        $this->model->update([
+            'enforced' => true,
+            'allow_aligned_rectangle' => false,
+        ]);
+
+        // The regular rectangle tool may still be used.
+        $this->assertNull($this->model->allowedShapes());
     }
 }

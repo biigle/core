@@ -34,6 +34,10 @@
         </p>
 
         <p>
+            If an enforced <a href="{{route('manual-tutorials', ['projects', 'about'])}}#use-a-guideline">annotation guideline</a> is selected, the first suggested label that is allowed by the guideline (with the shape of the new annotation) is preselected. Suggested labels that are not allowed can't be chosen. If none of the suggested labels are allowed, the annotation is not created and an error message is shown. In this case, select an allowed label in the <i class="fa fa-tags"></i> label trees tab and draw the annotation again. If an informational guideline is selected, suggested labels of the guideline are marked with the <i class="fa fa-clipboard-list"></i> icon.
+        </p>
+
+        <p>
             Be sure to check out all available LabelBOT keyboard shortcuts for an efficient workflow:
         </p>
 

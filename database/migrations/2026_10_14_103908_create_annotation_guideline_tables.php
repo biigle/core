@@ -20,8 +20,14 @@ return new class extends Migration {
             $table->unique('project_id');
 
             $table->boolean('enforced')->default(false);
+            // The aligned rectangle tool can be restricted independently of the
+            // regular rectangle tool, although both create rectangles.
+            $table->boolean('allow_aligned_rectangle')->default(true);
 
             $table->text('description')->nullable();
+            // Null if all shapes are allowed. An empty array if no shape is allowed, so
+            // only the separately allowed tools (see allow_aligned_rectangle) can be
+            // used. An empty array must always be checked together with these flags.
             $table->jsonb('only_shapes')->nullable();
         });
 
@@ -39,8 +45,11 @@ return new class extends Migration {
 
             // Value of the Biigle\Enums\Shape enum.
             $table->integer('shape')->nullable();
+            // Only relevant for the Rectangle shape. If true, the aligned rectangle tool
+            // must be used, otherwise the regular rectangle tool.
+            $table->boolean('allow_aligned_rectangle')->default(true);
 
-            $table->text('description')->nullable();
+            $table->string('description', 256)->nullable();
 
             $table->string('reference_image_path')->nullable();
 

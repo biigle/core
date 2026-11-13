@@ -2,6 +2,31 @@ import { rightClick } from '@/annotations/ol/events/condition.js';
 import { noModifierKeys } from '@biigle/ol/events/condition';
 import { DragPan } from '@biigle/ol/interaction';
 
+// Interaction modes of the image annotation tool that create new annotations and the
+// shape they create. Measuring is not included because it creates an annotation only
+// after a conversion.
+export const INTERACTION_MODE_SHAPES = {
+    drawPoint: 'Point',
+    drawRectangle: 'Rectangle',
+    drawAlignedRectangle: 'Rectangle',
+    drawCircle: 'Circle',
+    drawEllipse: 'Ellipse',
+    drawLineString: 'LineString',
+    drawPolygon: 'Polygon',
+    polygonBrush: 'Polygon',
+    magicWand: 'Polygon',
+};
+
+// The annotation guideline restricts the aligned rectangle tool independently of the
+// regular rectangle tool, although both create rectangles.
+export function getGuidelineShape(mode) {
+    if (mode === 'drawAlignedRectangle') {
+        return 'AlignedRectangle';
+    }
+
+    return INTERACTION_MODE_SHAPES[mode];
+}
+
 /**
  * This function checks for invalid annotation shapes.
  *

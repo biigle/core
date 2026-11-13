@@ -51,6 +51,26 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $this->assertNotNull($guidelineLabel->pivot->uuid);
     }
 
+    public function testStoreDescriptionTooLong()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'description' => str_repeat('a', 257),
+        ])->assertStatus(422);
+
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'description' => str_repeat('a', 256),
+        ])->assertStatus(201);
+    }
+
     public function testStoreUpdatesExisting()
     {
         $guideline = AnnotationGuideline::factory()->create([
@@ -236,6 +256,85 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'label_id' => $label->id,
             'shape' => Shape::POLYGON->value,
         ])->assertStatus(201);
+    }
+
+    public function testStoreAlignedRectangle()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [Shape::POLYGON->value],
+            'allow_aligned_rectangle' => true,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        // The regular rectangle tool is not in only_shapes.
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape' => Shape::RECTANGLE->value,
+            'allow_aligned_rectangle' => false,
+        ])->assertStatus(422);
+
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape' => Shape::RECTANGLE->value,
+        ])->assertStatus(201);
+
+        $pivot = $guideline->labels()->first()->pivot;
+        $this->assertSame(Shape::RECTANGLE->value, $pivot->shape);
+        $this->assertTrue($pivot->allow_aligned_rectangle);
+    }
+
+    public function testStoreOnlyAlignedRectangle()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'only_shapes' => [],
+            'allow_aligned_rectangle' => true,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape' => Shape::POINT->value,
+        ])->assertStatus(422);
+
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape' => Shape::RECTANGLE->value,
+            'allow_aligned_rectangle' => true,
+        ])->assertStatus(201);
+    }
+
+    public function testStoreValidatesAlignedRectangleAllowed()
+    {
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $this->project()->id,
+            'enforced' => true,
+            'allow_aligned_rectangle' => false,
+        ]);
+        $label = $this->labelRoot();
+        $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
+
+        $this->beAdmin();
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape' => Shape::RECTANGLE->value,
+            'allow_aligned_rectangle' => true,
+        ])->assertStatus(422);
+
+        $this->json('POST', $path, [
+            'label_id' => $label->id,
+            'shape' => Shape::RECTANGLE->value,
+            'allow_aligned_rectangle' => false,
+        ])->assertStatus(201);
+
+        $this->assertFalse($guideline->labels()->first()->pivot->allow_aligned_rectangle);
     }
 
     public function testStoreIgnoresOnlyShapesIfNotEnforced()

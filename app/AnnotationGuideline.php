@@ -12,8 +12,6 @@ use Storage;
  * This Model describes the annotation guideline of a Project
  *
  * @property int $id
- * @property bool $can_annotate Only set by AnnotationGuidelineService::getGuidelines().
- * @property int|string|null $project_role Only set temporarily by AnnotationGuidelineService::getGuidelines().
  */
 class AnnotationGuideline extends Model
 {
@@ -30,6 +28,7 @@ class AnnotationGuideline extends Model
         'description' => 'string',
         'enforced' => 'boolean',
         'only_shapes' => 'array',
+        'allow_aligned_rectangle' => 'boolean',
     ];
 
     protected $fillable = [
@@ -37,6 +36,7 @@ class AnnotationGuideline extends Model
         'description',
         'enforced',
         'only_shapes',
+        'allow_aligned_rectangle',
     ];
 
     /**
@@ -77,7 +77,7 @@ class AnnotationGuideline extends Model
     {
         return $this->belongsToMany(Label::class)
             ->using(AnnotationGuidelineLabel::class)
-            ->withPivot('shape', 'description', 'uuid', 'reference_image_path');
+            ->withPivot('shape', 'allow_aligned_rectangle', 'description', 'uuid', 'reference_image_path');
     }
 
     /**
@@ -128,7 +128,17 @@ class AnnotationGuideline extends Model
             }
         }
 
-        return $this->only_shapes;
+        $onlyShapes = $this->only_shapes;
+
+        // The aligned rectangle tool is only restricted in the frontend. It creates
+        // rectangles, so they must be allowed here even if only_shapes doesn't include
+        // them. This also applies to an empty only_shapes array, which means that no
+        // shape is allowed except those of the separately allowed tools.
+        if (!is_null($onlyShapes) && $this->allow_aligned_rectangle && !in_array(Shape::RECTANGLE->value, $onlyShapes, true)) {
+            $onlyShapes[] = Shape::RECTANGLE->value;
+        }
+
+        return $onlyShapes;
     }
 
     /**

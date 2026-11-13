@@ -1,0 +1,41 @@
+.annotation-guideline-print {
+    padding-bottom: 2em;
+
+    .annotation-guideline-print__toolbar {
+        padding-top: 1em;
+        text-align: right;
+    }
+
+    .annotation-guideline-print__text {
+        white-space: pre-line;
+    }
+
+    .annotation-guideline-print__labels {
+        tr {
+            break-inside: avoid;
+        }
+
+        td {
+            vertical-align: top;
+        }
+    }
+
+    .annotation-guideline-print__color {
+        width: 1em;
+        height: 1em;
+        vertical-align: middle;
+        margin-right: 0.25em;
+    }
+
+    .annotation-guideline-print__image {
+        max-width: 150px;
+        max-height: 150px;
+    }
+}
+
+@media print {
+    .annotation-guideline-print {
+        width: auto;
+        padding: 0;
+    }
+}

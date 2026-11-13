@@ -31,6 +31,10 @@
             The label trees tab shows all label trees that are available for the video. Here you can find and choose the labels you want to attach to new annotations. Use the search field at the top to quickly find labels of deeply nested label trees. Mark up to ten labels as favorites to quickly select them with the <kbd>0</kbd>-<kbd>9</kbd> keys of your keyboard. To select a label as favorite, click the <i class="fa fa-star"></i> icon next to the label in the label tree. Now it will appear in the "Favorites" label tree at the top and can be selected with a shortcut key. Click the <i class="fa fa-star"></i> icon of a favorite label again to remove it from the favorites.
         </p>
 
+        <p>
+            If a project of the volume has an annotation guideline, the <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Use Guideline</button> button above the label trees can be used to select the guideline. An enforced guideline restricts the labels and shapes that can be used for new annotations. Read more about this in the <a href="{{route('manual-tutorials', ['projects', 'about'])}}#use-a-guideline">annotation guideline</a> section of the projects article.
+        </p>
+
         <h3><a name="video-labels-tab"></a> <i class="fa fa-film"></i> Video Labels</h3>
 
         <p>
