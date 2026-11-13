@@ -94,7 +94,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($image);
 
@@ -103,7 +103,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100" cy="100" r="6" fill="#fff" /><circle cx="100" cy="100" r="5" fill="#666" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200"><g><circle cx="100" cy="100" r="12" fill="#fff" /><circle cx="100" cy="100" r="10" fill="#666" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -132,7 +132,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"><g><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="90 90 420 420"><g><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300.4" cy="300.4" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -149,7 +149,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(190, 190, 120, 120)
+            ->with(150, 150, 200, 200)
             ->once()
             ->andReturn($image);
 
@@ -158,7 +158,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="190 190 120 120"><g><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="150 150 200 200"><g><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="300,300 200,200 300,200 300,300" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -175,7 +175,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(190, 190, 120, 120)
+            ->with(150, 150, 200, 200)
             ->once()
             ->andReturn($image);
 
@@ -184,7 +184,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="190 190 120 120"><g><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="150 150 200 200"><g><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="300,300 200,200 300,200" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -212,7 +212,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -238,7 +238,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->image->uuid);
         $content = $disk->get("{$prefix}/{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -256,7 +256,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $image->shouldReceive('crop')
             ->once()
-            ->with(0, 0, 148, 148)
+            ->with(0, 0, 200, 200)
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
@@ -277,7 +277,7 @@ class ProcessAnnotatedImageTest extends TestCase
 
         $image->shouldReceive('crop')
             ->once()
-            ->with(852, 602, 148, 148)
+            ->with(800, 550, 200, 200)
             ->andReturn($image);
 
         $image->shouldReceive('writeToBuffer')->once()->andReturn('abc123');
@@ -321,7 +321,7 @@ class ProcessAnnotatedImageTest extends TestCase
         $job->mock = $image;
 
         $image->shouldReceive('crop')
-            ->with(10, 10, 100, 100)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($image);
 

@@ -109,7 +109,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -119,7 +119,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100.4" cy="100.4" r="6" fill="#fff" /><circle cx="100.4" cy="100.4" r="5" fill="#666" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200"><g><circle cx="100.4" cy="100.4" r="12" fill="#fff" /><circle cx="100.4" cy="100.4" r="10" fill="#666" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -152,7 +152,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 420 420"><g><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="90 90 420 420"><g><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#fff" stroke-width="5px" /><circle cx="300" cy="300" r="200" fill="none" vector-effect="non-scaling-stroke" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -178,7 +178,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(90, 90, 120, 120)
+            ->with(50, 50, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -187,7 +187,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="50 50 200 200"><g><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polygon points="100,100 150,200 200,100 100,100" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -211,7 +211,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(90, 90, 120, 120)
+            ->with(50, 50, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -220,7 +220,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 120 120"><g><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="50 50 200 200"><g><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><polyline points="100,100 150,200 200,100" fill="none" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -250,7 +250,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="90 90 220 220"><g><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><rect x="100" y="100" width="200" height="200" transform="rotate(0,100,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -280,7 +280,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="90 90 220 220"><g><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#fff" stroke-width="5px" /><ellipse cx="200" cy="100" rx="100" ry="0" transform="rotate(0,200,100)" fill="none" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke="#666" stroke-width="3px" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -301,7 +301,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(26, 26, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -311,7 +311,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $prefix = fragment_uuid_path($annotation->video->uuid);
         $content = $disk->get("{$prefix}/v-{$annotation->id}.svg");
-        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="26 26 148 148"><g><circle cx="100" cy="100" r="6" fill="#fff" /><circle cx="100" cy="100" r="5" fill="#666" /></g></svg>';
+        $svg = '<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200" viewBox="0 0 200 200"><g><circle cx="100" cy="100" r="12" fill="#fff" /><circle cx="100" cy="100" r="10" fill="#666" /></g></svg>';
         $this->assertSame($svg, $content);
     }
 
@@ -332,7 +332,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(0, 0, 148, 148)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -358,7 +358,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(852, 602, 148, 148)
+            ->with(800, 550, 200, 200)
             ->once()
             ->andReturn($video);
 
@@ -413,7 +413,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->mock = $video;
 
         $video->shouldReceive('crop')
-            ->with(10, 10, 100, 100)
+            ->with(0, 0, 200, 200)
             ->once()
             ->andReturn($video);
 
