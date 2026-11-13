@@ -807,6 +807,12 @@ export default {
                 return;
             }
 
+            // Switching the tool would discard a sketch that is still allowed (a
+            // disallowed one was already aborted by maybeResetDisallowedTool()).
+            if (this.isDrawing && !this.drawEnded) {
+                return;
+            }
+
             const shape = this.annotationGuideline?.getPreferredShape(this.selectedLabel.id);
             if (!this.canAdd || !shape || shape === this.interactionModeShape) {
                 return;
