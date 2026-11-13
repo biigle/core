@@ -17,6 +17,16 @@ export const INTERACTION_MODE_SHAPES = {
     magicWand: 'Polygon',
 };
 
+// The annotation guideline restricts the aligned rectangle tool independently of the
+// regular rectangle tool, although both create rectangles.
+export function getGuidelineShape(mode) {
+    if (mode === 'drawAlignedRectangle') {
+        return 'AlignedRectangle';
+    }
+
+    return INTERACTION_MODE_SHAPES[mode];
+}
+
 /**
  * This function checks for invalid annotation shapes.
  *

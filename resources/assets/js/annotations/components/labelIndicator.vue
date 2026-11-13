@@ -12,7 +12,8 @@
             <span v-else>
                 Preferred shape:
             </span>
-            <i class="icon" :class="`icon-${guidelineLabelShape.toLowerCase()}`" :title="guidelineLabelShape"></i>
+            <i v-if="guidelineLabelShape === 'AlignedRectangle'" class="fa fa-vector-square" title="Aligned rectangle"></i>
+            <i v-else class="icon" :class="`icon-${guidelineLabelShape.toLowerCase()}`" :title="guidelineLabelShape"></i>
         </div>
         <p
             v-if="guidelineLabel.description"

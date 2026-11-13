@@ -36,21 +36,18 @@
 
             <div v-if="annotationGuideline?.enforced">
                 <label>Available shapes</label>
-                <div v-if="annotationGuideline?.only_shapes" class="btn-group btn-group-justified form-group">
+                <div v-if="hasShapeRestrictions" class="btn-group btn-group-justified form-group">
                     <div
-                        v-for="[shapeId, shape] of allowedShapes"
-                        :key="shapeId"
+                        v-for="option of allowedShapeOptions"
+                        :key="option.key"
                         class="btn-group"
                         >
                         <button
                             class="btn btn-default"
-                            :title="shape"
+                            :title="option.title"
                             disabled
                             >
-                            <i
-                                class="icon icon-white"
-                                :class="`icon-${shape.toLowerCase()}`"
-                                ></i>
+                            <i :class="getShapeOptionIcon(option, true)"></i>
                         </button>
                     </div>
                 </div>
@@ -98,20 +95,17 @@
                 <label>Available shapes</label>
                 <div class="btn-group btn-group-justified">
                     <div
-                        v-for="[shapeId, shape] of availableShapes"
-                        :key="shapeId"
+                        v-for="option of availableShapeOptions"
+                        :key="option.key"
                         class="btn-group"
                         >
                         <button
                             class="btn btn-default"
-                            :class="{'active btn-info': guidelineShapes.has(shapeId)}"
-                            :title="shape"
-                            @click.prevent="selectGuidelineShape(shapeId)"
+                            :class="{'active btn-info': isGuidelineShapeOptionActive(option)}"
+                            :title="option.title"
+                            @click.prevent="selectGuidelineShape(option)"
                             >
-                            <i
-                                class="icon"
-                                :class="[`icon-${shape.toLowerCase()}`, guidelineShapes.has(shapeId) ? 'icon-white' : '']"
-                                ></i>
+                            <i :class="getShapeOptionIcon(option, isGuidelineShapeOptionActive(option))"></i>
                         </button>
                     </div>
                 </div>
@@ -185,20 +179,17 @@
                         <label>Label shape</label>
                         <div class="btn-group btn-group-justified">
                             <div
-                                v-for="[shapeId, shape] of allowedShapes"
-                                :key="shapeId"
+                                v-for="option of allowedShapeOptions"
+                                :key="option.key"
                                 class="btn-group"
                                 >
                                 <button
                                     class="btn btn-default"
-                                    :class="{'active btn-info': selectedShape === shapeId}"
-                                    :title="shape"
-                                    @click.prevent="selectLabelShape(shapeId)"
+                                    :class="{'active btn-info': isLabelShapeOptionActive(option)}"
+                                    :title="option.title"
+                                    @click.prevent="selectLabelShape(option)"
                                     >
-                                    <i
-                                        class="icon"
-                                        :class="[`icon-${shape.toLowerCase()}`, selectedShape === shapeId ? 'icon-white' : '']"
-                                        ></i>
+                                    <i :class="getShapeOptionIcon(option, isLabelShapeOptionActive(option))"></i>
                                 </button>
                             </div>
                         </div>
@@ -269,20 +260,17 @@
                         <label>Label shape</label>
                         <div class="btn-group btn-group-justified">
                             <div
-                                v-for="[shapeId, shape] of allowedShapes"
-                                :key="shapeId"
+                                v-for="option of allowedShapeOptions"
+                                :key="option.key"
                                 class="btn-group"
                                 >
                                 <button
                                     class="btn btn-default"
-                                    :class="{'active btn-info': selectedShape === shapeId}"
-                                    :title="shape"
+                                    :class="{'active btn-info': isLabelShapeOptionActive(option)}"
+                                    :title="option.title"
                                     disabled
                                     >
-                                    <i
-                                        class="icon"
-                                        :class="[`icon-${shape.toLowerCase()}`, selectedShape === shapeId ? 'icon-white' : '']"
-                                        ></i>
+                                    <i :class="getShapeOptionIcon(option, isLabelShapeOptionActive(option))"></i>
                                 </button>
                             </div>
                         </div>
@@ -347,12 +335,17 @@ export default {
             annotationGuideline: null,
             labelDescription: '',
             selectedShape: null,
+            // Only relevant if the selected shape is a rectangle.
+            labelAllowAlignedRectangle: true,
             referenceImage: null,
             referenceImagePreview: null,
             isDirty: false,
             guidelineDescription: null,
             guidelineIsEnforced: false,
             guidelineShapes: new Set(),
+            // State of the aligned rectangle button in the form. This is not the same
+            // as allow_aligned_rectangle (see initGuidelineShapesForm).
+            guidelineAllowAlignedRectangle: false,
             isEditingGuideline: false,
             labelDescriptionMaxLength: 256,
         };
@@ -379,8 +372,14 @@ export default {
         onlyShapeIds() {
             return new Set(this.annotationGuideline?.only_shapes);
         },
+        // only_shapes is null if all shapes are allowed. An empty array means that no
+        // shape is allowed, so only the separately allowed tools (e.g. the aligned
+        // rectangle) can be used. The size of onlyShapeIds can't be used for this check.
+        hasOnlyShapes() {
+            return Array.isArray(this.annotationGuideline?.only_shapes);
+        },
         allowedShapes() {
-            if (this.onlyShapeIds.size > 0) {
+            if (this.hasOnlyShapes) {
                 const allowed = new Map();
 
                 this.onlyShapeIds.forEach(id => allowed.set(id, this.availableShapes.get(id)));
@@ -390,7 +389,34 @@ export default {
 
             return this.availableShapes;
         },
+        rectangleId() {
+            for (const [id, name] of this.availableShapes) {
+                if (name === 'Rectangle') {
+                    return id;
+                }
+            }
+
+            return null;
+        },
+        alignedRectangleAllowed() {
+            return !this.annotationGuideline?.enforced
+                || this.annotationGuideline.allow_aligned_rectangle !== false;
+        },
+        hasShapeRestrictions() {
+            return this.hasOnlyShapes || !this.alignedRectangleAllowed;
+        },
+        allowedShapeOptions() {
+            return this.getShapeOptions(this.allowedShapes, this.alignedRectangleAllowed);
+        },
+        availableShapeOptions() {
+            return this.getShapeOptions(this.availableShapes, true);
+        },
         mediaTypeShapeWarning() {
+            // The aligned rectangle can be used in images and videos.
+            if (this.guidelineAllowAlignedRectangle) {
+                return '';
+            }
+
             return this.getMediaTypeShapeWarning(this.guidelineShapes);
         },
         labelMediaTypeShapeWarning() {
@@ -404,6 +430,7 @@ export default {
             if (guidelineLabel) {
                 this.labelDescription = guidelineLabel.description || '';
                 this.selectedShape = guidelineLabel.shape || null;
+                this.labelAllowAlignedRectangle = guidelineLabel.allow_aligned_rectangle !== false;
                 this.referenceImagePreview = guidelineLabel.reference_image_url;
                 this.isDirty = false;
             }
@@ -429,7 +456,7 @@ export default {
         if (this.annotationGuideline) {
             this.guidelineDescription = this.annotationGuideline.description;
             this.guidelineIsEnforced = this.annotationGuideline.enforced;
-            this.guidelineShapes = new Set(this.annotationGuideline?.only_shapes);
+            this.initGuidelineShapesForm();
             this.annotationGuideline.labels.forEach((label) => {
                 this.annotationGuidelineLabels.set(label.id, label.pivot);
             });
@@ -463,20 +490,114 @@ export default {
             }
             this.selectedLabel = label;
         },
-        selectGuidelineShape(id) {
-            if (this.guidelineShapes.has(id)) {
-                this.guidelineShapes.delete(id);
+        // The aligned rectangle is a separate option next to the rectangle, although it
+        // is stored as rectangle shape with the allow_aligned_rectangle flag.
+        getShapeOptions(shapes, withAlignedRectangle) {
+            const options = [];
+            this.availableShapes.forEach((name, id) => {
+                if (shapes.has(id)) {
+                    options.push({key: name, id, title: name});
+                }
+
+                if (withAlignedRectangle && id === this.rectangleId) {
+                    options.push({key: 'AlignedRectangle', id, title: 'Aligned rectangle'});
+                }
+            });
+
+            return options;
+        },
+        getShapeOptionIcon(option, active) {
+            if (option.key === 'AlignedRectangle') {
+                // The font icon has the text color, so it must be muted explicitly to
+                // match the image icons of the other shapes.
+                return ['fa fa-vector-square', {'text-muted': !active}];
+            }
+
+            return ['icon', `icon-${option.key.toLowerCase()}`, {'icon-white': active}];
+        },
+        isGuidelineShapeOptionActive(option) {
+            if (option.key === 'AlignedRectangle') {
+                return this.guidelineAllowAlignedRectangle;
+            }
+
+            return this.guidelineShapes.has(option.id);
+        },
+        selectGuidelineShape(option) {
+            if (option.key === 'AlignedRectangle') {
+                this.guidelineAllowAlignedRectangle = !this.guidelineAllowAlignedRectangle;
+            } else if (this.guidelineShapes.has(option.id)) {
+                this.guidelineShapes.delete(option.id);
             } else {
-                this.guidelineShapes.add(id);
+                this.guidelineShapes.add(option.id);
+            }
+
+            // Everything selected is saved as no restriction, which the form shows as
+            // nothing selected (see initGuidelineShapesForm). Clear it right away so the
+            // selection doesn't flip only after saving.
+            if (this.guidelineAllowAlignedRectangle && this.guidelineShapes.size === this.availableShapes.size) {
+                this.guidelineShapes.clear();
+                this.guidelineAllowAlignedRectangle = false;
             }
         },
-        selectLabelShape(id) {
+        // In the form, the aligned rectangle is selected like any other shape and no
+        // selected shape means that all shapes are allowed. The guideline instead
+        // stores the regular shapes in only_shapes (null if all are allowed) and the
+        // aligned rectangle in allow_aligned_rectangle (true by default). The two
+        // functions below convert between both representations. If all regular shapes
+        // are selected, only_shapes is saved as null:
+        //
+        // only_shapes | allow_aligned_rectangle | form
+        // null        | true                    | nothing selected
+        // null        | false                   | all regular shapes selected
+        // [ids]       | true/false              | the shapes, aligned rectangle on/off
+        // []          | true                    | only the aligned rectangle selected
+        //
+        // An empty only_shapes array doesn't imply the aligned rectangle on its own. More
+        // tools that are allowed separately may be added in the future, so the flags of
+        // all of them must be checked.
+        initGuidelineShapesForm() {
+            const onlyShapes = this.annotationGuideline?.only_shapes ?? null;
+            const allowAlignedRectangle = this.annotationGuideline?.allow_aligned_rectangle !== false;
+
+            if (onlyShapes === null) {
+                this.guidelineShapes = allowAlignedRectangle ? new Set() : new Set(this.availableShapes.keys());
+                this.guidelineAllowAlignedRectangle = false;
+            } else {
+                this.guidelineShapes = new Set(onlyShapes);
+                this.guidelineAllowAlignedRectangle = allowAlignedRectangle;
+            }
+        },
+        getGuidelineShapesPayload() {
+            const nothingSelected = this.guidelineShapes.size === 0
+                && !this.guidelineAllowAlignedRectangle;
+
+            // The backend also resets the attributes if the guideline is not enforced.
+            if (!this.guidelineIsEnforced || nothingSelected) {
+                return {only_shapes: null, allow_aligned_rectangle: true};
+            }
+
+            const allRegularSelected = this.guidelineShapes.size === this.availableShapes.size;
+
+            return {
+                // This is an empty array if only separate tools are selected.
+                only_shapes: allRegularSelected ? null : Array.from(this.guidelineShapes),
+                allow_aligned_rectangle: this.guidelineAllowAlignedRectangle,
+            };
+        },
+        isLabelShapeOptionActive(option) {
+            if (this.selectedShape !== option.id) {
+                return false;
+            }
+
+            return option.id !== this.rectangleId || this.labelAllowAlignedRectangle === (option.key === 'AlignedRectangle');
+        },
+        selectLabelShape(option) {
             this.isDirty = true;
-            id = Number(id);
-            if (this.selectedShape === id) {
+            if (this.isLabelShapeOptionActive(option)) {
                 this.selectedShape = null;
             } else {
-                this.selectedShape = id;
+                this.selectedShape = option.id;
+                this.labelAllowAlignedRectangle = option.key === 'AlignedRectangle';
             }
         },
         async deselectLabel() {
@@ -490,6 +611,7 @@ export default {
         resetForm() {
             this.labelDescription = '';
             this.selectedShape = null;
+            this.labelAllowAlignedRectangle = true;
             this.referenceImage = null;
             if (this.referenceImagePreview) {
                 if (this.referenceImagePreview.startsWith('blob:')) {
@@ -576,6 +698,9 @@ export default {
             if (this.selectedShape) {
                 formData.append('shape', this.selectedShape);
             }
+            if (this.selectedShape === this.rectangleId) {
+                formData.append('allow_aligned_rectangle', this.labelAllowAlignedRectangle ? '1' : '0');
+            }
             if (this.referenceImage !== null) {
                 formData.append('reference_image', this.referenceImage);
             } else if (!this.referenceImagePreview) {
@@ -615,22 +740,15 @@ export default {
             const payload = {
                 description: this.guidelineDescription,
                 enforced: this.guidelineIsEnforced,
+                ...this.getGuidelineShapesPayload(),
             };
-
-            if (this.guidelineIsEnforced && this.guidelineShapes.size > 0) {
-                payload.only_shapes = Array.from(this.guidelineShapes);
-            } else {
-                payload.only_shapes = null;
-            }
 
             if (this.creating) {
                 return AnnotationGuidelineApi.save({ id: this.projectId }, payload)
                     .then(
                         (response) => {
                             this.annotationGuideline = response.body;
-                            if (!this.annotationGuideline.only_shapes) {
-                                this.guidelineShapes.clear();
-                            }
+                            this.initGuidelineShapesForm();
                             return true;
                         },
                         (error) => {
@@ -645,9 +763,7 @@ export default {
                     .then(
                         () => {
                             Object.assign(this.annotationGuideline, payload);
-                            if (!payload.only_shapes) {
-                                this.guidelineShapes.clear();
-                            }
+                            this.initGuidelineShapesForm();
                             this.maybeUnsetLabelShapes();
                             return true;
                         },
@@ -659,14 +775,21 @@ export default {
                     .finally(this.finishLoading);
 
         },
+        // This mirrors the update of the guideline labels in the backend.
         maybeUnsetLabelShapes() {
-            if (this.onlyShapeIds.size > 0) {
-                this.annotationGuidelineLabels.forEach((label) => {
-                    if (label.shape && !this.onlyShapeIds.has(label.shape)) {
+            this.annotationGuidelineLabels.forEach((label) => {
+                if (!label.shape) {
+                    return;
+                }
+
+                if (label.shape === this.rectangleId && label.allow_aligned_rectangle !== false) {
+                    if (!this.alignedRectangleAllowed) {
                         label.shape = null;
                     }
-                })
-            }
+                } else if (this.hasOnlyShapes && !this.onlyShapeIds.has(label.shape)) {
+                    label.shape = null;
+                }
+            });
         },
         editGuideline() {
             this.isEditingGuideline = true;
@@ -679,7 +802,7 @@ export default {
         cancelEditingGuideline() {
             this.guidelineDescription = this.annotationGuideline?.description ?? null;
             this.guidelineIsEnforced = this.annotationGuideline?.enforced ?? false;
-            this.guidelineShapes = new Set(this.annotationGuideline?.only_shapes);
+            this.initGuidelineShapesForm();
             this.isEditingGuideline = false;
         },
         deleteGuideline() {
@@ -696,6 +819,7 @@ export default {
             this.guidelineDescription = null;
             this.guidelineIsEnforced = false;
             this.guidelineShapes.clear();
+            this.guidelineAllowAlignedRectangle = false;
             this.isEditingGuideline = false;
             this.selectedLabel = null;
             this.annotationGuidelineLabels.clear();

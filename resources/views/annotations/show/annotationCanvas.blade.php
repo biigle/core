@@ -53,6 +53,15 @@
                 v-on:click="drawPoint"
                 ></control-button>
             <control-button
+                v-if="onlyAlignedRectangleAllowed"
+                icon="fa-vector-square"
+                :title="getShapeToolTitle('AlignedRectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
+                :disabled="!isShapeAllowed('AlignedRectangle')"
+                :active="isDrawingAlignedRectangle"
+                v-on:click="drawAlignedRectangle"
+                ></control-button>
+            <control-button
+                v-else
                 icon="icon-rectangle"
                 :title="getShapeToolTitle('Rectangle', 'Draw a rectangle 𝗦')"
                 :disabled="!isShapeAllowed('Rectangle')"
@@ -62,8 +71,8 @@
                 >
                 <control-button
                     icon="fa-vector-square"
-                    :title="getShapeToolTitle('Rectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
-                    :disabled="!isShapeAllowed('Rectangle')"
+                    :title="getShapeToolTitle('AlignedRectangle', 'Draw an aligned rectangle 𝗦𝗵𝗶𝗳𝘁+𝗦')"
+                    :disabled="!isShapeAllowed('AlignedRectangle')"
                     :active="isDrawingAlignedRectangle"
                     v-on:click="drawAlignedRectangle"
                     v-on:active="onActive"

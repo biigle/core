@@ -134,6 +134,36 @@
                             ></control-button>
                 </control-button>
                 <control-button
+                    v-if="onlyAlignedRectangleAllowed"
+                    icon="fa-vector-square"
+                    :title="getShapeToolTitle('AlignedRectangle', (singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦')"
+                    :open="isDrawingAlignedRectangle"
+                    :active="isDrawingAlignedRectangle"
+                    :disabled="hasError || !isShapeAllowed('AlignedRectangle') || null"
+                    @click="drawAlignedRectangle"
+                    v-slot="{onActive}"
+                    >
+                        <template v-if="singleAnnotation">
+                            <control-button
+                                v-if="isDrawingAlignedRectangle"
+                                icon="fa-check"
+                                title="Disable the single-frame annotation option to create multi-frame annotations"
+                                :disabled="true"
+                                ></control-button>
+                        </template>
+                        <template v-else>
+                            <control-button
+                                v-if="isDrawingAlignedRectangle"
+                                icon="fa-check"
+                                title="Finish the rectangle annotation 𝗘𝗻𝘁𝗲𝗿"
+                                :disabled="cantFinishDrawAnnotation || null"
+                                @click="finishDrawAnnotation"
+                                @active="onActive"
+                                ></control-button>
+                        </template>
+                </control-button>
+                <control-button
+                    v-else
                     icon="icon-rectangle"
                     :title="getShapeToolTitle('Rectangle', (singleAnnotation ? 'Draw a rectangle' : 'Start a rectangle annotation') + ' 𝗦')"
                     :open="isDrawingRectangle || isDrawingAlignedRectangle"
@@ -162,9 +192,9 @@
                         </template>
                         <control-button
                             icon="fa-vector-square"
-                            :title="getShapeToolTitle('Rectangle', (singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦')"
+                            :title="getShapeToolTitle('AlignedRectangle', (singleAnnotation ? 'Draw an aligned rectangle' : 'Start an aligned rectangle annotation') + ' 𝗦𝗵𝗶𝗳𝘁+𝗦')"
                             :active="isDrawingAlignedRectangle"
-                            :disabled="!isShapeAllowed('Rectangle') || null"
+                            :disabled="!isShapeAllowed('AlignedRectangle') || null"
                             @click="drawAlignedRectangle"
                             @active="onActive"
                             ></control-button>
@@ -436,7 +466,7 @@ import ZoomToNativeControl from '@/annotations/ol/ZoomToNativeControl.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {containsCoordinate} from '@biigle/ol/extent';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
-import {INTERACTION_MODE_SHAPES} from '../utils.js';
+import {getGuidelineShape, INTERACTION_MODE_SHAPES} from '../utils.js';
 import {markRaw} from 'vue';
 
 export default {
@@ -622,8 +652,20 @@ export default {
         isDefaultInteractionMode() {
             return this.interactionMode === 'default';
         },
+        // The shape of the current interaction mode as used by the annotation guideline
+        // (if any).
         interactionModeShape() {
-            return INTERACTION_MODE_SHAPES[this.interactionMode];
+            return getGuidelineShape(this.interactionMode);
+        },
+        // The aligned rectangle tool replaces the disabled rectangle tool in this case
+        // so it is not hidden in the sub controls. Only the guideline is checked and
+        // not the selected label so the buttons don't swap when a label is selected.
+        onlyAlignedRectangleAllowed() {
+            const guideline = this.annotationGuideline;
+
+            return !!guideline
+                && guideline.allowsShape('AlignedRectangle')
+                && !guideline.allowsShape('Rectangle');
         },
         styleObject() {
             if (this.heightOffset !== 0) {

@@ -44,7 +44,7 @@ import ZoomifySource from '@biigle/ol/source/Zoomify';
 import ZoomLevel from './annotationCanvas/zoomLevel.vue';
 import ZoomToExtentControl from '@biigle/ol/control/ZoomToExtent';
 import ZoomToNativeControl from '../ol/ZoomToNativeControl.js';
-import { isInvalidShape, INTERACTION_MODE_SHAPES } from '../utils.js';
+import { isInvalidShape, getGuidelineShape, INTERACTION_MODE_SHAPES } from '../utils.js';
 import {click as clickCondition} from '@biigle/ol/events/condition';
 import {defaults as defaultInteractions} from '@biigle/ol/interaction';
 import {getCenter} from '@biigle/ol/extent';
@@ -218,9 +218,20 @@ export default {
         hasSelectedLabel() {
             return Boolean(this.selectedLabel);
         },
-        // The shape that is created by the current interaction mode (if any).
+        // The shape of the current interaction mode as used by the annotation guideline
+        // (if any).
         interactionModeShape() {
-            return INTERACTION_MODE_SHAPES[this.interactionMode];
+            return getGuidelineShape(this.interactionMode);
+        },
+        // The aligned rectangle tool replaces the disabled rectangle tool in this case
+        // so it is not hidden in the sub controls. Only the guideline is checked and
+        // not the selected label so the buttons don't swap when a label is selected.
+        onlyAlignedRectangleAllowed() {
+            const guideline = this.annotationGuideline;
+
+            return !!guideline
+                && guideline.allowsShape('AlignedRectangle')
+                && !guideline.allowsShape('Rectangle');
         },
         hasSelectedAnnotations() {
             return this.selectedAnnotations.length > 0;

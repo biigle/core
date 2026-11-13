@@ -212,7 +212,7 @@ export default {
             }
 
             return this.guideline.allowsLabel(label.id)
-                && this.guideline.allowsShape(this.annotation.shape, label.id);
+                && this.guideline.allowsAnnotationShape(this.annotation.shape, label.id);
         },
         getLabelClass(index) {
             return {

@@ -95,7 +95,15 @@ class AnnotationGuidelineController extends Controller
 
         $shapes = Shape::pluckById();
 
-        $onlyShapes = collect($guideline->only_shapes)->map(fn ($id) => $shapes[$id]);
+        // Null if there are no shape restrictions. An empty only_shapes array means that
+        // only the separately allowed tools (e.g. the aligned rectangle) can be used.
+        $onlyShapes = null;
+        if (!is_null($guideline->only_shapes)) {
+            $onlyShapes = collect($guideline->only_shapes)->map(fn ($id) => $shapes[$id]);
+            if ($guideline->allow_aligned_rectangle) {
+                $onlyShapes->push('AlignedRectangle');
+            }
+        }
 
         return view('projects.annotation-guideline-print', [
             'project' => $project,

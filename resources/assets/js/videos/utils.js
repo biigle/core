@@ -38,4 +38,14 @@ const INTERACTION_MODE_SHAPES = {
     drawWholeFrame: 'WholeFrame',
 };
 
-export {getRoundToPrecision, INTERACTION_MODE_SHAPES};
+// The annotation guideline restricts the aligned rectangle tool independently of the
+// regular rectangle tool, although both create rectangles.
+function getGuidelineShape(mode) {
+    if (mode === 'drawAlignedRectangle') {
+        return 'AlignedRectangle';
+    }
+
+    return INTERACTION_MODE_SHAPES[mode];
+}
+
+export {getRoundToPrecision, getGuidelineShape, INTERACTION_MODE_SHAPES};

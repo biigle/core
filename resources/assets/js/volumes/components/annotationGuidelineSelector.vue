@@ -43,13 +43,19 @@
             <p v-text="getOptionText(modelValue)"></p>
             <p v-if="restrictedShapes.length > 0">
                 Allowed shapes:
-                <i
-                    v-for="shape in restrictedShapes"
-                    :key="shape"
-                    class="icon shape"
-                    :class="`icon-${shape.toLowerCase()}`"
-                    :title="shape"
-                    ></i>
+                <template v-for="shape in restrictedShapes" :key="shape">
+                    <i
+                        v-if="shape === 'AlignedRectangle'"
+                        class="fa fa-vector-square shape"
+                        title="Aligned rectangle"
+                        ></i>
+                    <i
+                        v-else
+                        class="icon shape"
+                        :class="`icon-${shape.toLowerCase()}`"
+                        :title="shape"
+                        ></i>
+                </template>
             </p>
             <p v-if="modelValue.description" v-text="modelValue.description"></p>
             <p v-else class="text-muted">The guideline has no description.</p>
@@ -108,7 +114,9 @@ export default {
                 return [];
             }
 
-            return this.modelValue.onlyShapeNames;
+            // Not onlyShapeNames, because a disabled aligned rectangle without
+            // only_shapes restricts the shapes, too.
+            return Array.from(this.modelValue.allowedShapes() ?? []);
         },
         hasGuidelines() {
             return this.guidelines.length > 0;

@@ -30,6 +30,7 @@ class AnnotationGuidelineController extends Controller
      *       "description": "guideline description",
      *       "enforced": true,
      *       "only_shapes": [1, 3],
+     *       "allow_aligned_rectangle": true,
      *       "labels": [{
      *         "id": 4,
      *         "name": "some label",
@@ -38,6 +39,7 @@ class AnnotationGuidelineController extends Controller
      *           "annotation_guideline_id": 1,
      *           "label_id": 4,
      *           "shape": 1,
+     *           "allow_aligned_rectangle": true,
      *           "description": "description of a label",
      *           "reference_image_url": null
      *         }

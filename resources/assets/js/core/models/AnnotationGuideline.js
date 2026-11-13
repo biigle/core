@@ -3,6 +3,10 @@
  *
  * The methods mirror the AnnotationGuideline Eloquent model. Shapes are identified by
  * their names instead of IDs.
+ *
+ * In contrast to the backend, the aligned rectangle tool is treated as a separate
+ * "AlignedRectangle" shape so it can be restricted independently of the regular
+ * rectangle tool. Both tools create Rectangle annotations.
  */
 import {markRaw} from 'vue';
 
@@ -40,13 +44,31 @@ export default class AnnotationGuideline {
         return this.labels.map(label => label.id);
     }
 
+    get allowsAlignedRectangle() {
+        return this.allow_aligned_rectangle !== false;
+    }
+
     // Names of the shapes of only_shapes or an empty array if there are none. Shapes
     // that are not available in the current tool (e.g. Ellipse in the video annotation
     // tool) are omitted, as they can't be used anyway.
+    //
+    // only_shapes is null if all shapes are allowed. An empty only_shapes array means
+    // that no shape is allowed, so only the separately allowed tools (e.g. the aligned
+    // rectangle) can be used.
     get onlyShapeNames() {
-        return (this.only_shapes ?? [])
+        if (!this.only_shapes) {
+            return [];
+        }
+
+        const names = this.only_shapes
             .map(id => this.shapeNames[id])
             .filter(Boolean);
+
+        if (this.allowsAlignedRectangle) {
+            names.push('AlignedRectangle');
+        }
+
+        return names;
     }
 
     hasLabel(labelId) {
@@ -61,10 +83,18 @@ export default class AnnotationGuideline {
     }
 
     /**
-     * Get the name of the shape of a label of the guideline (if any).
+     * Get the name of the shape of a label of the guideline (if any). This is
+     * "AlignedRectangle" if the label should use the aligned rectangle tool.
      */
     getLabelShape(labelId) {
-        return this.shapeNames[this.getLabel(labelId)?.shape];
+        const label = this.getLabel(labelId);
+        const shape = this.shapeNames[label?.shape];
+
+        if (shape === 'Rectangle' && label.allow_aligned_rectangle !== false) {
+            return 'AlignedRectangle';
+        }
+
+        return shape;
     }
 
     /**
@@ -103,6 +133,15 @@ export default class AnnotationGuideline {
     }
 
     /**
+     * Determine if the guideline allows an annotation with the shape (optionally in
+     * combination with a label). Use allowsShape() to check annotation tools instead.
+     */
+    allowsAnnotationShape(shape, labelId = null) {
+        return this.allowsShape(shape, labelId)
+            || (shape === 'Rectangle' && this.allowsShape('AlignedRectangle', labelId));
+    }
+
+    /**
      * Get the names of the shapes that are allowed by the guideline (optionally in
      * combination with a label).
      *
@@ -122,16 +161,19 @@ export default class AnnotationGuideline {
             return null;
         }
 
-        const labelShapeId = this.getLabel(labelId)?.shape;
-        if (labelShapeId) {
-            const labelShape = this.shapeNames[labelShapeId];
+        if (this.getLabel(labelId)?.shape) {
+            const labelShape = this.getLabelShape(labelId);
             // The shape may not be available in the current tool (e.g. Ellipse in the
             // video annotation tool) so no shape can be used for the label.
             return labelShape ? new Set([labelShape]) : new Set();
         }
 
         if (!this.only_shapes) {
-            return null;
+            if (this.allowsAlignedRectangle) {
+                return null;
+            }
+
+            return new Set(Object.values(this.shapeNames));
         }
 
         return new Set(this.onlyShapeNames);

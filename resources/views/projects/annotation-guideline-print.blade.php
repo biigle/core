@@ -26,10 +26,12 @@
         @if ($guideline->enforced)
             <br>
             Allowed shapes:
-            @if ($onlyShapes->isNotEmpty())
+            @if (!is_null($onlyShapes))
                 {{ $onlyShapes->join(', ') }}
-            @else
+            @elseif ($guideline->allow_aligned_rectangle)
                 All shapes
+            @else
+                All shapes except AlignedRectangle
             @endif
         @endif
     </p>
@@ -62,7 +64,9 @@
                             {{ $label->name }}
                         </td>
                         <td>
-                            @if ($label->pivot->shape)
+                            @if ($label->pivot->shape === \Biigle\Enums\Shape::RECTANGLE->value && $label->pivot->allow_aligned_rectangle)
+                                AlignedRectangle
+                            @elseif ($label->pivot->shape)
                                 {{ $shapes[$label->pivot->shape] }}
                             @else
                                 <span class="text-muted">Any</span>
