@@ -140,6 +140,7 @@ class RegisterController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        // Uses the per-IP registration limit defined in RouteServiceProvider.
         $limit = RateLimiter::limiter('registration')($request);
         if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
             return redirect()->route('register')->withInput()
