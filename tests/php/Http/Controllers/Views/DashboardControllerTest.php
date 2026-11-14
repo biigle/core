@@ -70,6 +70,25 @@ class DashboardControllerTest extends TestCase
             ->assertDontSee('Please verify your email address');
     }
 
+    public function testDashboardHidesAdminConfirmationNoticeAfterApproval()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => null,
+            'registration_approved_at' => now(),
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSee('You should have received a verification email')
+            ->assertDontSee('You will be able to create new projects')
+            ->assertSee(route('verification.resend'));
+    }
+
     public function testDashboardShowsBothRegistrationNoticesInOrder()
     {
         config([

@@ -21,7 +21,7 @@
             </div>
         </div>
     @endif
-    @if (config('biigle.user_registration_confirmation') && $user->role === \Biigle\Enums\Role::GUEST)
+    @if (config('biigle.user_registration_confirmation') && $user->role === \Biigle\Enums\Role::GUEST && is_null($user->registration_approved_at))
         <div class="row">
             <div class="col-xs-12">
                     <p class="text-info text-center">
