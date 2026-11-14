@@ -67,7 +67,9 @@ class VerificationController extends Controller
 
     protected function verificationResponse(string $message, string $messageType)
     {
-        return redirect()->route('login')
+        $route = auth()->check() ? 'home' : 'login';
+
+        return redirect()->route($route)
             ->with('message', $message)
             ->with('messageType', $messageType);
     }
