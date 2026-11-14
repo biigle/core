@@ -186,11 +186,6 @@ class RegisterController extends Controller
             Notification::send($notifiable, new RegistrationConfirmation($user));
         }
 
-        if ($this->isEmailVerificationEnabled()) {
-            return redirect()->intended($this->redirectPath())
-                ->with('welcomeMessage', true);
-        }
-
         // Redirect to the intended path in case users came from a project invitation.
         return redirect()->intended($this->redirectPath())
             ->with('welcomeMessage', true);
