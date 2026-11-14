@@ -191,6 +191,11 @@ class RegisterController extends Controller
             ->with('welcomeMessage', true);
     }
 
+    /**
+     * Determines if email verification is enabled.
+     *
+     * @return bool
+     */
     protected function isEmailVerificationEnabled()
     {
         return config('biigle.email_verification') && !config('biigle.offline_mode');
