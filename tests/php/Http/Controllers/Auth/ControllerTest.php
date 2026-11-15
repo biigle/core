@@ -148,7 +148,7 @@ class ControllerTest extends TestCase
             ->assertSessionHas('messageType', 'danger');
     }
 
-    public function testEmailVerificationWithoutAuthentication()
+    public function testEmailVerificationRequiresAuthentication()
     {
         config(['biigle.email_verification' => true]);
         $user = UserTest::create(['email_verified_at' => null]);
@@ -158,18 +158,31 @@ class ControllerTest extends TestCase
         ]);
 
         $this->get($url)
-            ->assertRedirect(route('login'))
-            ->assertSessionHas('message', 'Your email address has been verified. You may now log in.')
-            ->assertSessionHas('messageType', 'success');
+            ->assertRedirect(route('login'));
 
-        $this->assertTrue($user->fresh()->hasVerifiedEmail());
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function testEmailVerificationRequiresMatchingAuthenticatedUser()
+    {
+        config(['biigle.email_verification' => true]);
+        $user = UserTest::create(['email_verified_at' => null]);
+        $this->actingAs(UserTest::create());
+
+        $url = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+
+        $this->get($url)->assertForbidden();
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 
     public function testEmailVerificationWhileAuthenticatedShowsAllOutcomes()
     {
         config(['biigle.email_verification' => true]);
         $user = UserTest::create(['email_verified_at' => null]);
-        $this->actingAs(UserTest::create());
+        $this->actingAs($user);
 
         $url = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
             'id' => $user->id,
@@ -196,23 +209,20 @@ class ControllerTest extends TestCase
         ]);
 
         $this->get($expiredUrl)
-            ->assertRedirect(route('home'))
-            ->assertSessionHas('message', 'This email verification link is invalid or has expired.')
-            ->assertSessionHas('messageType', 'danger');
-        $this->get('/')
-            ->assertSee('This email verification link is invalid or has expired.');
+            ->assertForbidden();
     }
 
     public function testEmailVerificationLinkCanBeUsedAgain()
     {
         $user = UserTest::create(['email_verified_at' => now()]);
+        $this->actingAs($user);
         $url = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
             'id' => $user->id,
             'hash' => sha1($user->email),
         ]);
 
         $this->get($url)
-            ->assertRedirect(route('login'))
+            ->assertRedirect(route('home'))
             ->assertSessionHas('message', 'Your email address has already been verified. You may now log in.')
             ->assertSessionHas('messageType', 'info');
     }
@@ -220,14 +230,12 @@ class ControllerTest extends TestCase
     public function testExpiredEmailVerificationLink()
     {
         $user = UserTest::create();
+        $this->actingAs($user);
         $url = URL::temporarySignedRoute('verification.verify', now()->subMinute(), [
             'id' => $user->id,
             'hash' => sha1($user->email),
         ]);
 
-        $this->get($url)
-            ->assertRedirect(route('login'))
-            ->assertSessionHas('message', 'This email verification link is invalid or has expired.')
-            ->assertSessionHas('messageType', 'danger');
+        $this->get($url)->assertForbidden();
     }
 }

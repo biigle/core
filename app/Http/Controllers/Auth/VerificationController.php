@@ -3,43 +3,32 @@
 namespace Biigle\Http\Controllers\Auth;
 
 use Biigle\Http\Controllers\Controller;
-use Biigle\User;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Foundation\Auth\VerifiesEmails;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\URL;
 
+/**
+ * Adds application-specific messages and resend limits to email verification.
+ *
+ * Laravel's EmailVerificationRequest handles link authorization and fulfillment;
+ * this controller customizes the responses and rate-limits resend requests.
+ */
 class VerificationController extends Controller
 {
-    use VerifiesEmails {
-        resend as baseResend;
-    }
-
     public function __construct()
     {
-        $this->middleware('auth')->except('verify');
+        $this->middleware('auth');
+        $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify');
     }
 
-    public function verify(Request $request)
+    public function verify(EmailVerificationRequest $request)
     {
-        if (!URL::hasValidSignature($request)) {
-            return $this->verificationFailed();
-        }
-
-        $user = User::find($request->route('id'));
-        if (!$user || !hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
-            return $this->verificationFailed();
-        }
-
-        if ($user->hasVerifiedEmail()) {
+        if ($request->user()->hasVerifiedEmail()) {
             return $this->verificationResponse('Your email address has already been verified. You may now log in.', 'info');
         }
 
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
+        $request->fulfill();
 
         return $this->verificationResponse('Your email address has been verified. You may now log in.', 'success');
     }
@@ -57,7 +46,7 @@ class VerificationController extends Controller
             return redirect()->route('home');
         }
 
-        $this->baseResend($request);
+        $request->user()->sendEmailVerificationNotification();
         RateLimiter::hit($limit->key, $limit->decaySeconds);
 
         return redirect()->route('home')
@@ -67,15 +56,8 @@ class VerificationController extends Controller
 
     protected function verificationResponse(string $message, string $messageType)
     {
-        $route = auth()->check() ? 'home' : 'login';
-
-        return redirect()->route($route)
+        return redirect()->route('home')
             ->with('message', $message)
             ->with('messageType', $messageType);
-    }
-
-    protected function verificationFailed()
-    {
-        return $this->verificationResponse('This email verification link is invalid or has expired.', 'danger');
     }
 }
