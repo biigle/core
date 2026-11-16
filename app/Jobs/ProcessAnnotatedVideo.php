@@ -5,8 +5,6 @@ namespace Biigle\Jobs;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Biigle\VolumeFile;
-use Biigle\Exceptions\CantCreateTemporaryFileException;
-use FFMpeg\Exception\RuntimeException;
 use FFMpeg\FFProbe;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -14,7 +12,6 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
-use Jcupitt\Vips\Exception as VipsException;
 use Jcupitt\Vips\Image;
 
 /**
@@ -122,21 +119,18 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                 $frame = $a->frames[0];
                 try {
                     $videoFrame = $this->getVideoFrame($sourcePath, $frame, $window);
-                } catch (RuntimeException $e) {
-                    // FFMpeg can't extract the frame.
-                    continue;
-                } catch (VipsException $e) {
-                    // The "buffer not in known format" error when FFMPeg returns an empty
-                    // buffer from the end of the video. We have the "trySeek" argument
-                    // that attempts to rewind for a bit to get a frame but this may not
-                    // always work.
-                    continue;
                 } catch (\Throwable $e) {
                     Log::error('Unexpected error while extracting a video frame.', [
                         'exception' => $e,
                         'source_path' => $sourcePath,
                         'time' => $frame,
                     ]);
+                    continue;
+                }
+
+                // No frame could be found near the end of the video, even after
+                // rewinding. This is expected for some annotations.
+                if ($videoFrame === null) {
                     continue;
                 }
 
@@ -192,7 +186,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
      * @param float $window
      * @param ?int $trySeek
      *
-     * @return Image
+     * @return Image|null Null if no frame could be extracted after all seek attempts.
      */
     protected function getVideoFrame(string $sourcePath, float $time, float $window, ?int $trySeek = null)
     {
@@ -217,7 +211,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             // We only return the buffer anyways, the file can be safely deleted later
             $tmpFile = tempnam(sys_get_temp_dir(), 'largo_video_frame');
             if ($tmpFile === false) {
-                throw new CantCreateTemporaryFileException('Could not create a temporary file.');
+                throw new \RuntimeException('Could not create a temporary file.');
             }
 
             $outputPath = "{$tmpFile}.jpg";
@@ -234,11 +228,9 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                         escapeshellarg($outputPath)
                     ));
 
-                if ($result->failed()) {
-                    // If ffmpeg failed, throw laravel exception not handled by
-                    // processAnnotationChunk, thereby stopping the process
-                    $result->throw();
-                }
+                // The exception includes the ffmpeg output, which is logged by
+                // processAnnotationChunk.
+                $result->throw();
 
                 $buffer = File::exists($outputPath)
                     ? File::get($outputPath)
@@ -257,7 +249,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             $time = max(0, $time - $window);
         } while ($trySeek > 0);
 
-        throw new RuntimeException('Could not extract a video frame.');
+        return null;
     }
 
     /**

@@ -938,41 +938,20 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->handle();
     }
 
-    public function testHandleRuntimeError()
+    public function testHandleFrameNotFound()
     {
         $disk = Storage::fake('test');
-        $video = $this->getFrameMock(0);
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100]],
             'frames' => [1],
             'shape' => Shape::POINT,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
-        $job->mock = $video;
-        $job->throwGetFrame = \FFMpeg\Exception\RuntimeException::class;
+        $job->mock = null;
 
-        $video->shouldReceive('crop')->never();
-        $video->shouldReceive('writeToBuffer')->never();
-        $job->handle();
-        $this->assertEmpty($job->capturedCropBoxes);
-    }
+        Log::shouldReceive('error')->never();
 
-    public function testHandleVipsException()
-    {
-        $disk = Storage::fake('test');
-        $video = $this->getFrameMock(0);
-        $annotation = VideoAnnotationTest::create([
-            'points' => [[100, 100]],
-            'frames' => [1],
-            'shape' => Shape::POINT,
-        ]);
-        $job = new ProcessAnnotatedVideoStub($annotation->video);
-        $job->mock = $video;
-        $job->throwGetFrame = \Jcupitt\Vips\Exception::class;
-
-        $video->shouldReceive('crop')->never();
-        $video->shouldReceive('writeToBuffer')->never();
-        $job->handle();
+        $job->handleFile($annotation->video, 'abc');
         $this->assertEmpty($job->capturedCropBoxes);
     }
 
@@ -987,7 +966,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
-        $job->throwGetFrame = \Biigle\Exceptions\CantCreateTemporaryFileException::class;
+        $job->throwGetFrame = \RuntimeException::class;
 
         Log::shouldReceive('error')
             ->once()
