@@ -191,17 +191,17 @@ class ControllerTest extends TestCase
 
         $this->get($url)
             ->assertRedirect(route('home'))
-            ->assertSessionHas('message', 'Your email address has been verified. You may now log in.')
+            ->assertSessionHas('message', 'Your email address has been verified.')
             ->assertSessionHas('messageType', 'success');
         $this->get('/')
-            ->assertSee('Your email address has been verified. You may now log in.');
+            ->assertSee('Your email address has been verified.');
 
         $this->get($url)
             ->assertRedirect(route('home'))
-            ->assertSessionHas('message', 'Your email address has already been verified. You may now log in.')
+            ->assertSessionHas('message', 'Your email address has already been verified.')
             ->assertSessionHas('messageType', 'info');
         $this->get('/')
-            ->assertSee('Your email address has already been verified. You may now log in.');
+            ->assertSee('Your email address has already been verified.');
 
         $expiredUrl = URL::temporarySignedRoute('verification.verify', now()->subMinute(), [
             'id' => $user->id,
@@ -223,7 +223,7 @@ class ControllerTest extends TestCase
 
         $this->get($url)
             ->assertRedirect(route('home'))
-            ->assertSessionHas('message', 'Your email address has already been verified. You may now log in.')
+            ->assertSessionHas('message', 'Your email address has already been verified.')
             ->assertSessionHas('messageType', 'info');
     }
 

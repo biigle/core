@@ -43,17 +43,13 @@ class VerificationController extends Controller
         }
 
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('home')
-                ->with('message', 'Your email address has already been verified.')
-                ->with('messageType', 'info');
+            return $this->verificationResponse('Your email address has already been verified.', 'info');
         }
 
         $request->user()->sendEmailVerificationNotification();
         RateLimiter::hit($limit->key, $limit->decaySeconds);
 
-        return redirect()->route('home')
-            ->with('message', 'A fresh verification link has been sent to your email address.')
-            ->with('messageType', 'info');
+        return $this->verificationResponse('A fresh verification link has been sent to your email address.', 'info');
     }
 
     protected function verificationResponse(string $message, string $messageType)
