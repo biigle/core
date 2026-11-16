@@ -25,12 +25,12 @@ class VerificationController extends Controller
     public function verify(EmailVerificationRequest $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return $this->verificationResponse('Your email address has already been verified. You may now log in.', 'info');
+            return $this->verificationResponse('Your email address has already been verified.', 'info');
         }
 
         $request->fulfill();
 
-        return $this->verificationResponse('Your email address has been verified. You may now log in.', 'success');
+        return $this->verificationResponse('Your email address has been verified.', 'success');
     }
 
     public function resend(Request $request)
@@ -43,7 +43,9 @@ class VerificationController extends Controller
         }
 
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->route('home');
+            return redirect()->route('home')
+                ->with('message', 'Your email address has already been verified.')
+                ->with('messageType', 'info');
         }
 
         $request->user()->sendEmailVerificationNotification();
