@@ -400,8 +400,9 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // Free memory.
         unset($alreadyThere);
 
-        // Store the ID so we can efficiently loop over the models later. This is only
-        // possible because all this happens inside a DB transaction (see above).
+        // Store the ID so we can efficiently loop over the models later. Rows committed
+        // by concurrent transactions can still appear above this ID, so the loop below
+        // needs additional filters.
         $startId = $labelModel::orderBy('id', 'desc')->select('id')->first()->id;
 
         collect($newAnnotationLabels)
@@ -424,7 +425,13 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // Free memory.
         unset($newAnnotationLabels);
 
+        // Limit the loop to the annotation labels inserted above. Labels of other
+        // transactions could be deleted concurrently, which would cause a foreign key
+        // violation in the feature vector job and abort this transaction. Our own
+        // uncommitted labels are invisible to others and can't be deleted.
         $labelModel::where('id', '>', $startId)
+            ->where('user_id', $user->id)
+            ->where('created_at', $now)
             ->eachById(function ($annotationLabel) use ($labelModel) {
                 // Execute the jobs synchronously because after this method the
                 // old annotation labels may be deleted and there will be nothing
