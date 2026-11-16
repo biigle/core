@@ -49,6 +49,28 @@ class Volume extends Model
     const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
 
     /**
+     * Number of seconds the volume thumbnails are cached.
+     *
+     * @var int
+     */
+    const THUMBNAILS_CACHE_TTL = 3600;
+
+    /**
+     * Number of volumes whose thumbnails are read from the cache at once in
+     * preloadThumbnails().
+     *
+     * @var int
+     */
+    const THUMBNAILS_PRELOAD_CHUNK = 100;
+
+    /**
+     * Thumbnail URLs that were loaded with preloadThumbnails().
+     *
+     * @var \Illuminate\Support\Collection|null
+     */
+    protected $preloadedThumbnailUrls = null;
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -295,7 +317,14 @@ class Volume extends Model
      */
     public function getThumbnailUrlAttribute()
     {
-        return $this->thumbnail ? $this->thumbnail->thumbnailUrl : null;
+        if (!is_null($this->preloadedThumbnailUrls)) {
+            $urls = $this->preloadedThumbnailUrls;
+
+            // Same file as in getThumbnailAttribute().
+            return $urls->get(intdiv($urls->count() - 1, 2));
+        }
+
+        return $this->thumbnail?->thumbnailUrl;
     }
 
     /**
@@ -307,33 +336,77 @@ class Volume extends Model
     {
         // We can cache this for 1 hour because it's unlikely to change as long as the
         // volume exists.
-        return Cache::remember($this->getThumbnailsCacheKey(), 3600, function () {
-            $number = 10;
-            $total = $this->files()->count();
-            $query = $this->orderedFiles();
-            $step = intdiv($total, $number);
+        return Cache::remember(
+            $this->getThumbnailsCacheKey(),
+            self::THUMBNAILS_CACHE_TTL,
+            fn () => $this->computeThumbnails()
+        );
+    }
 
-            return $this->orderedFiles()
-                // The query must use the row number instead of the ID because in some
-                // cases no ID may be divisible by the step (e.g. if the step is even)
-                // and only odd IDs are there.
-                ->when($step > 1, function ($query) use ($step) {
-                    $tableName = $query->getModel()->getTable();
-                    $query->whereIn(
-                        'id',
-                        fn ($query) =>
-                        $query->select('id')
-                            ->fromSub(function ($query) use ($tableName) {
-                                $query->selectRaw('id, ROW_NUMBER() OVER (ORDER BY filename ASC) as row_num')
-                                    ->from($tableName)
-                                    ->where('volume_id', $this->id);
-                            }, 'numbered_files')
-                            ->whereRaw("(row_num - 1) % ? = 0", [$step])
-                    );
-                })
-                ->limit($number)
-                ->get();
-        });
+    /**
+     * Load the thumbnail URLs of many volumes with few cache reads.
+     *
+     * The cache entries are read in chunks with one call each. Thumbnails that are
+     * not cached yet are computed and cached. Afterwards, the thumbnailUrl and
+     * thumbnailsUrl attributes of the volumes don't read from the cache again. Only
+     * the URLs are kept so the file models can be freed.
+     *
+     * @param iterable<Volume> $volumes
+     */
+    public static function preloadThumbnails(iterable $volumes)
+    {
+        foreach (collect($volumes)->chunk(self::THUMBNAILS_PRELOAD_CHUNK) as $chunk) {
+            $cached = Cache::many(
+                $chunk->map(fn ($volume) => $volume->getThumbnailsCacheKey())->values()->all()
+            );
+
+            foreach ($chunk as $volume) {
+                $key = $volume->getThumbnailsCacheKey();
+                $thumbnails = $cached[$key] ?? null;
+                if (is_null($thumbnails)) {
+                    $thumbnails = $volume->computeThumbnails();
+                    Cache::put($key, $thumbnails, self::THUMBNAILS_CACHE_TTL);
+                }
+
+                $volume->preloadedThumbnailUrls = $thumbnails->map(fn ($file) => $file->thumbnailUrl);
+            }
+
+            unset($cached, $thumbnails);
+        }
+    }
+
+    /**
+     * Select the files that are used as thumbnails of this volume.
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    protected function computeThumbnails()
+    {
+        $number = 10;
+        $total = $this->files()->count();
+        $query = $this->orderedFiles();
+        $step = intdiv($total, $number);
+
+        return $this->orderedFiles()
+            // The query must use the row number instead of the ID because in some
+            // cases no ID may be divisible by the step (e.g. if the step is even)
+            // and only odd IDs are there.
+            ->when($step > 1, function ($query) use ($step) {
+                $tableName = $query->getModel()->getTable();
+                $query->whereIn(
+                    'id',
+                    fn ($query) =>
+                    $query->select('id')
+                        ->fromSub(function ($query) use ($tableName) {
+                            $query->selectRaw('id, ROW_NUMBER() OVER (ORDER BY filename ASC) as row_num')
+                                ->from($tableName)
+                                ->where('volume_id', $this->id);
+                        }, 'numbered_files')
+                        ->whereRaw("(row_num - 1) % ? = 0", [$step])
+                );
+            })
+            ->limit($number)
+            ->get();
     }
 
     /**
@@ -343,6 +416,10 @@ class Volume extends Model
      */
     public function getThumbnailsUrlAttribute()
     {
+        if (!is_null($this->preloadedThumbnailUrls)) {
+            return $this->preloadedThumbnailUrls;
+        }
+
         return $this->thumbnails->map(fn ($file) => $file->thumbnailUrl);
     }
 
@@ -351,6 +428,7 @@ class Volume extends Model
      */
     public function flushThumbnailCache()
     {
+        $this->preloadedThumbnailUrls = null;
         Cache::forget($this->getThumbnailsCacheKey());
     }
 
