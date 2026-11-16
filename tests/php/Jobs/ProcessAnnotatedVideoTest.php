@@ -13,7 +13,6 @@ use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
 use Exception;
-use FFMpeg\Media\Video;
 use FileCache;
 use Log;
 use Mockery;
@@ -939,26 +938,24 @@ class ProcessAnnotatedVideoTest extends TestCase
         $job->handle();
     }
 
-    public function testHandleRuntimeError()
+    public function testHandleFrameNotFound()
     {
         $disk = Storage::fake('test');
-        $video = $this->getFrameMock(0);
         $annotation = VideoAnnotationTest::create([
             'points' => [[100, 100]],
             'frames' => [1],
             'shape' => Shape::POINT,
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
-        $job->mock = $video;
-        $job->throwGetFrame = \FFMpeg\Exception\RuntimeException::class;
+        $job->mock = null;
 
-        $video->shouldReceive('crop')->never();
-        $video->shouldReceive('writeToBuffer')->never();
-        $job->handle();
+        Log::shouldReceive('error')->never();
+
+        $job->handleFile($annotation->video, 'abc');
         $this->assertEmpty($job->capturedCropBoxes);
     }
 
-    public function testHandleVipsException()
+    public function testHandleUnexpectedFrameException()
     {
         $disk = Storage::fake('test');
         $video = $this->getFrameMock(0);
@@ -969,11 +966,17 @@ class ProcessAnnotatedVideoTest extends TestCase
         ]);
         $job = new ProcessAnnotatedVideoStub($annotation->video);
         $job->mock = $video;
-        $job->throwGetFrame = \Jcupitt\Vips\Exception::class;
+        $job->throwGetFrame = \RuntimeException::class;
+
+        Log::shouldReceive('error')
+            ->once()
+            ->withArgs(fn ($message, $context) => $message === 'Unexpected error while extracting a video frame.'
+                && $context['source_path'] === 'abc'
+                && $context['time'] === 1);
 
         $video->shouldReceive('crop')->never();
         $video->shouldReceive('writeToBuffer')->never();
-        $job->handle();
+        $job->handleFile($annotation->video, 'abc');
         $this->assertEmpty($job->capturedCropBoxes);
     }
 
@@ -994,6 +997,27 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $box = $job->capturedCropBoxes[0];
         $this->assertSame([300, 284, 100, 32], $box);
+    }
+
+    public function testParseVideoFps()
+    {
+        $job = new ProcessAnnotatedVideoParseStub(VideoModel::factory()->make());
+
+        $this->assertSame(30.0, $job->parseVideoFpsForTest('0/0'));
+        $this->assertEqualsWithDelta(30000 / 1001, $job->parseVideoFpsForTest('30000/1001'), 1e-5);
+        $this->assertSame(30.0, $job->parseVideoFpsForTest(null));
+        $this->assertSame(30.0, $job->parseVideoFpsForTest('invalid'));
+    }
+
+    public function testCalculateSeekWindow()
+    {
+        $job = new ProcessAnnotatedVideoSeekWindowStub(VideoModel::factory()->make());
+
+        $job->fps = 60;
+        $this->assertSame(0.05, $job->calculateSeekWindowForTest('video.mp4'));
+
+        $job->fps = 1;
+        $this->assertSame(3.0, $job->calculateSeekWindowForTest('video.mp4'));
     }
 
     protected function getFrameMock($times = 1)
@@ -1019,12 +1043,12 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     public $throwGetFrame = false;
     public $beforePyworkerRequest;
 
-    public function getVideo($path)
+    public function calculateSeekWindow(string $path): float
     {
-        return Mockery::mock(Video::class);
+        return 0.05;
     }
 
-    public function getVideoFrame(Video $video, float $time, int $trySeek = 3)
+    public function getVideoFrame(string $sourcePath, float $time, float $window, ?int $trySeek = 3)
     {
         if ($this->throwGetFrame !== false) {
             throw new $this->throwGetFrame;
@@ -1038,7 +1062,7 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
     protected function getVipsImageForPyworker(string $path, array $options = [])
     {
         // Return the mock directly, skipping RGB conversion
-        return $this->getVideo($path);
+        return $this->mock;
     }
 
     protected function getCropBufferForPyworker($image, array $box): string
@@ -1056,6 +1080,29 @@ class ProcessAnnotatedVideoStub extends ProcessAnnotatedVideo
         }
 
         return $this->featureVector ?: range(0, 383);
+    }
+}
+
+class ProcessAnnotatedVideoSeekWindowStub extends ProcessAnnotatedVideo
+{
+    public float $fps;
+
+    public function getVideoFps(string $path): float
+    {
+        return $this->fps;
+    }
+
+    public function calculateSeekWindowForTest(string $path): float
+    {
+        return $this->calculateSeekWindow($path);
+    }
+}
+
+class ProcessAnnotatedVideoParseStub extends ProcessAnnotatedVideo
+{
+    public function parseVideoFpsForTest(mixed $rate): float
+    {
+        return $this->parseVideoFps($rate);
     }
 }
 

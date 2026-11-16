@@ -64,7 +64,8 @@ export default {
             selectedLabel: null,
             pendingAnnotation: null,
             annotations: [],
-            seeking: false,
+            videoSeeking: false,
+            mediabunnyDecoding: false,
             settings: {
                 annotationOpacity: 1,
                 showMinimap: true,
@@ -128,6 +129,12 @@ export default {
         };
     },
     computed: {
+        // The native "seeked" event fires before mediabunny has drawn the frame that
+        // belongs to currentTime. Until then, the displayed frame may not be the one
+        // that annotations would be created at.
+        seeking() {
+            return this.videoSeeking || this.mediabunnyDecoding;
+        },
         selectedAnnotations() {
             return this.filteredAnnotations.filter((a) => a.isSelected);
         },
@@ -229,6 +236,9 @@ export default {
 
             return annotation;
         },
+        setMediabunnyDecoding(active) {
+            this.mediabunnyDecoding = active;
+        },
         seek(time, force) {
             if (this.seeking || this.labelbotIsComputing) {
                 return Promise.resolve();
@@ -242,13 +252,13 @@ export default {
                 this.video.addEventListener('seeked', resolve);
                 this.video.addEventListener('error', reject);
             });
-            this.seeking = true;
+            this.videoSeeking = true;
             this.video.currentTime = time;
 
             return promise;
         },
         startSeeking() {
-            this.seeking = true;
+            this.videoSeeking = true;
         },
         selectAnnotation(annotation, time, shift) {
             if (this.attachingLabel) {
@@ -454,7 +464,7 @@ export default {
             }
         },
         handleVideoSeeked() {
-            this.seeking = false;
+            this.videoSeeking = false;
         },
         modifyAnnotations(event) {
             event.forEach(this.modifyAnnotation);
@@ -711,7 +721,7 @@ export default {
                 .finally(() => {
                     this.finishLoading();
                     // Avoid spinning wheel continuing to be displayed after moving fast through videos
-                    this.seeking = false;
+                    this.videoSeeking = false;
                 });
 
             return promise;
@@ -748,7 +758,7 @@ export default {
         },
         reset() {
             this.annotations = [];
-            this.seeking = false;
+            this.videoSeeking = false;
             this.initialCurrentTime = 0;
             this.initialFocussedAnnotation = 0;
             this.$refs.videoTimeline.reset();
@@ -1006,11 +1016,6 @@ export default {
         // Wait for the sub-components to register their event listeners before
         // loading the video.
         this.loadVideo(this.videoId);
-
-        // See: https://github.com/biigle/core/issues/391
-        if (navigator.userAgent.toLowerCase().includes('firefox')) {
-            Messages.danger('Current versions of the Firefox browser may not show the correct video frame for a given time. Annotations may be placed incorrectly. Please consider using Chrome until the issue is fixed in Firefox. Learn more on https://github.com/biigle/core/issues/391.');
-        }
     },
 };
 </script>
