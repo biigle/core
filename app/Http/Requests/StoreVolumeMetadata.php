@@ -84,7 +84,7 @@ class StoreVolumeMetadata extends FormRequest
             }
 
             $parser = new $parserClass($this->file('file'));
-            if (!$parser->recognizesFile()) {
+            if (!$parser->recognizesFileSafely()) {
                 $validator->errors()->add('file', 'Unknown metadata file format.');
                 return;
             }
