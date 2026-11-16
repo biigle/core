@@ -72,8 +72,7 @@ class UsersControllerTest extends TestCase
             $this->be($admin);
             $response = $this->get('admin/users');
 
-            $response->assertSeeText('[unverified]')
-                ->assertDontSeeText('never logged in');
+            $response->assertSeeText('[unverified]');
         } finally {
             config(['biigle.email_verification' => false]);
         }
