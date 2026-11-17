@@ -44,8 +44,9 @@ class UpdateUser extends FormRequest
 
         return [
             // Ignore the email of the own user.
-            'email' => "filled|email|unique:users,email,{$this->updateUser->id}|max:255",
-            'password' => 'nullable|min:8',
+            // Utf8 must come before unique, which is skipped if a previous rule failed.
+            'email' => ['filled', 'string', new Utf8, 'email', "unique:users,email,{$this->updateUser->id}", 'max:255'],
+            'password' => ['nullable', 'string', 'min:8', new Utf8],
             'firstname' => ['filled', 'string', 'max:127', new Utf8],
             'lastname' => ['filled', 'string', 'max:127', new Utf8],
             'role' => ['filled', 'integer', Rule::in($roles)],
@@ -64,7 +65,8 @@ class UpdateUser extends FormRequest
      */
     protected function prepareForValidation()
     {
-        if ($this->filled('email')) {
+        // Non-strings are rejected by the validation but would crash strtolower().
+        if ($this->filled('email') && is_string($this->input('email'))) {
             $this->merge(['email' => strtolower($this->input('email'))]);
         }
     }
