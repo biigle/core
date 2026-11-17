@@ -130,6 +130,7 @@ export default {
                 const x = boxRect.left - viewportRect.left;
                 const y = boxRect.top - viewportRect.top;
                 const radius = parseFloat(boxStyle.borderRadius);
+                ctx.globalAlpha = parseFloat(window.getComputedStyle(tooltip).opacity);
 
                 ctx.beginPath();
                 ctx.roundRect(x, y, boxRect.width, boxRect.height, radius);

@@ -6,7 +6,7 @@
     centered
     dragging-class="labelbot-popup--dragging"
     :connector-color="labels[0].color"
-    :feature="feature"
+    :feature="overlayFeature"
     :gap="overlayOffset"
     :line-source="lineSource"
     :map="map"
@@ -65,6 +65,7 @@ import Events from '@/core/events';
 import Keyboard from '@/core/keyboard';
 import Typeahead from '@/label-trees/components/labelTypeahead.vue';
 import {debounce} from '@/core/utils.js';
+import {markRaw} from 'vue';
 
 // Defined in CSS.
 const OVERLAY_MAX_WIDTH = 300;
@@ -102,7 +103,7 @@ export default {
         },
         feature: {
             type: Object,
-            required: true,
+            default: null,
         },
         lineSource: {
             type: Object,
@@ -124,6 +125,7 @@ export default {
             maybeGetsAttention: false,
             typeaheadFocused: false,
             selectedLabel: null,
+            overlayFeature: markRaw(this.feature),
         };
     },
     computed: {
@@ -292,6 +294,15 @@ export default {
                 case 2: return this.selectLabel3();
             }
         }
+    },
+    watch: {
+        feature(feature) {
+            // The feature is removed if the video time changes to a frame without
+            // the annotation. Keep the previous feature in this case.
+            if (feature) {
+                this.overlayFeature = markRaw(feature);
+            }
+        },
     },
     created() {
         if (this.timeout === (TIMEOUTS.length - 1)) {

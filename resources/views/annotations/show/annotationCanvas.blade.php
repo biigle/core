@@ -18,6 +18,7 @@
         :annotation-source="annotationSource"
         :map="map"
         :mode="showLabelTooltip"
+        :opacity="annotationOpacity"
         ></persistent-label-tooltips>
     <measure-tooltip
         :show="showMeasureTooltip"

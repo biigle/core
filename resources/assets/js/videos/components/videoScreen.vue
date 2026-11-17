@@ -14,6 +14,7 @@
             :annotation-source="annotationSource"
             :map="map"
             :mode="showLabelTooltip"
+            :opacity="annotationOpacity"
             ></persistent-label-tooltips>
         <div class="controls">
             <div v-if="showPrevNext" class="btn-group">

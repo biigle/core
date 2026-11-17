@@ -5,6 +5,7 @@
         :feature="feature"
         :line-source="lineSource"
         :map="map"
+        :style="{opacity: opacity}"
         ></persistent-label-tooltip>
 </template>
 
@@ -32,6 +33,10 @@ export default {
         mode: {
             type: String,
             required: true,
+        },
+        opacity: {
+            type: Number,
+            default: 1,
         },
     },
     data() {
@@ -93,6 +98,9 @@ export default {
         mode(mode) {
             this.lineLayer.setVisible(mode === LABEL_TOOLTIP_MODES.ALWAYS);
         },
+        opacity(opacity) {
+            this.lineLayer.setOpacity(opacity);
+        },
     },
     created() {
         // OpenLayers objects must not become reactive because this hurts rendering performance.
@@ -105,6 +113,7 @@ export default {
             updateWhileAnimating: true,
             updateWhileInteracting: true,
             style: Styles.features,
+            opacity: this.opacity,
         });
         this.lineLayer.setVisible(this.mode === LABEL_TOOLTIP_MODES.ALWAYS);
         this.attachSource(this.activeSource);
