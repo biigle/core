@@ -182,17 +182,22 @@ class UsersController extends Controller
         $volumesCount = $volumes->count();
         $volumesPercent = $volumesCount > 0 ? round($volumesCount / $volumesTotal * 100, 2) : 0;
 
-        $imagesTotal = Image::count();
         $imagesCount = Image::join('volumes', 'volumes.id', '=', 'images.volume_id')
             ->where('volumes.creator_id', $user->id)
             ->count();
-        $imagesPercent = $imagesCount > 0 ? round($imagesCount / $imagesTotal * 100, 2) : 0;
+        $imagesPercent = 0;
+        if ($imagesCount > 0) {
+            // The estimate may be outdated and smaller than the exact count.
+            $imagesPercent = min(100, round($imagesCount / Image::estimatedCount() * 100, 2));
+        }
 
-        $videosTotal = Video::count();
         $videosCount = Video::join('volumes', 'volumes.id', '=', 'videos.volume_id')
             ->where('volumes.creator_id', $user->id)
             ->count();
-        $videosPercent = $videosCount > 0 ? round($videosCount / $videosTotal * 100, 2) : 0;
+        $videosPercent = 0;
+        if ($videosCount > 0) {
+            $videosPercent = min(100, round($videosCount / Video::estimatedCount() * 100, 2));
+        }
 
         return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent', 'videosCount', 'videosPercent');
     }
@@ -212,8 +217,7 @@ class UsersController extends Controller
         $totalAnnotations = (clone $annotationQuery)->distinct()->count('image_annotations.id');
 
         if ($totalAnnotations > 0) {
-            $estimatedCount = ImageAnnotation::estimatedCount();
-            $relativeAnnotations =  $estimatedCount > 0 ? $totalAnnotations / $estimatedCount : 0;
+            $relativeAnnotations = $totalAnnotations / ImageAnnotation::estimatedCount();
 
             $recentImageAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
@@ -243,8 +247,7 @@ class UsersController extends Controller
         $totalVideoAnnotations = (clone $annotationQuery)->distinct()->count('video_annotations.id');
 
         if ($totalVideoAnnotations > 0) {
-            $estimatedCount = VideoAnnotation::estimatedCount();
-            $relativeVideoAnnotations = $estimatedCount > 0 ? $totalVideoAnnotations / $estimatedCount : 0;
+            $relativeVideoAnnotations = $totalVideoAnnotations / VideoAnnotation::estimatedCount();
 
             $recentVideoAnnotations = $annotationQuery->orderBy('video_annotation_labels.created_at', 'desc')
                 ->take(10)

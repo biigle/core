@@ -3,6 +3,7 @@
 namespace Biigle;
 
 use Biigle\FileCache\Contracts\File as FileContract;
+use Biigle\Traits\HasEstimatedCount;
 use Biigle\Traits\HasJsonAttributes;
 use Illuminate\Database\Eloquent\Attributes\WithoutTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 #[WithoutTimestamps]
 abstract class VolumeFile extends Model implements FileContract
 {
-    use HasJsonAttributes, HasFactory;
+    use HasEstimatedCount, HasJsonAttributes, HasFactory;
 
     /**
      * Adds the `url` attribute to the model. The url is the absolute path

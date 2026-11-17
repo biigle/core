@@ -195,7 +195,8 @@ class UsersControllerTest extends TestCase
 
         $this->be($admin);
         $this->get("admin/users/{$user->id}")
-            ->assertSeeText('with 1 image(s) (100%) and 2 video(s) (100%).');
+            ->assertSeeText('with 1 image(s)')
+            ->assertSeeText('and 2 video(s)');
     }
 
     public function testShowVideoCount()
@@ -215,7 +216,7 @@ class UsersControllerTest extends TestCase
 
         $this->be($admin);
         $this->get("admin/users/{$user->id}")
-            ->assertSeeText('with 2 video(s) (66.67%).')
+            ->assertSeeText('with 2 video(s)')
             ->assertDontSeeText('with no images');
     }
 
