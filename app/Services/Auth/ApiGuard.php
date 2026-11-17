@@ -3,6 +3,7 @@
 namespace Biigle\Services\Auth;
 
 use Biigle\ApiToken;
+use Biigle\Rules\Utf8;
 use Hash;
 use Illuminate\Auth\TokenGuard;
 
@@ -29,7 +30,7 @@ class ApiGuard extends TokenGuard
 
         // Check the encoding bcause a user can put anything into the string and cause
         // a server/database error with weird strings.
-        if (!empty($token) && !empty($email) && mb_check_encoding($email, 'UTF-8')) {
+        if (!empty($token) && !empty($email) && (new Utf8)->passes('email', $email)) {
             $user = $this->provider->retrieveByCredentials(
                 ['email' => strtolower($email)]
             );

@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Auth;
 
 use Biigle\Http\Controllers\Controller;
+use Biigle\Rules\Utf8;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -46,10 +47,26 @@ class ForgotPasswordController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        // Validate before strtolower(), which would crash on non-string input.
+        $this->validateEmail($request);
+
         // Transform the username/email to lowercase because we want this to be case
         // insensitive.
         $request->merge(['email' => strtolower($request->input('email'))]);
 
         return $this->baseSendResetLinkEmail($request);
+    }
+
+    /**
+     * Validate the email for the given request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function validateEmail(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'string', 'email', new Utf8],
+        ]);
     }
 }

@@ -29,8 +29,9 @@ class StoreUser extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|string|email|unique:users|max:256',
-            'password' => 'required|string|min:8',
+            // Utf8 must come before unique, which is skipped if a previous rule failed.
+            'email' => ['required', 'string', new Utf8, 'email', 'unique:users', 'max:256'],
+            'password' => ['required', 'string', 'min:8', new Utf8],
             'firstname' => ['required', 'string', 'max:128', new Utf8],
             'lastname' => ['required', 'string', 'max:128', new Utf8],
             'role' => ['integer', Rule::enum(Role::class)],

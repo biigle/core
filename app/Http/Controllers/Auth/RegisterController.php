@@ -62,7 +62,8 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         // Email should be case insensitive
-        if (array_key_exists('email', $data)) {
+        // Non-strings are rejected by the validation but would crash strtolower().
+        if (array_key_exists('email', $data) && is_string($data['email'])) {
             $data['email'] = strtolower($data['email']);
         }
 
