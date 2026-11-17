@@ -163,6 +163,31 @@ class ControllerTest extends TestCase
         $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 
+    public function testEmailVerificationIsDisabledInOfflineMode()
+    {
+        config(['biigle.email_verification' => true, 'biigle.offline_mode' => true]);
+        $user = UserTest::create(['email_verified_at' => null]);
+        $this->actingAs($user);
+        $url = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+
+        $this->get($url)->assertNotFound();
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
+    }
+
+    public function testEmailVerificationResendIsDisabledInOfflineMode()
+    {
+        config(['biigle.email_verification' => true, 'biigle.offline_mode' => true]);
+        Notification::fake();
+        $user = UserTest::create(['email_verified_at' => null]);
+        $this->actingAs($user);
+
+        $this->post(route('verification.resend'))->assertNotFound();
+        Notification::assertNothingSent();
+    }
+
     public function testEmailVerificationRequiresMatchingAuthenticatedUser()
     {
         config(['biigle.email_verification' => true]);

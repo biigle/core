@@ -24,6 +24,10 @@ class VerificationController extends Controller
 
     public function verify(EmailVerificationRequest $request)
     {
+        if (config('biigle.offline_mode')) {
+            abort(404);
+        }
+
         if ($request->user()->hasVerifiedEmail()) {
             return $this->verificationResponse('Your email address has already been verified.', 'info');
         }
@@ -35,6 +39,10 @@ class VerificationController extends Controller
 
     public function resend(Request $request)
     {
+        if (config('biigle.offline_mode')) {
+            abort(404);
+        }
+
         $limit = RateLimiter::limiter('verification')($request);
         if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
             return back()
