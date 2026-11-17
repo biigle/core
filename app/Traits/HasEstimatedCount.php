@@ -16,7 +16,7 @@ trait HasEstimatedCount
      */
     public static function estimatedCount(): int
     {
-        $table = (new static)->getTable();
+        $table = static::query()->getModel()->getTable();
 
         $estimate = (int) DB::selectOne('SELECT reltuples::bigint AS estimate FROM pg_class WHERE relname = ?', [$table])->estimate;
 
