@@ -32,7 +32,7 @@ class UpdateOwnUser extends UpdateUser
         
         // Prevent users from deleting their affiliation with an empty string
         // but still allow null values for cases where affiliation was never set
-        $rules['affiliation'] = ['filled', 'max:255', new Utf8];
+        $rules['affiliation'] = ['filled', 'string', 'max:255', new Utf8];
         
         return $rules;
     }

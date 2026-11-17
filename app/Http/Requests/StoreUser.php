@@ -35,7 +35,7 @@ class StoreUser extends FormRequest
             'lastname' => ['required', 'string', 'max:128', new Utf8],
             'role' => ['integer', Rule::enum(Role::class)],
             'uuid' => ['nullable', new Uuid4],
-            'affiliation' => ['nullable', 'max:255', new Utf8],
+            'affiliation' => ['nullable', 'string', 'max:255', new Utf8],
         ];
     }
 

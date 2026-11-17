@@ -70,7 +70,7 @@ class RegisterController extends Controller
         $additionalRules = [
             'website' => 'honeypot',
             'homepage' => 'honeytime:10|required',
-            'affiliation' => ['required', 'max:255', new Utf8],
+            'affiliation' => ['required', 'string', 'max:255', new Utf8],
         ];
 
         if (View::exists('privacy')) {
