@@ -60,6 +60,10 @@ class UpdateFederatedSearchInstance extends FormRequest
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             $token = $this->input('remote_token');
             $baseUrl = $this->input('url', $this->instance->url);
             $url = $baseUrl.route('federated-search-index', '', false);
