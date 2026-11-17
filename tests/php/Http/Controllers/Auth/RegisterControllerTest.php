@@ -155,6 +155,7 @@ class RegisterControllerTest extends TestCase
 
         /** @var User $user */
         $user = User::where('email', 'e@ma.il')->first();
+        $this->assertCount(1, Notification::sent($user, VerifyEmail::class));
         Notification::assertSentTo(
             new AnonymousNotifiable,
             RegistrationConfirmation::class,
@@ -162,6 +163,7 @@ class RegisterControllerTest extends TestCase
         $user->markEmailAsVerified();
         event(new Verified($user));
 
+        $this->assertCount(1, Notification::sent(new AnonymousNotifiable, RegistrationConfirmation::class));
         $this->assertSame(Role::GUEST, $user->fresh()->role);
     }
 
