@@ -11,7 +11,8 @@ class Utf8 implements Rule
      *
      * Strings with invalid UTF-8 byte sequences can't be stored in the database. This
      * only happens with manipulated requests, e.g. from bots, but would otherwise
-     * produce a server error.
+     * produce a server error. NUL bytes are valid UTF-8 but PostgreSQL rejects them
+     * in text columns, too.
      *
      * @param  string  $attribute
      * @param  mixed  $value
@@ -19,7 +20,7 @@ class Utf8 implements Rule
      */
     public function passes($attribute, $value)
     {
-        return !is_string($value) || mb_check_encoding($value, 'UTF-8');
+        return !is_string($value) || (mb_check_encoding($value, 'UTF-8') && !str_contains($value, "\0"));
     }
 
     /**

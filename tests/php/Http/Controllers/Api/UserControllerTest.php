@@ -533,6 +533,24 @@ class UserControllerTest extends ApiTestCase
         $this->assertSame($firstname, $this->guest()->fresh()->firstname);
     }
 
+    public function testUpdateNulByte()
+    {
+        $this->beGlobalAdmin();
+        $firstname = $this->guest()->firstname;
+        // NUL bytes are valid UTF-8 but would produce a database error. They are
+        // placed in the middle because TrimStrings would strip them at the ends.
+        $this
+            ->put('/api/v1/users/'.$this->guest()->id, [
+                'firstname' => "ja\0ck",
+                'lastname' => "jack\0son",
+                'affiliation' => "My\0Company",
+            ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['firstname', 'lastname', 'affiliation']);
+
+        $this->assertSame($firstname, $this->guest()->fresh()->firstname);
+    }
+
     public function testUpdateOwnInvalidUtf8()
     {
         $this->beGuest();
