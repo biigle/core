@@ -41,8 +41,9 @@ class UpdateVolume extends FormRequest
         // Validate the URL only if it should be changed. Otherwise users who can
         // update the volume but have no access to the storage disk of the volume
         // URL (e.g. the user disk of another user) could not update any other
-        // attributes of the volume.
-        if ($this->input('url') !== $this->volume->url) {
+        // attributes of the volume. Always validate for sudo users because an update
+        // without changes triggers a reread of the volume files.
+        if ($this->input('url') !== $this->volume->url || $this->user()->can('sudo')) {
             $urlRules[] = new VolumeUrl;
         }
 
