@@ -78,8 +78,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
 
             // API
-            $apiMiddleware = config('biigle.email_verification') && !config('biigle.offline_mode') ? ['web', 'api', 'auth:web,api', 'verified'] : ['web', 'api', 'auth:web,api'];
-            Route::middleware($apiMiddleware)
+            Route::middleware(['web', 'api', 'auth:web,api'])
                 ->namespace($this->namespace.'\Api')
                 ->prefix('api/v1')
                 ->group(base_path('routes/api.php'));
