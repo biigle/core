@@ -67,7 +67,7 @@ class RouteServiceProvider extends ServiceProvider
 
         RateLimiter::for('registration', fn (Request $request) => Limit::perSecond(1, 10)->by('registration:'.$request->ip()));
 
-        RateLimiter::for('verification', fn (Request $request) => Limit::perSecond(1, 10)->by(
+        RateLimiter::for('verification-resend', fn (Request $request) => Limit::perSecond(1, 10)->by(
             $request->user()?->getAuthIdentifier() ?? $request->ip()
         ));
 

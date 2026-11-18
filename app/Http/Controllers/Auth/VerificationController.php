@@ -43,7 +43,7 @@ class VerificationController extends Controller
             abort(404);
         }
 
-        $limit = RateLimiter::limiter('verification')($request);
+        $limit = RateLimiter::limiter('verification-resend')($request);
         if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
             return back()
                 ->with('message', 'Verification emails are rate limited. Please wait before requesting another email.')
