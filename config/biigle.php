@@ -69,5 +69,10 @@ return [
     */
     'db_param_limit' => 65535,
 
+    /*
+    | Require newly registered users to verify their email address. Until they do,
+    | they have the global "guest" role. This feature cannot be enabled in offline
+    | mode as it relies on emails.
+    */
     'email_verification' => env('BIIGLE_EMAIL_VERIFICATION', false) && !env('BIIGLE_OFFLINE_MODE', false),
 ];
