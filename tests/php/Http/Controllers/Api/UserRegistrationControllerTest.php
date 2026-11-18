@@ -26,6 +26,7 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
             ->assertStatus(403);
 
+        // Accept user: This should not make him editor, we still need verification
         $this->globalReviewer()->markEmailAsVerified();
         $this->beGlobalReviewer();
         $this->getJson("/api/v1/accept-user-registration/{$user->id}")
@@ -33,6 +34,7 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->assertSame(Role::GUEST, $user->fresh()->role);
         $this->assertNotNull($user->fresh()->registration_approved_at);
 
+        // Verify user: This should make him editor
         $user = $user->fresh();
         $user->markEmailAsVerified();
         event(new Verified($user));
