@@ -14,6 +14,18 @@
             width: 100%;
             max-height: 100%;
             overflow: hidden;
+
+            // Tracks with one lane have no space for a second line. The MaxN label is
+            // shown next to the label name instead.
+            &.single-lane {
+                display: flex;
+                align-items: center;
+
+                .max-n {
+                    flex: none;
+                    margin: 0 0 0 5px;
+                }
+            }
         }
 
         .label-name {

@@ -328,21 +328,42 @@ export default {
 
             return lanes;
         },
-
         getAnnotationTrackMaxN(annotations) {
-            let maxN = 0;
-            let frameCounts = {};
+            // Sweep line over the continuous segments of all annotations. A gap (null
+            // in the frames array) splits an annotation into separate segments.
+            const events = [];
+            const addSegment = (from, to) => {
+                events.push([this.roundTime(from), 1], [this.roundTime(to), -1]);
+            };
 
             annotations.forEach((annotation) => {
-                if (!frameCounts.hasOwnProperty(annotation.startFrame)) {
-                    frameCounts[annotation.startFrame] = 0;
+                const frames = annotation.frames;
+                // Pending annotations are not counted.
+                if (annotation.pending || frames.length === 0) {
+                    return;
                 }
 
-                frameCounts[annotation.startFrame] += 1;
-
-                if (frameCounts[annotation.startFrame] > maxN) {
-                    maxN = frameCounts[annotation.startFrame];
+                let start = frames[0];
+                for (let i = 1; i < frames.length; i++) {
+                    if (frames[i] === null) {
+                        addSegment(start, frames[i - 1]);
+                        start = frames[i + 1];
+                        i += 1;
+                    }
                 }
+
+                addSegment(start, frames[frames.length - 1]);
+            });
+
+            // At the same time, process starts before ends. An annotation is still
+            // visible in its last frame, so segments that touch there overlap.
+            events.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+
+            let current = 0;
+            let maxN = 0;
+            events.forEach(([, delta]) => {
+                current += delta;
+                maxN = Math.max(maxN, current);
             });
 
             return maxN;
