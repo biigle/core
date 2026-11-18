@@ -9,6 +9,7 @@ use Biigle\Notifications\RegistrationRejected;
 use Biigle\Tests\UserTest;
 use Illuminate\Auth\Events\Verified;
 use Notification;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class UserRegistrationControllerTest extends ApiTestCase
 {
@@ -45,25 +46,6 @@ class UserRegistrationControllerTest extends ApiTestCase
         Notification::assertSentTo($user, RegistrationAccepted::class);
     }
 
-    public function testAcceptVerifiedRegistration()
-    {
-        Notification::fake();
-        config([
-            'biigle.email_verification' => true,
-            'biigle.user_registration_confirmation' => true,
-        ]);
-        $user = UserTest::create(['role' => Role::GUEST]);
-        $user->markEmailAsVerified();
-        event(new Verified($user));
-        $this->assertSame(Role::GUEST, $user->fresh()->role);
-
-        $this->globalReviewer()->markEmailAsVerified();
-        $this->beGlobalReviewer();
-        $this->getJson("/api/v1/accept-user-registration/{$user->id}")
-            ->assertStatus(200);
-        $this->assertSame(Role::EDITOR, $user->fresh()->role);
-    }
-
     public function testAcceptRedirectReviewer()
     {
         Notification::fake();
@@ -84,17 +66,97 @@ class UserRegistrationControllerTest extends ApiTestCase
             ->assertRedirectToRoute('admin-users-show', $user->id);
     }
 
-    public function testAcceptRegistrationDisabled()
+    public static function registrationFeatureConfigProvider(): array
     {
+        return [
+            'online, email verification off, confirmation off' => [false, false, false],
+            'online, email verification off, confirmation on' => [false, false, true],
+            'online, email verification on, confirmation off' => [false, true, false],
+            'online, email verification on, confirmation on' => [false, true, true],
+            'offline, email verification off, confirmation off' => [true, false, false],
+            'offline, email verification off, confirmation on' => [true, false, true],
+            'offline, email verification on, confirmation off' => [true, true, false],
+            'offline, email verification on, confirmation on' => [true, true, true],
+        ];
+    }
+
+    /**
+     * Checks role promotion for every registration feature configuration. A new user
+     * becomes an editor after all enabled confirmation and verification steps, in
+     * either order; offline mode disables both steps.
+     */
+    #[DataProvider('registrationFeatureConfigProvider')]
+    public function testRegistrationLifecycleAcrossFeatureConfig(
+        bool $offlineMode,
+        bool $emailVerification,
+        bool $registrationConfirmation
+    ): void {
+        Notification::fake();
         config([
-            'biigle.email_verification' => false,
-            'biigle.user_registration_confirmation' => false,
+            'biigle.offline_mode' => $offlineMode,
+            'biigle.email_verification' => $emailVerification,
+            'biigle.user_registration_confirmation' => $registrationConfirmation,
         ]);
-        $user = UserTest::create(['role' => Role::GUEST]);
         $this->globalReviewer()->markEmailAsVerified();
         $this->beGlobalReviewer();
-        $this->getJson("/api/v1/accept-user-registration/{$user->id}")
-            ->assertStatus(404);
+
+        $emailVerificationEnabled = $emailVerification && !$offlineMode;
+        $registrationConfirmationEnabled = $registrationConfirmation && !$offlineMode;
+        $initialRole = $emailVerificationEnabled || $registrationConfirmationEnabled
+            ? Role::GUEST
+            : Role::EDITOR;
+
+        $actionOrders = [[]];
+        if ($registrationConfirmationEnabled) {
+            $actionOrders[0][] = 'confirmation';
+        }
+        if ($emailVerificationEnabled) {
+            $actionOrders[0][] = 'verification';
+        }
+        if ($registrationConfirmationEnabled && $emailVerificationEnabled) {
+            $actionOrders[] = ['verification', 'confirmation'];
+        }
+
+        foreach ($actionOrders as $actions) {
+            $user = UserTest::create([
+                'role' => $initialRole,
+                'email_verified_at' => null,
+            ]);
+            $this->assertSame($initialRole, $user->fresh()->role);
+
+            foreach ($actions as $index => $action) {
+                if ($action === 'confirmation') {
+                    $this->getJson("/api/v1/accept-user-registration/{$user->id}")
+                        ->assertStatus(200);
+                } else {
+                    $user->markEmailAsVerified();
+                    event(new Verified($user->fresh()));
+                }
+
+                $expectedRole = $index === count($actions) - 1
+                    ? Role::EDITOR
+                    : Role::GUEST;
+                $this->assertSame($expectedRole, $user->fresh()->role);
+            }
+
+            $this->assertSame(Role::EDITOR, $user->fresh()->role);
+        }
+
+        if (!$registrationConfirmationEnabled) {
+            $user = UserTest::create(['role' => Role::GUEST]);
+            $this->getJson("/api/v1/accept-user-registration/{$user->id}")
+                ->assertStatus(404);
+        }
+
+        $rejectedUser = UserTest::create(['role' => Role::GUEST]);
+        $rejectResponse = $this->getJson("/api/v1/reject-user-registration/{$rejectedUser->id}");
+        if ($registrationConfirmationEnabled) {
+            $rejectResponse->assertStatus(200);
+            $this->assertNull($rejectedUser->fresh());
+        } else {
+            $rejectResponse->assertStatus(404);
+            $this->assertNotNull($rejectedUser->fresh());
+        }
     }
 
     public function testRejectRegistration()
@@ -138,14 +200,5 @@ class UserRegistrationControllerTest extends ApiTestCase
         $this->beGlobalAdmin();
         $this->get("/api/v1/reject-user-registration/{$user->id}")
             ->assertRedirectToRoute('admin-users');
-    }
-
-    public function testRejectRegistrationDisabled()
-    {
-        config(['biigle.user_registration_confirmation' => false]);
-        $user = UserTest::create(['role' => Role::GUEST]);
-        $this->beGlobalReviewer();
-        $this->getJson("/api/v1/reject-user-registration/{$user->id}")
-            ->assertStatus(404);
     }
 }
