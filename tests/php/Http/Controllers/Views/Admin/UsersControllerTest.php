@@ -55,28 +55,24 @@ class UsersControllerTest extends TestCase
     public function testGetShowsUnverifiedStatusAndActivity()
     {
         config(['biigle.email_verification' => true]);
-        try {
-            $loginAt = now()->subDay();
-            $user = UserTest::create([
-                'email' => 'unverified@user.com',
-                'email_verified_at' => null,
-                'role' => Role::GUEST,
-            ]);
-            $user->login_at = $loginAt;
-            $user->save();
-            $admin = UserTest::create([
-                'role' => Role::ADMIN,
-                'email_verified_at' => now(),
-            ]);
+        $loginAt = now()->subDay();
+        $user = UserTest::create([
+            'email' => 'unverified@user.com',
+            'email_verified_at' => null,
+            'role' => Role::GUEST,
+        ]);
+        $user->login_at = $loginAt;
+        $user->save();
+        $admin = UserTest::create([
+            'role' => Role::ADMIN,
+            'email_verified_at' => now(),
+        ]);
 
-            $this->be($admin);
-            $response = $this->get('admin/users');
+        $this->be($admin);
+        $response = $this->get('admin/users');
 
-            $response->assertSeeText('[unverified]');
-            $response->assertSeeText($loginAt->diffForHumans());
-        } finally {
-            config(['biigle.email_verification' => false]);
-        }
+        $response->assertSeeText('[unverified]');
+        $response->assertSeeText($loginAt->diffForHumans());
     }
 
     public function testGetPaginationKeepsSearch()
