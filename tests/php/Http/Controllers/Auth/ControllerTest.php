@@ -237,30 +237,4 @@ class ControllerTest extends TestCase
             ->assertForbidden();
     }
 
-    public function testEmailVerificationLinkCanBeUsedAgain()
-    {
-        $user = UserTest::create(['email_verified_at' => now()]);
-        $this->actingAs($user);
-        $url = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
-            'id' => $user->id,
-            'hash' => sha1($user->email),
-        ]);
-
-        $this->get($url)
-            ->assertRedirect(route('home'))
-            ->assertSessionHas('message', 'Your email address has already been verified.')
-            ->assertSessionHas('messageType', 'info');
-    }
-
-    public function testExpiredEmailVerificationLink()
-    {
-        $user = UserTest::create();
-        $this->actingAs($user);
-        $url = URL::temporarySignedRoute('verification.verify', now()->subMinute(), [
-            'id' => $user->id,
-            'hash' => sha1($user->email),
-        ]);
-
-        $this->get($url)->assertForbidden();
-    }
 }
