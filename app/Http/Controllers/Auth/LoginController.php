@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Auth;
 
 use Biigle\Http\Controllers\Controller;
+use Biigle\Rules\Utf8;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
@@ -54,10 +55,8 @@ class LoginController extends Controller
     protected function validateLogin(Request $request)
     {
         $request->validate([
-            // The email validation also catches invalid UTF-8 sequences that would
-            // produce a database error.
-            $this->username() => 'required|email',
-            'password' => 'required|string',
+            $this->username() => ['required', 'string', 'email', new Utf8],
+            'password' => ['required', 'string'],
         ]);
     }
 

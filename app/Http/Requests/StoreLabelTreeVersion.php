@@ -40,7 +40,7 @@ class StoreLabelTreeVersion extends FormRequest
                 'max:256',
                 Rule::unique('label_tree_versions')->where(fn ($query) => $query->where('label_tree_id', $this->tree->id)),
             ],
-            'doi' => 'nullable|min:10',
+            'doi' => 'nullable|min:10|max:512',
         ];
     }
 }

@@ -42,8 +42,8 @@ abstract class CopyAnnotationFeatureVector extends Job
                     'vector' => $vector->vector,
                 ]);
             } catch (QueryException $e) {
-                // SQLSTATE 23503 is a foreign key violation. The annotation was
-                // deleted between the query and the insert.
+                // SQLSTATE 23503 is a foreign key violation. The annotation or
+                // annotation label was deleted between the query and the insert.
                 if ($e->getCode() !== '23503') {
                     throw $e;
                 }

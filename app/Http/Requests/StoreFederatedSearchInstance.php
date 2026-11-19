@@ -26,7 +26,7 @@ class StoreFederatedSearchInstance extends FormRequest
     {
         return [
             'name' => 'required|min:1|max:512',
-            'url' => 'required|url|unique:federated_search_instances,url',
+            'url' => 'required|url|max:512|unique:federated_search_instances,url',
         ];
     }
 }
