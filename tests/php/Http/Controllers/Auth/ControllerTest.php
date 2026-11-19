@@ -236,5 +236,4 @@ class ControllerTest extends TestCase
         $this->get($expiredUrl)
             ->assertForbidden();
     }
-
 }
