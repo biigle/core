@@ -10,10 +10,15 @@ updates:
       directory: "/.docker"
       schedule:
           interval: "monthly"
-      # The Python version is bound by wheel availability of the pinned
-      # requirements, so it is updated manually together with them.
       ignore:
+          # Major and minor version updates may break dependencies, so these will be done
+          # manually.
           - dependency-name: "python"
+            update-types: ["version-update:semver-major", "version-update:semver-minor"]
+          - dependency-name: "php"
+            update-types: ["version-update:semver-major", "version-update:semver-minor"]
+          - dependency-name: "nginx"
+            update-types: ["version-update:semver-major", "version-update:semver-minor"]
     - package-ecosystem: composer
       directory: "/"
       schedule:
