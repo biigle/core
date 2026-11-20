@@ -182,6 +182,26 @@ class ProcessNewVideoTest extends TestCase
         $this->assertSame(144, $video->fresh()->height);
     }
 
+    public function testHandleDuration()
+    {
+        $video = VideoTest::create(['filename' => 'test.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $job->passThroughDuration = true;
+        $job->handle();
+        $this->assertSame(14.916656, $video->fresh()->duration);
+    }
+
+    public function testHandleDurationMultipleMdat()
+    {
+        // The video has 4 s of frames in two "mdat" blocks but the durations in the
+        // header (mvhd, tkhd and mdhd boxes) are only 1 s.
+        $video = VideoTest::create(['filename' => 'test_multiple_mdat.mp4']);
+        $job = new ProcessNewVideoStub($video);
+        $job->passThroughDuration = true;
+        $job->handle();
+        $this->assertEqualsWithDelta(4.0, $video->fresh()->duration, 0.001);
+    }
+
     public function testHandleMalformed()
     {
         $video = VideoTest::create(['filename' => 'test_malformed.mp4']);
@@ -261,6 +281,7 @@ class ProcessNewVideoStub extends ProcessNewVideo
     public $passThroughDimensions = false;
     public $passThroughCodec = false;
     public $passThroughMimeType = false;
+    public $passThroughDuration = false;
 
     protected function getVideoDimensions($url)
     {
@@ -282,6 +303,10 @@ class ProcessNewVideoStub extends ProcessNewVideo
 
     protected function getVideoDuration($path)
     {
+        if ($this->passThroughDuration) {
+            return parent::getVideoDuration($path);
+        }
+
         return $this->duration;
     }
 
