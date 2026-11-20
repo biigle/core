@@ -252,8 +252,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function createSvg(Annotation $annotation): void
     {
-        $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
+        $thumbWidth = config('thumbnails.width') * 2;
+        $thumbHeight = config('thumbnails.height') * 2;
         $padding = config('largo.patch_padding');
         $pointPadding = config('largo.point_padding');
 
@@ -292,8 +292,8 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
      */
     protected function getAnnotationPatch($image, $points, $shape)
     {
-        $thumbWidth = config('thumbnails.width');
-        $thumbHeight = config('thumbnails.height');
+        $thumbWidth = config('thumbnails.width') * 2;
+        $thumbHeight = config('thumbnails.height') * 2;
 
         if ($shape === Shape::WHOLE_FRAME) {
             $image = $image->resize(floatval($thumbWidth) / $image->width);
@@ -534,7 +534,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         }
 
         $annotation = match ($shape) {
-            Shape::POINT => new SVGCircle($points[0], $points[1], 5),
+            Shape::POINT => new SVGCircle($points[0], $points[1], 10),
             Shape::CIRCLE => new SVGCircle($points[0], $points[1], $points[2]),
             Shape::POLYGON => new SVGPolygon($tuples),
             Shape::LINE => new SVGPolyline($tuples),
@@ -559,7 +559,7 @@ abstract class ProcessAnnotatedFile extends GenerateFeatureVectors
         $outline = clone $annotation;
 
         if ($shape === Shape::POINT) {
-            $outline->setAttribute('r', 6);
+            $outline->setAttribute('r', 12);
             $outline->setAttribute('fill', '#fff');
             $annotation->setAttribute('fill', '#666');
         } else {

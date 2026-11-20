@@ -3,6 +3,7 @@
 namespace Biigle\Http\Controllers\Auth;
 
 use Biigle\Http\Controllers\Controller;
+use Biigle\Rules\Utf8;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
 
@@ -56,9 +57,9 @@ class ResetPasswordController extends Controller
     protected function rules()
     {
         return [
-            'email' => 'required|email|max:255',
-            'password' => 'required|confirmed|min:8',
-            'token' => 'required',
+            'email' => ['required', 'string', 'email', 'max:255', new Utf8],
+            'password' => ['required', 'string', 'confirmed', 'min:8', new Utf8],
+            'token' => ['required', 'string', new Utf8],
         ];
     }
 }

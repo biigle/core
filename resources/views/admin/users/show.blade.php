@@ -75,10 +75,14 @@
         <div class="panel-heading">
             @if ($volumesCount > 0)
                 Created <strong>{{$volumesCount}}</strong> {{$volumesCount === 1 ? 'volume' : 'volumes'}} ({{ $volumesPercent}}%)
-                @if ($imagesCount > 0)
+                @if ($imagesCount > 0 && $videosCount > 0)
+                    with <strong>{{$imagesCount}}</strong> image(s) ({{ $imagesPercent }}%) and <strong>{{$videosCount}}</strong> video(s) ({{ $videosPercent }}%).
+                @elseif ($imagesCount > 0)
                     with <strong>{{$imagesCount}}</strong> image(s) ({{ $imagesPercent }}%).
+                @elseif ($videosCount > 0)
+                    with <strong>{{$videosCount}}</strong> video(s) ({{ $videosPercent }}%).
                 @else
-                    with no images.
+                    with no images or videos.
                 @endif
             @else
                 Created no volumes.
