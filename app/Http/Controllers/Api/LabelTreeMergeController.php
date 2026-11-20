@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Http\Requests\StoreLabelTreeMerge;
 use Biigle\Label;
 use DB;
@@ -67,6 +68,14 @@ class LabelTreeMergeController extends Controller
                 $l->save();
                 $newIds[] = $l->id;
             }
+
+            // The mass delete below skips the label observer, which cleans up the
+            // reference images of guideline labels. Use lazyById() because offset
+            // pagination of each() would skip rows that are deleted in the loop.
+            AnnotationGuidelineLabel::whereIn('label_id', $request->remove)
+                ->lazyById()
+                ->each
+                ->delete();
 
             $request->tree->labels()
                 ->whereIn('id', $request->remove)
