@@ -8,10 +8,19 @@ use Biigle\AnnotationGuidelineLabel;
 use Biigle\Enums\Shape;
 use Biigle\Label;
 use Illuminate\Http\UploadedFile;
+use Jcupitt\Vips\Image as VipsImage;
 use Storage;
 
 class AnnotationGuidelineLabelControllerTest extends ApiTestCase
 {
+    protected function makeReferenceImage(): UploadedFile
+    {
+        // Reference images must not exceed 300x300 px.
+        $content = VipsImage::black(100, 100)->writeToBuffer('.jpg');
+
+        return UploadedFile::fake()->createWithContent('test-image.jpg', $content);
+    }
+
     public function testStoreRequiresAdmin()
     {
         $guideline = AnnotationGuideline::factory()->create([
@@ -109,16 +118,11 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         ]);
         $label = $this->labelRoot();
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
-        $file = new UploadedFile(
-            __DIR__.'/../../../../../files/test-image.jpg',
-            'test-image.jpg',
-            test: true
-        );
 
         $this->beAdmin();
         $this->post($path, [
             'label_id' => $label->id,
-            'reference_image' => $file,
+            'reference_image' => $this->makeReferenceImage(),
         ])->assertStatus(201);
 
         $guidelineLabel = $guideline->labels()->where('label_id', $label->id)->first()->pivot;
@@ -143,16 +147,11 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $disk->put($oldPath, 'old content');
         $guidelineLabel->update(['reference_image_path' => $oldPath]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
-        $file = new UploadedFile(
-            __DIR__.'/../../../../../files/test-image.jpg',
-            'test-image.jpg',
-            test: true
-        );
 
         $this->beAdmin();
         $this->post($path, [
             'label_id' => $label->id,
-            'reference_image' => $file,
+            'reference_image' => $this->makeReferenceImage(),
         ])->assertStatus(200);
 
         $newPath = $guidelineLabel->fresh()->reference_image_path;
