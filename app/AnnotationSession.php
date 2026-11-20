@@ -94,7 +94,8 @@ class AnnotationSession extends Model
             }]);
         } elseif ($this->hide_own_annotations) {
 
-            // take only labels of this session or any labels of other users
+            // take only labels of this session, any labels of other users or all
+            // labels of annotations of this session
             $query->with(['labels' => function ($query) use ($user) {
                 // wrap this in a where because the default query already has a where
                 $query->where(function ($query) use ($user) {
@@ -103,7 +104,16 @@ class AnnotationSession extends Model
                             $query->where('created_at', '>=', $this->starts_at)
                                 ->where('created_at', '<', $this->ends_at);
                         })
-                        ->orWhere('user_id', '!=', $user->id);
+                        ->orWhere('user_id', '!=', $user->id)
+                        // Whether an annotation belongs to the session is determined by
+                        // the creation date of the annotation (see allowedBySession).
+                        // The labels of these annotations must be shown, too, even if
+                        // they were created later (e.g. by relabeling in Largo).
+                        // Otherwise the annotation would be returned without labels.
+                        ->orWhereHas('annotation', function ($query) {
+                            $query->where($query->qualifyColumn('created_at'), '>=', $this->starts_at)
+                                ->where($query->qualifyColumn('created_at'), '<', $this->ends_at);
+                        });
                 });
             }]);
         } else {
