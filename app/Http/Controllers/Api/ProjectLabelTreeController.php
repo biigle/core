@@ -159,10 +159,16 @@ class ProjectLabelTreeController extends Controller
     {
         $count = DB::transaction(function () use ($request) {
             $treeId = $request->route('id2');
-            AnnotationGuidelineLabel::join('annotation_guidelines', 'annotation_guidelines.id', '=', 'annotation_guideline_label.annotation_guideline_id')
+            // Select only the pivot columns because the joined table has columns with
+            // the same names. Use lazyById() because offset pagination of each() would
+            // skip rows that are deleted in the loop.
+            AnnotationGuidelineLabel::select('annotation_guideline_label.*')
+                ->join('annotation_guidelines', 'annotation_guidelines.id', '=', 'annotation_guideline_label.annotation_guideline_id')
                 ->where('annotation_guidelines.project_id', $request->project->id)
                 ->whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->where('label_tree_id', $treeId))
-                ->each(fn ($gl) => $gl->delete());
+                ->lazyById(1000, 'annotation_guideline_label.uuid', 'uuid')
+                ->each
+                ->delete();
 
             return $request->project->labelTrees()->detach($treeId);
         });

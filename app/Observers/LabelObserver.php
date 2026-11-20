@@ -14,7 +14,11 @@ class LabelObserver
         // reference images.
         DB::transaction(
             fn () =>
-            AnnotationGuidelineLabel::where('label_id', $label->id)->each(fn ($gl) => $gl->delete())
+            AnnotationGuidelineLabel::where('label_id', $label->id)
+                // Offset pagination of each() would skip rows that are deleted in the loop.
+                ->lazyById(1000, 'uuid')
+                ->each
+                ->delete()
         );
     }
 }
