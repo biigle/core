@@ -220,7 +220,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             try {
                 $result = Process::timeout(30)
                     ->run(sprintf(
-                        'ffmpeg -copyts -start_at_zero -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\',setpts=N" -fps_mode passthrough -update 1 -y %s',
+                        'ffmpeg -copyts -start_at_zero -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\',setpts=\'if(eq(N\\,0)\\,PTS\\,max(PTS\\,PREV_OUTPTS+1))\'" -enc_time_base filter -fps_mode passthrough -update 1 -y %s',
                         $seekTime,
                         $decodeDuration,
                         escapeshellarg($sourcePath),

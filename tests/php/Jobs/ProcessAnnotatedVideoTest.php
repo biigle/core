@@ -11,10 +11,10 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotationLabelFeatureVector;
-use Illuminate\Support\Facades\Process;
 use Bus;
 use Exception;
 use FileCache;
+use Illuminate\Support\Facades\Process;
 use Log;
 use Mockery;
 use Storage;
@@ -1021,7 +1021,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame(3.0, $job->calculateSeekWindowForTest('video.mp4'));
     }
 
-    public function testGetVideoFrameResetsSelectedFrameTimestamps()
+    public function testGetVideoFrameCorrectsSelectedFrameTimestamps()
     {
         Process::fake();
         $job = new ProcessAnnotatedVideoFrameExtractionStub(new VideoModel);
@@ -1030,7 +1030,7 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         Process::assertRan(fn ($process) => str_contains(
             $process->command,
-            "select='lte(t\\,237.210500)',setpts=N"
+            "select='lte(t\\,237.210500)',setpts='if(eq(N\\,0)\\,PTS\\,max(PTS\\,PREV_OUTPTS+1))'\" -enc_time_base filter"
         ));
     }
 
