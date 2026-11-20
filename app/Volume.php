@@ -64,14 +64,43 @@ class Volume extends Model
     /**
      * Parses a comma separated list of filenames to an array.
      *
+     * Filenames that contain a comma can be enclosed in double quotes like in a CSV
+     * file, e.g. `"a,b.jpg", c.jpg`.
+     *
      * @param string $string
      *
      * @return array
      */
     public static function parseFilesQueryString(string $string)
     {
-        // Remove whitespace as well as enclosing '' or "".
-        return preg_split('/[\"\'\s]*,[\"\'\s]*/', trim($string, " \t\n\r\0\x0B'\""), 0, PREG_SPLIT_NO_EMPTY);
+        $files = array_map(
+            // Remove whitespace as well as enclosing '' or "".
+            fn ($file) => trim($file ?? '', " \t\n\r\0\x0B'\""),
+            str_getcsv($string, ',', '"', '')
+        );
+
+        return array_values(array_filter($files, fn ($file) => $file !== ''));
+    }
+
+    /**
+     * Joins filenames to a comma separated list that can be parsed with
+     * parseFilesQueryString().
+     *
+     * @param array $files
+     *
+     * @return string
+     */
+    public static function joinFilesQueryString(array $files)
+    {
+        $files = array_map(function ($file) {
+            if (str_contains($file, ',') || str_contains($file, '"')) {
+                return '"'.str_replace('"', '""', $file).'"';
+            }
+
+            return $file;
+        }, $files);
+
+        return implode(',', $files);
     }
 
     /**
