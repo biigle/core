@@ -1,12 +1,13 @@
 import Settings from '@/core/models/Settings.js';
 import {TIMEOUTS} from '@/annotations/components/labelbotPopup.vue';
+import {LABEL_TOOLTIP_MODES} from '@/annotations/utils.js';
 
 let defaults = {
     annotationOpacity: 1,
     showMinimap: true,
     autoplayDraw: 0,
     autoPause: 0,
-    showLabelTooltip: false,
+    showLabelTooltip: LABEL_TOOLTIP_MODES.OFF,
     showMousePosition: false,
     showProgressIndicator: true,
     showThumbnailPreview: true,

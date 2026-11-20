@@ -147,7 +147,7 @@
         </p>
 
         <p>
-            The label tooltip switch controls the display of a tooltip that appears when you hover your cursor over annotations. The tooltip shows the names of the labels that are attached to these annotations.
+            The label tooltip setting controls when the names of labels attached to annotations are displayed. Choose <i>hover</i> to show a tooltip for annotations below the cursor, <i>always</i> to show draggable tooltips for all visible annotations, or <i>off</i> to hide label tooltips.
         </p>
 
         <p>
@@ -156,7 +156,7 @@
 
         <div class="panel panel-warning">
             <div class="panel-body text-warning">
-                Only one of the label or measure tooltips can be activated at the same time.
+                The measure tooltip and either label tooltip mode cannot be activated at the same time.
             </div>
         </div>
 
