@@ -302,14 +302,14 @@ class ProjectLabelTreeControllerTest extends ApiTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
         ]);
-        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
-        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $disk->put("{$guideline->id}/image.jpg", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/image.jpg"]);
 
         $this->beAdmin();
         $this->json('DELETE', "/api/v1/projects/{$p->id}/label-trees/{$t->id}", ['force' => true])
             ->assertStatus(200);
 
         $this->assertNull($guidelineLabel->fresh());
-        $disk->assertMissing("{$guideline->id}/{$guidelineLabel->uuid}");
+        $disk->assertMissing("{$guideline->id}/image.jpg");
     }
 }

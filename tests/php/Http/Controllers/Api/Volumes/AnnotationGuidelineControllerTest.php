@@ -35,7 +35,7 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
             ->assertJsonPath('guidelines.0.id', $guideline->id)
             ->assertJsonPath('guidelines.0.enforced', true)
             ->assertJsonPath('guidelines.0.labels.0.id', $this->labelRoot()->id)
-            ->assertJsonPath('guidelines.0.labels.0.pivot.uuid', $guidelineLabel->uuid);
+            ->assertJsonPath('guidelines.0.labels.0.pivot.id', $guidelineLabel->id);
     }
 
     public function testIndexGuest()

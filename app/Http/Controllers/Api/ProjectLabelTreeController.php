@@ -166,7 +166,7 @@ class ProjectLabelTreeController extends Controller
                 ->join('annotation_guidelines', 'annotation_guidelines.id', '=', 'annotation_guideline_label.annotation_guideline_id')
                 ->where('annotation_guidelines.project_id', $request->project->id)
                 ->whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->where('label_tree_id', $treeId))
-                ->lazyById(1000, 'annotation_guideline_label.uuid', 'uuid')
+                ->lazyById(1000, 'annotation_guideline_label.id', 'id')
                 ->each
                 ->delete();
 

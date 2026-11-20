@@ -16,11 +16,8 @@ class AnnotationGuidelineLabel extends Pivot
 
     protected $table = 'annotation_guideline_label';
 
-    protected $primaryKey = 'uuid';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
+    // Pivot models are not incrementing by default.
+    public $incrementing = true;
 
     protected $appends = ['reference_image_url'];
 

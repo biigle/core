@@ -32,7 +32,7 @@ return new class extends Migration {
         });
 
         Schema::create('annotation_guideline_label', function (Blueprint $table) {
-            $table->uuid('uuid')->primary();
+            $table->id();
             $table->timestamps();
 
             $table->foreignId('annotation_guideline_id')
@@ -53,7 +53,6 @@ return new class extends Migration {
 
             $table->string('reference_image_path')->nullable();
 
-            $table->index('annotation_guideline_id');
             $table->index('label_id');
             $table->unique(['annotation_guideline_id', 'label_id']);
         });

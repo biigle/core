@@ -16,7 +16,7 @@ class LabelObserver
             fn () =>
             AnnotationGuidelineLabel::where('label_id', $label->id)
                 // Offset pagination of each() would skip rows that are deleted in the loop.
-                ->lazyById(1000, 'uuid')
+                ->lazyById()
                 ->each
                 ->delete()
         );

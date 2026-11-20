@@ -29,7 +29,7 @@ class AnnotationGuidelineLabelTest extends TestCase
         $this->assertSame($this->label->id, $pivot->label_id);
         $this->assertNull($pivot->shape);
         $this->assertNull($pivot->description);
-        $this->assertNotNull($pivot->uuid);
+        $this->assertNotNull($pivot->id);
     }
 
     public function testUnique()

@@ -392,10 +392,10 @@ class ProjectTest extends ModelTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => LabelTest::create()->id,
         ]);
-        Storage::disk('annotation_storage')->put("{$guideline->id}/{$pivot->uuid}", 'image');
+        Storage::disk('annotation_storage')->put("{$guideline->id}/image.jpg", 'image');
 
         $this->model->delete();
 
-        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/{$pivot->uuid}");
+        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/image.jpg");
     }
 }

@@ -16,7 +16,7 @@ class LabelTreeObserver
             fn () =>
             AnnotationGuidelineLabel::whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->where('label_tree_id', $labelTree->id))
                 // Offset pagination of each() would skip rows that are deleted in the loop.
-                ->lazyById(1000, 'uuid')
+                ->lazyById()
                 ->each
                 ->delete()
         );

@@ -175,11 +175,11 @@ class LabelTest extends ModelTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $this->model->id,
         ]);
-        Storage::disk('annotation_storage')->put("{$guideline->id}/{$pivot->uuid}", 'image');
-        $pivot->update(['reference_image_path' => "{$guideline->id}/{$pivot->uuid}"]);
+        Storage::disk('annotation_storage')->put("{$guideline->id}/image.jpg", 'image');
+        $pivot->update(['reference_image_path' => "{$guideline->id}/image.jpg"]);
 
         $this->model->delete();
 
-        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/{$pivot->uuid}");
+        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/image.jpg");
     }
 }

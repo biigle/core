@@ -48,7 +48,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         $this->assertNotNull($guidelineLabel);
         $this->assertSame(Shape::POLYGON->value, $guidelineLabel->pivot->shape);
         $this->assertSame('some description', $guidelineLabel->pivot->description);
-        $this->assertNotNull($guidelineLabel->pivot->uuid);
+        $this->assertNotNull($guidelineLabel->pivot->id);
     }
 
     public function testStoreDescriptionTooLong()
@@ -122,8 +122,8 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
         ])->assertStatus(201);
 
         $guidelineLabel = $guideline->labels()->where('label_id', $label->id)->first()->pivot;
-        $disk->assertExists("{$guideline->id}/{$guidelineLabel->uuid}.jpg");
-        $this->assertSame("{$guideline->id}/{$guidelineLabel->uuid}.jpg", $guidelineLabel->reference_image_path);
+        $this->assertMatchesRegularExpression("/^{$guideline->id}\/[0-9a-f-]{36}\.jpg$/", $guidelineLabel->reference_image_path);
+        $disk->assertExists($guidelineLabel->reference_image_path);
     }
 
     public function testStoreUpdatesReferenceImage()
@@ -139,8 +139,9 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
         ]);
-        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}.jpg", 'old content');
-        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}.jpg"]);
+        $oldPath = "{$guideline->id}/old.jpg";
+        $disk->put($oldPath, 'old content');
+        $guidelineLabel->update(['reference_image_path' => $oldPath]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
         $file = new UploadedFile(
             __DIR__.'/../../../../../files/test-image.jpg',
@@ -154,7 +155,10 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'reference_image' => $file,
         ])->assertStatus(200);
 
-        $this->assertNotEquals('old content', $disk->get("{$guideline->id}/{$guidelineLabel->uuid}.jpg"));
+        $newPath = $guidelineLabel->fresh()->reference_image_path;
+        $this->assertNotSame($oldPath, $newPath);
+        $disk->assertExists($newPath);
+        $disk->assertMissing($oldPath);
     }
 
     public function testStoreDeletesReferenceImageWhenNull()
@@ -170,8 +174,8 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
         ]);
-        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
-        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $disk->put("{$guideline->id}/image.jpg", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/image.jpg"]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
         $this->beAdmin();
@@ -180,7 +184,7 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'reference_image' => null,
         ])->assertStatus(200);
 
-        $disk->assertMissing("{$guideline->id}/{$guidelineLabel->uuid}");
+        $disk->assertMissing("{$guideline->id}/image.jpg");
         $this->assertNull($guidelineLabel->fresh()->reference_image_path);
     }
 
@@ -197,15 +201,15 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
         ]);
-        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
-        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $disk->put("{$guideline->id}/image.jpg", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/image.jpg"]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels";
 
         $this->beAdmin();
         $this->json('POST', $path, ['label_id' => $label->id])->assertStatus(200);
 
-        $disk->assertExists("{$guideline->id}/{$guidelineLabel->uuid}");
-        $this->assertSame("{$guideline->id}/{$guidelineLabel->uuid}", $guidelineLabel->fresh()->reference_image_path);
+        $disk->assertExists("{$guideline->id}/image.jpg");
+        $this->assertSame("{$guideline->id}/image.jpg", $guidelineLabel->fresh()->reference_image_path);
     }
 
     public function testStoreRequiresLabelBelongsToProject()
@@ -482,13 +486,13 @@ class AnnotationGuidelineLabelControllerTest extends ApiTestCase
             'annotation_guideline_id' => $guideline->id,
             'label_id' => $label->id,
         ]);
-        $disk->put("{$guideline->id}/{$guidelineLabel->uuid}", 'content');
-        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/{$guidelineLabel->uuid}"]);
+        $disk->put("{$guideline->id}/image.jpg", 'content');
+        $guidelineLabel->update(['reference_image_path' => "{$guideline->id}/image.jpg"]);
         $path = "/api/v1/annotation-guidelines/{$guideline->id}/labels/{$label->id}";
 
         $this->beAdmin();
         $this->delete($path)->assertStatus(200);
 
-        $disk->assertMissing("{$guideline->id}/{$guidelineLabel->uuid}");
+        $disk->assertMissing("{$guideline->id}/image.jpg");
     }
 }

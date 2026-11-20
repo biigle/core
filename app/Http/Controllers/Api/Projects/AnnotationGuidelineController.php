@@ -34,7 +34,7 @@ class AnnotationGuidelineController extends Controller
      *     "id": 4,
      *     "name": "some label",
      *     "pivot": {
-     *       "uuid": "...",
+     *       "id": 3,
      *       "annotation_guideline_id": 1,
      *       "label_id": 4,
      *       "shape": 7,

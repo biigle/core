@@ -61,25 +61,36 @@ class AnnotationGuidelineLabelController extends Controller
                     'shape' => $shape,
                     'use_aligned_rectangle' => $useAlignedRectangle,
                     'description' => $description,
-                    'uuid' => Str::uuid(),
                 ]);
             }
 
             if (array_key_exists('reference_image', $validated)) {
                 $disk = Storage::disk(config('projects.annotation_guideline_disk'));
                 $image = $validated['reference_image'];
+                $oldPath = $guidelineLabel->reference_image_path;
+                $newPath = null;
+
                 if ($image) {
-                    $path = "{$guidelineId}/{$guidelineLabel->uuid}.jpg";
-                    if ($disk->putFileAs("$guidelineId", $image, "{$guidelineLabel->uuid}.jpg") === false) {
+                    // A new filename for each upload so browsers don't show a cached
+                    // old image.
+                    $filename = Str::uuid().'.jpg';
+                    if ($disk->putFileAs("$guidelineId", $image, $filename) === false) {
                         abort(500, 'The reference image could not be stored.');
                     }
-                    $guidelineLabel->update(['reference_image_path' => $path]);
-                } elseif (!is_null($guidelineLabel->reference_image_path)) {
-                    $path = $guidelineLabel->reference_image_path;
+                    $newPath = "{$guidelineId}/{$filename}";
+                    // Delete the new file if the transaction rolls back so it isn't
+                    // orphaned.
+                    DB::afterRollBack(fn () => $disk->delete($newPath));
+                }
+
+                if (!is_null($oldPath)) {
                     // Defer storage deletion until after the DB transaction commits to
                     // avoid deleting the file if the transaction rolls back.
-                    DB::afterCommit(fn () => $disk->delete($path));
-                    $guidelineLabel->update(['reference_image_path' => null]);
+                    DB::afterCommit(fn () => $disk->delete($oldPath));
+                }
+
+                if ($newPath !== $oldPath) {
+                    $guidelineLabel->update(['reference_image_path' => $newPath]);
                 }
             }
 
