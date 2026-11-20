@@ -10,6 +10,7 @@ use Biigle\ImageLabel;
 use Biigle\Jobs\PostprocessVolumeImport;
 use Biigle\Project;
 use Biigle\Rules\VolumeUrl;
+use Biigle\Traits\ChunksInserts;
 use Biigle\User;
 use Biigle\Video;
 use Biigle\VideoAnnotation;
@@ -24,6 +25,8 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 class VolumeImport extends Import
 {
+    use ChunksInserts;
+
     /**
      * Caches the decoded volume import file.
      *
@@ -563,7 +566,7 @@ class VolumeImport extends Import
             $volumeIds[] = $file['volume_id'];
         }
 
-        $modelClass::insert($toInsert);
+        $this->insertInChunks($modelClass, $toInsert);
         $newFiles = $modelClass::whereIn('volume_id', array_unique($volumeIds))
             ->pluck('id', 'uuid');
 
@@ -623,7 +626,7 @@ class VolumeImport extends Import
             }
         }
 
-        ImageLabel::insert($imageLabels);
+        $this->insertInChunks(ImageLabel::class, $imageLabels);
     }
 
     /**
@@ -650,7 +653,7 @@ class VolumeImport extends Import
             }
         }
 
-        VideoLabel::insert($videoLabels);
+        $this->insertInChunks(VideoLabel::class, $videoLabels);
     }
 
     /**
@@ -684,14 +687,14 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    ImageAnnotation::insert($annotations);
+                    $this->insertInChunks(ImageAnnotation::class, $annotations);
                     $annotations = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        ImageAnnotation::insert($annotations);
+        $this->insertInChunks(ImageAnnotation::class, $annotations);
         // Try to save memory where we can here. The annotation(labels) arrays can get
         // huge.
         unset($annotations);
@@ -734,14 +737,14 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    ImageAnnotationLabel::insert($annotationLabels);
+                    $this->insertInChunks(ImageAnnotationLabel::class, $annotationLabels);
                     $annotationLabels = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        ImageAnnotationLabel::insert($annotationLabels);
+        $this->insertInChunks(ImageAnnotationLabel::class, $annotationLabels);
     }
 
     /**
@@ -776,14 +779,14 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    VideoAnnotation::insert($annotations);
+                    $this->insertInChunks(VideoAnnotation::class, $annotations);
                     $annotations = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        VideoAnnotation::insert($annotations);
+        $this->insertInChunks(VideoAnnotation::class, $annotations);
         // Try to save memory where we can here. The annotation(labels) arrays can get
         // huge.
         unset($annotations);
@@ -825,13 +828,13 @@ class VolumeImport extends Import
                 $currentIndex += 1;
 
                 if ($currentIndex >= $chunkSize) {
-                    VideoAnnotationLabel::insert($annotationLabels);
+                    $this->insertInChunks(VideoAnnotationLabel::class, $annotationLabels);
                     $annotationLabels = [];
                     $currentIndex = 0;
                 }
             }
         }
 
-        VideoAnnotationLabel::insert($annotationLabels);
+        $this->insertInChunks(VideoAnnotationLabel::class, $annotationLabels);
     }
 }
