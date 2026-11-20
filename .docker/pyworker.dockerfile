@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM python:3.15
 
 COPY .docker/requirements.txt /tmp/requirements.txt
 
