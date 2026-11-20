@@ -14,7 +14,9 @@ return [
     | Supported: "local", "ftp", "sftp", "s3"
     |
     */
+
     'default' => env('FILESYSTEM_DISK', env('FILESYSTEM_DRIVER', 'local')),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks

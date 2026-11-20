@@ -100,9 +100,10 @@ class AnnotationGuidelineController extends Controller
      * @api {put} annotation-guidelines/:id Update the annotation guideline
      * @apiGroup Projects
      * @apiName UpdateAnnotationGuideline
+     * @apiDescription All attributes are replaced. Omitted attributes are reset to their defaults (`description`: null, `enforced`: false, `only_shapes`: null, `allow_aligned_rectangle`: true). Shapes of guideline labels that are no longer allowed are removed.
      * @apiParam {Number} id The guideline ID
-     * @apiParam {String} [description] Description of how to annotate.
-     * @apiParam {Boolean} [enforced] Whether the guideline restricts the available labels and shapes for new annotations.
+     * @apiParam {String} [description] Description of how to annotate. If omitted, it is reset to null.
+     * @apiParam {Boolean} [enforced] Whether the guideline restricts the available labels and shapes for new annotations. If omitted, it is reset to `false`.
      * @apiParam {Number[]} [only_shapes] IDs of the shapes that should be available for new annotations. If null or omitted, all shapes are available. If empty, no shape is available, so only the tools that are allowed separately (e.g. with allow_aligned_rectangle) can be used. An empty array requires at least one of these tools. Can only be set if enforced is true.
      * @apiParam {Boolean} [allow_aligned_rectangle] Whether the aligned rectangle tool should be available in the annotation tools (default `true`). This is independent of the rectangle shape in only_shapes. If omitted, it is reset to `true`. Ignored if enforced is false.
      * @apiPermission projectAdmin
