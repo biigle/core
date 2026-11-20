@@ -158,6 +158,8 @@ $router->post('label-trees/import', [
     'uses' => 'Import\PublicLabelTreeImportController@store',
 ]);
 
+$router->get('largo-sessions/{uuid}/unchanged-annotations', 'LargoSessionUnchangedAnnotationController@index');
+
 $router->resource('media-types', 'MediaTypeController', [
     'only' => ['index', 'show'],
     'parameters' => ['media-types' => 'id'],
@@ -416,6 +418,10 @@ $router->group([
         $router->get('images/{disk}', 'BrowserController@indexImages');
         $router->get('videos/{disk}', 'BrowserController@indexVideos');
     });
+
+    $router->get('{id}/annotation-guidelines', [
+        'uses' => 'AnnotationGuidelineController@index',
+    ]);
 
     $router->get('{id}/export-area', [
         'uses' => 'ExportAreaController@show',

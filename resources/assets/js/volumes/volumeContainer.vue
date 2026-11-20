@@ -58,6 +58,7 @@ export default {
             volumeId: null,
             imageLabelMode: false,
             selectedLabel: null,
+            annotationGuideline: null,
             loadingFilenames: false,
             showFilenames: false,
             filenamesPromise: null,
@@ -73,6 +74,14 @@ export default {
     computed: {
         plugins() {
             return plugins;
+        },
+        // Informational guidelines only affect what is shown and are not sent.
+        annotationGuidelineId() {
+            if (this.annotationGuideline?.isEnforced) {
+                return this.annotationGuideline.id;
+            }
+
+            return null;
         },
         // Map from file ID to index of sorted array to compute sortedFiles fast.
         sortingMap() {
@@ -181,6 +190,9 @@ export default {
         },
         handleDeselectedLabel() {
             this.selectedLabel = null;
+        },
+        handleSelectedAnnotationGuideline(guideline) {
+            this.annotationGuideline = guideline;
         },
         updateSortingSequence(sequence, active) {
             this.sortingSequence = sequence;

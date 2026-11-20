@@ -218,6 +218,11 @@
                                 ></label-trees>
                         </div>
                     </div>
+                    <div v-if="showEnforcedGuidelineNotice" v-cloak class="panel panel-warning">
+                        <div class="panel-body text-warning">
+                            The destination project has an enforced annotation guideline. The guideline is not applied to the cloned annotations and file labels, so they may have labels and shapes that the guideline does not allow.
+                        </div>
+                    </div>
                     <div class="form-group">
                         <span class="pull-right">
                             <a

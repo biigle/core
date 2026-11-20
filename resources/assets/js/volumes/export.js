@@ -1,3 +1,4 @@
+import AnnotationGuidelineSelector from './components/annotationGuidelineSelector.vue';
 import FilterListComponent from './components/filterListComponent.vue';
 import FilterStore from './stores/filters.js';
 import ImageGrid from './components/imageGrid.vue';
@@ -9,6 +10,7 @@ import { plugins } from './volumeContainer.vue';
 
 biigle.$declare('annotations.api.volumes', VolumesApi); // Legacy support
 biigle.$declare('volumes.api.volumes', VolumesApi);
+biigle.$declare('volumes.components.annotationGuidelineSelector', AnnotationGuidelineSelector);
 biigle.$declare('volumes.components.filterListComponent', FilterListComponent);
 biigle.$declare('volumes.components.imageGrid', ImageGrid);
 biigle.$declare('volumes.components.imageGridImage', ImageGridImage);

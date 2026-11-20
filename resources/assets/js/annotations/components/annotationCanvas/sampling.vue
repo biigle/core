@@ -1,6 +1,7 @@
 <script>
 import Circle from '@biigle/ol/style/Circle';
 import Feature from '@biigle/ol/Feature';
+import Messages from '@/core/messages/store.js';
 import Point from '@biigle/ol/geom/Point';
 import Stroke from '@biigle/ol/style/Stroke';
 import Style from '@biigle/ol/style/Style';
@@ -125,6 +126,13 @@ export default {
             return true;
         },
         createSampledAnnotation() {
+            // The sampling modes are disabled if the guideline doesn't allow points at
+            // all but the shape of the selected label may still not be a point.
+            if (!this.isShapeAllowed('Point')) {
+                Messages.danger('The annotation guideline does not allow point annotations with the selected label.');
+                return;
+            }
+
             let location = this.samplingLocations[this.currentSamplingIndex];
             this.createPointAnnotationAt(location[0], location[1]);
         },

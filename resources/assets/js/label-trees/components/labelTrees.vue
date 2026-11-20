@@ -18,7 +18,7 @@
                 v-if="typeahead"
                 more-info="tree.versionedName"
                 placeholder="Find label"
-                :items="labels"
+                :items="typeaheadLabels"
                 @select="handleSelect"
                 ></typeahead>
             <button
@@ -45,6 +45,7 @@
                 :collapsible="collapsible"
                 :labels-in-guideline="labelsInGuidelineSet"
                 :filter-by-guideline="filterByGuideline"
+                :enforce-guideline="isGuidelineEnforced"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
@@ -63,6 +64,7 @@
                 :collapsible="collapsible"
                 :labels-in-guideline="labelsInGuidelineSet"
                 :filter-by-guideline="filterByGuideline"
+                :enforce-guideline="isGuidelineEnforced"
                 :can-have-more-favourites="canHaveMoreFavourites"
                 @select="handleSelect"
                 @deselect="handleDeselect"
@@ -166,6 +168,11 @@ export default {
             type: Array,
             default: () => [],
         },
+        // Only labels in the guideline can be selected (if there are any).
+        enforceGuideline: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         customOrderStorageKeys() {
@@ -214,6 +221,18 @@ export default {
             }
 
             return labels;
+        },
+        // This is separate from "labels" because "labels" is also used to restore the
+        // favourites, which must not drop favourites outside of the guideline.
+        typeaheadLabels() {
+            if (this.isGuidelineEnforced && !this.filterByGuideline) {
+                return this.labels.filter(this.isLabelAllowed);
+            }
+
+            return this.labels;
+        },
+        isGuidelineEnforced() {
+            return this.enforceGuideline && this.hasGuideline;
         },
         favouriteIds() {
             return this.favourites.map((label) => label.id);
@@ -266,8 +285,11 @@ export default {
         },
     },
     methods: {
+        isLabelAllowed(label) {
+            return !this.isGuidelineEnforced || this.labelsInGuidelineSet.has(label.id);
+        },
         handleSelect(label, e) {
-            if (label) {
+            if (label && this.isLabelAllowed(label)) {
                 this.$emit('select', label, e);
                 this.events.emit('select', {label, e});
             }
@@ -335,6 +357,13 @@ export default {
         toggleFilterLabelsByGuideline() {
             this.filterByGuidelineInternal = !this.filterByGuidelineInternal;
         },
+        deselectDisallowedLabels() {
+            // Don't use "labels" because it may be filtered by the guideline.
+            this.trees
+                .flatMap(tree => tree.labels)
+                .filter(label => label.selected && !this.isLabelAllowed(label))
+                .forEach(label => this.handleDeselect(label));
+        },
     },
     watch: {
         trees: {
@@ -361,6 +390,12 @@ export default {
         },
         selectedFavouriteLabel(index) {
             this.selectFavourite(index);
+        },
+        labelsInGuidelineSet() {
+            this.deselectDisallowedLabels();
+        },
+        isGuidelineEnforced() {
+            this.deselectDisallowedLabels();
         },
     },
     created() {

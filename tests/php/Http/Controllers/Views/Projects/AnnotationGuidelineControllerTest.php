@@ -40,4 +40,35 @@ class AnnotationGuidelineControllerTest extends ApiTestCase
         $this->get($path)->assertStatus(200);
 
     }
+
+    public function testPrintable()
+    {
+        $id = $this->project()->id;
+
+        $path = "projects/{$id}/annotation-guideline/print";
+
+        $this->beUser();
+        $this->get($path)->assertStatus(403);
+
+        // There is nothing to print without a guideline.
+        $this->beAdmin();
+        $this->get($path)->assertStatus(404);
+
+        AnnotationGuideline::factory()->create(['project_id' => $id]);
+
+        $this->beUser();
+        $this->get($path)->assertStatus(403);
+
+        $this->beGuest();
+        $this->get($path)->assertStatus(200);
+
+        $this->beEditor();
+        $this->get($path)->assertStatus(200);
+
+        $this->beAdmin();
+        $this->get($path)->assertStatus(200);
+
+        $this->beGlobalAdmin();
+        $this->get($path)->assertStatus(200);
+    }
 }

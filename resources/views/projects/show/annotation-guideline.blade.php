@@ -13,7 +13,8 @@
     <div class="row">
         <div class="col-sm-12">
             <annotation-guideline
-            :is-admin={{ $isAdmin ? 'true' : 'false' }}>
+            :is-admin={{ $isAdmin ? 'true' : 'false' }}
+            print-url="{{ route('annotation-guideline-print', ['id' => $project->id, 'print' => 1]) }}">
             </annotation-guideline>
         </div>
     </div>

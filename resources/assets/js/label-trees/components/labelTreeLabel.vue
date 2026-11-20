@@ -1,6 +1,6 @@
 <template>
     <li v-show="!shouldBeFilteredByGuideline" class="label-tree-label" :class="classObject">
-        <div class="label-tree-label__name" :class="nameClass" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">
+        <div class="label-tree-label__name" :class="nameClass" :title="nameTitle" @click="toggleOpen" @mouseover="doHover" @mouseleave="dontHover">
             <span v-if="editing">
                 <input type="color" class="form-control input-sm label-tree-color-input" v-model="newColor" />
                 <input type="text" v-model="newName" v-on:keydown.enter="saveThis" class="form-control input-sm label-tree-label__name-input">
@@ -9,14 +9,14 @@
                 <span v-show="showColor" class="label-tree-label__color" :style="colorStyle"></span>
                 <span v-show="showChevronDown" class="label-tree-label__chevron label-tree-label__chevron--down" :style="chevronStyle"></span>
                 <span v-show="showChevronUp" class="label-tree-label__chevron label-tree-label__chevron--up" :style="chevronStyle"></span>
-                <span v-text="label.name" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
+                <span v-text="label.name" :class="textClass" :title="disallowedTitle" @click.stop="toggleSelect" @mouseenter="dontHover"></span>
             </span>
             <span class="label-tree-label__buttons">
+                <i v-if="showGuidelineIcon" class="fa fa-fw fa-clipboard-list text-muted" title="This label is included in an annotation guideline"></i>
                 <span v-if="showFavouriteShortcuts" class="text-muted label-tree-label_position">
                     <span class="fa fa-keyboard" aria-hidden="true"></span>
                     <span v-text="actualPosition"></span>
                 </span>
-                <i v-if="showGuidelineIcon" class="fa fa-fw fa-clipboard-list" title="This label is included in an annotation guideline"></i>
                 <button v-if="showFavourites" type="button" class="label-tree-label__favourite" :class="favouriteClass" @click.stop="toggleFavourite" :title="favouriteTitle" :disabled="cantBeAddedAsFavourite">
                     <span class="fa fa-star" aria-hidden="true"></span>
                 </button>
@@ -37,6 +37,7 @@
                 :show-favourites="showFavourites"
                 :labels-in-guideline="labelsInGuideline"
                 :filter-by-guideline="filterByGuideline"
+                :enforce-guideline="enforceGuideline"
                 :can-have-more-favourites="canHaveMoreFavourites"
                 @select="emitSelect"
                 @deselect="emitDeselect"
@@ -111,6 +112,11 @@ export default {
             type: Boolean,
             default: false,
         },
+        // Labels outside of the guideline can't be selected.
+        enforceGuideline: {
+            type: Boolean,
+            default: false,
+        },
         canHaveMoreFavourites: {
             type: Boolean,
             default: true,
@@ -151,7 +157,31 @@ export default {
         nameClass() {
             return {
                 'text-muted': this.hasGuideline && !this.isInGuideline,
+                // A click on an expandable label expands it instead of selecting it.
+                'label-tree-label__name--disallowed': this.isDisallowed && !this.expandable,
             };
+        },
+        textClass() {
+            return {
+                'label-tree-label__text--disallowed': this.isDisallowed,
+            };
+        },
+        isDisallowed() {
+            return this.enforceGuideline && this.hasGuideline && !this.isInGuideline;
+        },
+        disallowedTitle() {
+            if (this.isDisallowed) {
+                return 'The label cannot be selected because it is not allowed by the annotation guideline';
+            }
+
+            return undefined;
+        },
+        nameTitle() {
+            if (this.expandable) {
+                return undefined;
+            }
+
+            return this.disallowedTitle;
         },
         favouriteTitle() {
             if (this.cantBeAddedAsFavourite) {
