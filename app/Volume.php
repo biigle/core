@@ -46,7 +46,7 @@ class Volume extends Model
      *
      * @var string
      */
-    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|webm|mov)(\?.+)?$/i';
+    const VIDEO_FILE_REGEX = '/\.(mpe?g|mp4|m4v|webm|mov)(\?.+)?$/i';
 
     /**
      * Get the attributes that should be cast.
