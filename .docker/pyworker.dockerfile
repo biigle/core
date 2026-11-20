@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM python:3.13.18@sha256:9ffe84122ce74ebdffe2e0e6b946c9dd95d0bf3463f6eb1006b4dc6fefe36d01
 
 COPY .docker/requirements.txt /tmp/requirements.txt
 
