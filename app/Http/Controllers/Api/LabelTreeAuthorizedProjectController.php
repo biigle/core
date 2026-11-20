@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Enums\Visibility;
 use Biigle\Http\Requests\StoreLabelTreeAuthorizedProject;
 use Biigle\LabelTree;
@@ -84,6 +85,19 @@ class LabelTreeAuthorizedProjectController extends Controller
                 ->delete();
 
             if ($tree->visibility === Visibility::PRIVATE) {
+                // The labels can no longer be used in the project. Delete the guideline
+                // labels through the model so the reference images are cleaned up, too.
+                // Select only the pivot columns because the joined table has columns
+                // with the same names. Use lazyById() because offset pagination of
+                // each() would skip rows that are deleted in the loop.
+                AnnotationGuidelineLabel::select('annotation_guideline_label.*')
+                    ->join('annotation_guidelines', 'annotation_guidelines.id', '=', 'annotation_guideline_label.annotation_guideline_id')
+                    ->where('annotation_guidelines.project_id', $pid)
+                    ->whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->whereIn('label_tree_id', $treeIds))
+                    ->lazyById(1000, 'annotation_guideline_label.id', 'id')
+                    ->each
+                    ->delete();
+
                 DB::table('label_tree_project')
                     ->where('project_id', $pid)
                     ->whereIn('label_tree_id', $treeIds)
