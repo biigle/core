@@ -5,7 +5,16 @@ namespace Biigle\Tests\Http\Controllers\Api\Volumes;
 use ApiTestCase;
 use Biigle\Enums\MediaType;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\Tests\AnnotationSessionTest;
+use Biigle\Tests\ImageAnnotationLabelTest;
+use Biigle\Tests\ImageAnnotationTest;
+use Biigle\Tests\ImageTest;
+use Biigle\Tests\LabelTest;
+use Biigle\Tests\VideoAnnotationLabelTest;
+use Biigle\Tests\VideoAnnotationTest;
+use Biigle\Tests\VideoTest;
 use Biigle\VideoAnnotationLabelFeatureVector;
+use Carbon\Carbon;
 
 class SortAnnotationsByOutliersControllerTest extends ApiTestCase
 {
@@ -51,6 +60,123 @@ class SortAnnotationsByOutliersControllerTest extends ApiTestCase
         $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$l4->label_id}")
             ->assertStatus(200)
             ->assertExactJson([$l4->annotation_id]);
+    }
+
+    public function testIndexImageAnnotationSession()
+    {
+        $id = $this->volume()->id;
+        $image = ImageTest::create(['volume_id' => $id]);
+        $label = LabelTest::create();
+        $annotationLabels = [
+            // Own annotation before the annotation session.
+            [Carbon::yesterday(), $this->editor()],
+            // Own annotation of the annotation session.
+            [Carbon::today(), $this->editor()],
+            // Annotation of another user.
+            [Carbon::today(), $this->admin()],
+        ];
+        $annotationIds = [];
+        foreach ($annotationLabels as [$createdAt, $user]) {
+            $a = ImageAnnotationTest::create([
+                'image_id' => $image->id,
+                'created_at' => $createdAt,
+            ]);
+            $al = ImageAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+                'label_id' => $label->id,
+                'user_id' => $user->id,
+            ]);
+            // All vectors are identical so the annotations are sorted by ID.
+            ImageAnnotationLabelFeatureVector::factory()->create([
+                'id' => $al->id,
+                'annotation_id' => $a->id,
+                'label_id' => $label->id,
+                'volume_id' => $id,
+            ]);
+            $annotationIds[] = $a->id;
+        }
+        [$a1, $a2, $a3] = $annotationIds;
+
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+        $session->users()->attach($this->editor());
+
+        $this->beEditor();
+        $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$label->id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a3, $a2]);
+
+        $session->hide_own_annotations = false;
+        $session->hide_other_users_annotations = true;
+        $session->save();
+
+        $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$label->id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a2, $a1]);
+
+        $session->hide_own_annotations = true;
+        $session->save();
+
+        $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$label->id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a2]);
+
+        $session->users()->detach($this->editor());
+
+        $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$label->id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a3, $a2, $a1]);
+    }
+
+    public function testIndexVideoAnnotationSession()
+    {
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
+        $video = VideoTest::create(['volume_id' => $id]);
+        $label = LabelTest::create();
+        $annotationLabels = [
+            [Carbon::yesterday(), $this->editor()],
+            [Carbon::today(), $this->editor()],
+            [Carbon::today(), $this->admin()],
+        ];
+        $annotationIds = [];
+        foreach ($annotationLabels as [$createdAt, $user]) {
+            $a = VideoAnnotationTest::create([
+                'video_id' => $video->id,
+                'created_at' => $createdAt,
+            ]);
+            $al = VideoAnnotationLabelTest::create([
+                'annotation_id' => $a->id,
+                'label_id' => $label->id,
+                'user_id' => $user->id,
+            ]);
+            VideoAnnotationLabelFeatureVector::factory()->create([
+                'id' => $al->id,
+                'annotation_id' => $a->id,
+                'label_id' => $label->id,
+                'volume_id' => $id,
+            ]);
+            $annotationIds[] = $a->id;
+        }
+        [$a1, $a2, $a3] = $annotationIds;
+
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+        $session->users()->attach($this->editor());
+
+        $this->beEditor();
+        $this->get("/api/v1/volumes/{$id}/annotations/sort/outliers/{$label->id}")
+            ->assertStatus(200)
+            ->assertExactJson([$a2]);
     }
 
     public function testIndexDuplicateImage()
