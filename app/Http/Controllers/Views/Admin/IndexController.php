@@ -18,12 +18,21 @@ class IndexController extends Controller
      */
     public function get(Modules $modules)
     {
-        $users = User::select('login_at')->get();
-        $allUsers = $users->count();
-        $loginUsers = $users->where('login_at', '!=', null)->count();
-        $activeUsersLastMonth = $users->where('login_at', '>', Carbon::now()->subMonth())->count();
-        $activeUsersLastWeek = $users->where('login_at', '>', Carbon::now()->subWeek())->count();
-        $activeUsersLastDay = $users->where('login_at', '>', Carbon::now()->subDay())->count();
+        // Count in the database because loading all users can exhaust the memory.
+        $now = Carbon::now();
+        $userCounts = User::toBase()
+            ->selectRaw('count(*) as all_users')
+            ->selectRaw('count(login_at) as login_users')
+            ->selectRaw('count(*) filter (where login_at > ?) as last_month', [$now->copy()->subMonth()])
+            ->selectRaw('count(*) filter (where login_at > ?) as last_week', [$now->copy()->subWeek()])
+            ->selectRaw('count(*) filter (where login_at > ?) as last_day', [$now->copy()->subDay()])
+            ->first();
+
+        $allUsers = $userCounts->all_users;
+        $loginUsers = $userCounts->login_users;
+        $activeUsersLastMonth = $userCounts->last_month;
+        $activeUsersLastWeek = $userCounts->last_week;
+        $activeUsersLastDay = $userCounts->last_day;
 
         $installedModules = $modules->getInstalledModules();
 
