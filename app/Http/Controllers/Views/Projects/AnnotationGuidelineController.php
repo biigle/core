@@ -23,9 +23,7 @@ class AnnotationGuidelineController extends Controller
         $project = Project::findOrFail($id);
         $user = $request->user();
 
-        if (!$user->can('sudo')) {
-            $this->authorize('access', $project);
-        }
+        $this->authorize('access', $project);
 
         $isAdmin = $user->can('update', $project);
 

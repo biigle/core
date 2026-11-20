@@ -2,6 +2,7 @@
 
 namespace Biigle\Http\Controllers\Api;
 
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Enums\Role;
 use Biigle\Enums\Visibility;
 use Biigle\Http\Requests\DestroyLabelTree;
@@ -202,6 +203,27 @@ class LabelTreeController extends Controller
                     ->update(['visibility' => $tree->visibility]);
 
                 if ($tree->visibility === Visibility::PRIVATE) {
+                    $treeIds = $tree->versions()
+                        ->join('label_trees', 'label_trees.version_id', '=', 'label_tree_versions.id')
+                        ->pluck('label_trees.id')
+                        ->concat([$tree->id]);
+
+                    // The labels can no longer be used in unauthorized projects. Delete
+                    // the guideline labels through the model so the reference images are
+                    // cleaned up, too. Select only the pivot columns because the joined
+                    // table has columns with the same names. Use lazyById() because
+                    // offset pagination of each() would skip rows that are deleted in
+                    // the loop.
+                    AnnotationGuidelineLabel::select('annotation_guideline_label.*')
+                        ->join('annotation_guidelines', 'annotation_guidelines.id', '=', 'annotation_guideline_label.annotation_guideline_id')
+                        ->whereIn('label_id', fn ($q) => $q->select('id')->from('labels')->whereIn('label_tree_id', $treeIds))
+                        ->whereNotIn('annotation_guidelines.project_id', fn ($q) => $q->select('project_id')
+                            ->from('label_tree_authorized_project')
+                            ->where('label_tree_id', $tree->id))
+                        ->lazyById(1000, 'annotation_guideline_label.id', 'id')
+                        ->each
+                        ->delete();
+
                     $tree->detachUnauthorizedProjects();
                 }
             }
