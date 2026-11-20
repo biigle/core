@@ -1,0 +1,114 @@
+<?php
+
+namespace Biigle\Http\Controllers\Views\Projects;
+
+use Biigle\Enums\Shape;
+use Biigle\Http\Controllers\Views\Controller;
+use Biigle\Project;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+class AnnotationGuidelineController extends Controller
+{
+    /**
+     * Shows the annotation guideline page for the project.
+     *
+     * @param Request $request
+     * @param int $id Id of the project
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function show(Request $request, int $id)
+    {
+        $project = Project::findOrFail($id);
+        $user = $request->user();
+
+        $this->authorize('access', $project);
+
+        $isAdmin = $user->can('update', $project);
+
+        $annotationGuideline = $project->annotationGuideline;
+
+        if ($annotationGuideline) {
+            $annotationGuideline->load('labels');
+        } elseif (!$isAdmin) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $userProject = $request->user()->projects()->where('id', $id)->first();
+        $isMember = $userProject !== null;
+        $isPinned = $isMember && $userProject->getRelationValue('pivot')->pinned;
+        $canPin = $isMember && 3 > $request->user()
+            ->projects()
+            ->wherePivot('pinned', true)
+            ->count();
+
+        $labelTrees = $project->labelTrees()->with('labels', 'version')->get();
+
+        $shapes = Shape::pluckById();
+
+        return view('projects.show.annotation-guideline', [
+            'project' => $project,
+            'user' => $user,
+            'annotationGuideline' => $annotationGuideline,
+            'isMember' => $isMember,
+            'isAdmin' => $isAdmin,
+            'isPinned' => $isPinned,
+            'canPin' => $canPin,
+            'activeTab' => 'guideline',
+            'labelTrees' => $labelTrees,
+            'availableShapes' => $shapes,
+        ]);
+    }
+
+    /**
+     * Shows a printable version of the annotation guideline of the project.
+     *
+     * The browser prints the page or saves it as PDF. This avoids a PDF library and
+     * the reference images (which may be on another origin) are displayed as usual.
+     *
+     * @param int $id Id of the project
+     *
+     * @return \Illuminate\View\View
+     */
+    public function printable(int $id)
+    {
+        $project = Project::findOrFail($id);
+        $this->authorize('access', $project);
+
+        $guideline = $project->annotationGuideline;
+
+        if (is_null($guideline)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
+        $guideline->load([
+            'labels' => fn ($query) => $query->orderBy('name'),
+            'labels.tree:id,name',
+        ]);
+
+        $labelsByTree = $guideline->labels
+            ->groupBy('label_tree_id')
+            ->sortBy(fn ($labels) => $labels->first()->tree->name);
+
+        $shapes = Shape::pluckById();
+
+        // Null if there are no shape restrictions. An empty only_shapes array means that
+        // only the separately allowed tools (e.g. the aligned rectangle) can be used.
+        $onlyShapes = null;
+        if (!is_null($guideline->only_shapes)) {
+            $onlyShapes = collect($guideline->only_shapes)->map(fn ($id) => $shapes[$id]);
+            if ($guideline->allow_aligned_rectangle) {
+                $onlyShapes->push('AlignedRectangle');
+            }
+        }
+
+        return view('projects.annotation-guideline-print', [
+            'project' => $project,
+            'guideline' => $guideline,
+            'labelsByTree' => $labelsByTree,
+            'onlyShapes' => $onlyShapes,
+            'shapes' => $shapes,
+        ]);
+    }
+}

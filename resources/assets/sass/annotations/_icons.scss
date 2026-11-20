@@ -15,6 +15,10 @@
         background-image: url("@images/annotations/rectangle.svg");
     }
 
+    &.icon-alignedrectangle {
+        background-image: url("@images/annotations/alignedrectangle.svg");
+    }
+
     &.icon-polygon {
         background-image: url("@images/annotations/polygon.svg");
     }
@@ -45,6 +49,10 @@
         background-image: url("@images/annotations/rectangle_white.svg");
     }
 
+    &.icon-alignedrectangle {
+        background-image: url("@images/annotations/alignedrectangle_white.svg");
+    }
+
     &.icon-polygon {
         background-image: url("@images/annotations/polygon_white.svg");
     }
@@ -73,6 +81,10 @@
 
     &.icon-rectangle {
         background-image: url("@images/annotations/rectangle_highlight.svg");
+    }
+
+    &.icon-alignedrectangle {
+        background-image: url("@images/annotations/alignedrectangle_highlight.svg");
     }
 
     &.icon-polygon {

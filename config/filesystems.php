@@ -95,6 +95,13 @@ return [
             'url' => env('APP_URL').'/storage/largo-patches',
             'visibility' => 'public',
         ],
+
+        'annotation-guideline' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/annotation-guidelines'),
+            'url' => env('APP_URL').'/storage/annotation-guidelines',
+            'visibility' => 'public',
+        ],
     ],
 
     /*

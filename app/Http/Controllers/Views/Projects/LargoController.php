@@ -39,12 +39,23 @@ class LargoController extends Controller
 
         $shapes = Shape::pluckById();
 
+        // Project Largo sessions always apply the enforced guideline of the project
+        // (see StoreProjectLargoSession), so other guidelines are not offered. This
+        // includes global admins without a project role.
+        $annotationGuidelines = $project->annotationGuideline()
+            ->with('labels', 'project:id,name')
+            ->get();
+
+        $mustUseAnnotationGuideline = $annotationGuidelines->contains('enforced', true);
+
         return view('largo.project', [
             'project' => $project,
             'labelTrees' => $labelTrees,
             'target' => $project,
             'patchUrlTemplate' => $patchUrlTemplate,
             'shapes' => $shapes,
+            'annotationGuidelines' => $annotationGuidelines,
+            'mustUseAnnotationGuideline' => $mustUseAnnotationGuideline,
         ]);
     }
 }

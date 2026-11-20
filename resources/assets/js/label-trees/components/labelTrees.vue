@@ -18,21 +18,34 @@
                 v-if="typeahead"
                 more-info="tree.versionedName"
                 placeholder="Find label"
-                :items="labels"
+                :items="typeaheadLabels"
                 @select="handleSelect"
                 ></typeahead>
+            <button
+                v-if="hasGuideline"
+                @click="toggleFilterLabelsByGuideline"
+                class="btn btn-default"
+                :class="filterByGuidelineClass"
+                title="Show only labels in guideline"
+                type="button"
+                >
+                <span class="fa fa-clipboard-list fa-fw" aria-hidden="true"></span>
+            </button>
         </div>
         <div class="label-trees__body">
             <label-tree
-                v-if="hasFavourites"
+                v-if="hasFilteredFavourites"
                 name="Favourites"
-                :labels="favourites"
+                :labels="filteredFavourites"
                 :show-favourites="showFavourites"
                 :showMoveButtonUp="false"
                 :showMoveButtonDown="false"
                 :flat="true"
                 :showFavouriteShortcuts="true"
                 :collapsible="collapsible"
+                :labels-in-guideline="labelsInGuidelineSet"
+                :filter-by-guideline="filterByGuideline"
+                :enforce-guideline="isGuidelineEnforced"
                 @select="handleSelect"
                 @deselect="handleDeselect"
                 @remove-favourite="handleRemoveFavourite"
@@ -49,6 +62,9 @@
                 :allow-select-children="allowSelectChildren"
                 :show-favourites="showFavourites"
                 :collapsible="collapsible"
+                :labels-in-guideline="labelsInGuidelineSet"
+                :filter-by-guideline="filterByGuideline"
+                :enforce-guideline="isGuidelineEnforced"
                 :can-have-more-favourites="canHaveMoreFavourites"
                 @select="handleSelect"
                 @deselect="handleDeselect"
@@ -90,6 +106,7 @@ export default {
             favourites: [],
             customOrder: [],
             sortable: true,
+            filterByGuidelineInternal: false,
         };
     },
     props: {
@@ -147,6 +164,15 @@ export default {
             type: Array,
             default: undefined,
         },
+        labelsInGuideline: {
+            type: Array,
+            default: () => [],
+        },
+        // Only labels in the guideline can be selected (if there are any).
+        enforceGuideline: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         customOrderStorageKeys() {
@@ -164,6 +190,12 @@ export default {
 
             return false;
         },
+        labelsInGuidelineSet() {
+            return new Set(this.labelsInGuideline);
+        },
+        hasGuideline() {
+            return this.labelsInGuidelineSet.size > 0;
+        },
         // All labels of all label trees in a flat, sorted list.
         labels() {
             let labels = [];
@@ -171,8 +203,12 @@ export default {
                 Array.prototype.push.apply(labels, tree.labels);
             });
 
+            if (this.filterByGuideline) {
+                labels = labels.filter(label => this.labelsInGuidelineSet.has(label.id));
+            }
+
             if (this.localeCompareSupportsLocales) {
-                // Use this to sort label names "natuarally". This is only supported in
+                // Use this to sort label names "naturally". This is only supported in
                 // modern browsers, though.
                 let collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
                 labels.sort(function (a, b) {
@@ -186,14 +222,36 @@ export default {
 
             return labels;
         },
+        // This is separate from "labels" because "labels" is also used to restore the
+        // favourites, which must not drop favourites outside of the guideline.
+        typeaheadLabels() {
+            if (this.isGuidelineEnforced && !this.filterByGuideline) {
+                return this.labels.filter(this.isLabelAllowed);
+            }
+
+            return this.labels;
+        },
+        isGuidelineEnforced() {
+            return this.enforceGuideline && this.hasGuideline;
+        },
         favouriteIds() {
             return this.favourites.map((label) => label.id);
         },
         canHaveMoreFavourites() {
             return this.favourites.length < MAX_FAVOURITES;
         },
+        filteredFavourites() {
+            if (this.filterByGuideline) {
+                return this.favourites.filter(label => this.labelsInGuidelineSet.has(label.id));
+            }
+
+            return this.favourites;
+        },
         hasFavourites() {
             return this.favourites.length > 0;
+        },
+        hasFilteredFavourites() {
+            return this.filteredFavourites.length > 0;
         },
         ownId() {
             if (this.id) {
@@ -216,11 +274,22 @@ export default {
         },
         treeIds() {
             return this.trees.map(tree => tree.id);
-        }
+        },
+        filterByGuideline() {
+            return this.filterByGuidelineInternal && this.hasGuideline;
+        },
+        filterByGuidelineClass() {
+            return {
+                'active btn-info': this.filterByGuideline,
+            };
+        },
     },
     methods: {
+        isLabelAllowed(label) {
+            return !this.isGuidelineEnforced || this.labelsInGuidelineSet.has(label.id);
+        },
         handleSelect(label, e) {
-            if (label) {
+            if (label && this.isLabelAllowed(label)) {
                 this.$emit('select', label, e);
                 this.events.emit('select', {label, e});
             }
@@ -258,8 +327,8 @@ export default {
             }
         },
         selectFavourite(index) {
-            if (this.favourites[index]) {
-                this.handleSelect(this.favourites[index]);
+            if (this.filteredFavourites[index]) {
+                this.handleSelect(this.filteredFavourites[index]);
             }
         },
         on(key, fn) {
@@ -284,7 +353,17 @@ export default {
             this.customOrderStorageKeys.forEach(function (storageKey) {
                 localStorage.setItem(storageKey, JSON.stringify(newCustomOrder));
             });
-        }
+        },
+        toggleFilterLabelsByGuideline() {
+            this.filterByGuidelineInternal = !this.filterByGuidelineInternal;
+        },
+        deselectDisallowedLabels() {
+            // Don't use "labels" because it may be filtered by the guideline.
+            this.trees
+                .flatMap(tree => tree.labels)
+                .filter(label => label.selected && !this.isLabelAllowed(label))
+                .forEach(label => this.handleDeselect(label));
+        },
     },
     watch: {
         trees: {
@@ -311,6 +390,12 @@ export default {
         },
         selectedFavouriteLabel(index) {
             this.selectFavourite(index);
+        },
+        labelsInGuidelineSet() {
+            this.deselectDisallowedLabels();
+        },
+        isGuidelineEnforced() {
+            this.deselectDisallowedLabels();
         },
     },
     created() {

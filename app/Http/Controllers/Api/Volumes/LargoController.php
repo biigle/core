@@ -27,6 +27,7 @@ class LargoController extends Controller
      * @apiParam (Optional arguments) {Object} dismissed_video_annotations Map from a label ID to a list of IDs of video annotations from which this label should be detached.
      * @apiParam (Optional arguments) {Object} changed_video_annotations Map from a label ID to a list of IDs of video annotations to which this label should be attached.
      * @apiParam (Optional arguments) {Object} force If set to `true`, project experts and admins can replace annotation labels attached by other users.
+     * @apiParam (Optional arguments) {Number} guideline_id ID of the enforced annotation guideline that applies. Changes that are not allowed by the guideline are skipped when the session is applied. Required if all projects of the volume (where the user can create annotations) have an enforced guideline. See the "Get annotation guidelines" endpoint of volumes.
      *
      * @apiParamExample {JSON} Request example (JSON):
      * {
@@ -63,7 +64,7 @@ class LargoController extends Controller
         $request->volume->save();
 
         try {
-            $job = new ApplyLargoSession($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force);
+            $job = new ApplyLargoSession($uuid, $request->user(), $request->dismissedImageAnnotations, $request->changedImageAnnotations, $request->dismissedVideoAnnotations, $request->changedVideoAnnotations, $request->force, $request->guideline?->id);
             Queue::pushOn($job->queue, $job);
         } catch (Throwable $e) {
             // We can't use DB::transaction to roll back the changes because this would

@@ -3,10 +3,14 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Enums\Role;
 use Biigle\Enums\Visibility;
+use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
+use Storage;
 
 class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
 {
@@ -138,6 +142,42 @@ class LabelTreeAuthorizedProjectControllerTest extends ApiTestCase
         $response->assertStatus(200);
         $this->assertSame(0, $tree->authorizedProjects()->count());
         $this->assertSame(0, $tree->projects()->count());
+    }
+
+    public function testDestroyPrivateDeletesGuidelineLabels()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        Storage::fake('annotation_storage');
+
+        $project = $this->project();
+        $tree = LabelTreeTest::create(['visibility' => Visibility::PRIVATE]);
+        $tree->addMember($this->admin(), Role::ADMIN);
+        $tree->authorizedProjects()->attach($project->id);
+        $tree->projects()->attach($project->id);
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+
+        $guideline = AnnotationGuideline::factory()->create([
+            'project_id' => $project->id,
+        ]);
+        $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+            'reference_image_path' => "{$guideline->id}/image.jpg",
+        ]);
+        Storage::disk('annotation_storage')->put("{$guideline->id}/image.jpg", 'image');
+
+        // Guideline labels of other projects must not be affected.
+        $otherGuidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'label_id' => $label->id,
+        ]);
+
+        $this->beAdmin();
+        $this->deleteJson("/api/v1/label-trees/{$tree->id}/authorized-projects/{$project->id}")
+            ->assertStatus(200);
+
+        $this->assertNull($guidelineLabel->fresh());
+        $this->assertNotNull($otherGuidelineLabel->fresh());
+        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/image.jpg");
     }
 
     public function testDestroyFormRequest()

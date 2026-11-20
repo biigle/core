@@ -2,11 +2,14 @@
 
 namespace Biigle\Http\Requests;
 
+use Biigle\Http\Requests\Traits\ValidatesAnnotationGuideline;
 use Biigle\Label;
 use Illuminate\Foundation\Http\FormRequest;
 
 abstract class StoreVolumeFileLabel extends FormRequest
 {
+    use ValidatesAnnotationGuideline;
+
     /**
      * The file to which the label should be attached.
      *
@@ -45,7 +48,36 @@ abstract class StoreVolumeFileLabel extends FormRequest
     {
         return [
             // The label_id is already validated above.
+            'guideline_id' => 'nullable|integer',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
+            $guideline = $this->validateGuideline(
+                $validator,
+                $this->file->volume_id,
+                $this->integer('guideline_id') ?: null
+            );
+
+            if (is_null($guideline)) {
+                return;
+            }
+
+            // File labels have no shape, so only the label is checked.
+            $this->validateGuidelineLabel($validator, $guideline, $this->label->id);
+        });
     }
 
     /**
