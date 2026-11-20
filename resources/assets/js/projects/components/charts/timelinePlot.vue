@@ -149,6 +149,7 @@ export default {
             chartdata.push(xAxis);
 
             // reduce user-timeseries to values only
+            let userRows = [];
             Object.entries(idDict).forEach(entry => {
                 // calculate the sum over all years and include in the array on position 0
                 let sum = 0;
@@ -159,11 +160,14 @@ export default {
                 let userid = entry[0];
                 // case of deleted account
                 if (name === " ") {
-                    chartdata.push([sum, 'Deleted Account', ...Object.values(entry[1]),userid]);
+                    userRows.push([sum, 'Deleted Account', ...Object.values(entry[1]),userid]);
                 } else { // case of existing user
-                    chartdata.push([sum, name, ...Object.values(entry[1]),userid]);
+                    userRows.push([sum, name, ...Object.values(entry[1]),userid]);
                 }
             });
+            // sort users by their total number of annotations (most first)
+            userRows.sort((a, b) => b[0] - a[0]);
+            chartdata.push(...userRows);
             return chartdata;
         },
         createTimelineSeries() {
