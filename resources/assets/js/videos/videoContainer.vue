@@ -77,6 +77,7 @@ export default {
                 jumpStep: 5.0,
                 showProgressIndicator: true,
                 showThumbnailPreview: true,
+                showMaxN: true,
                 enableJumpByFrame: false,
                 muteVideo: true,
                 singleAnnotation: false,

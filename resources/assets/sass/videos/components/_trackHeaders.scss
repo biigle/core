@@ -6,16 +6,38 @@
         border-bottom: 1px solid $legend-border-color;
         padding: 5px 0;
 
-        .label-name {
+        .header-info {
             position: absolute;
             top: 0;
             left: 0;
             padding: 5px;
             width: 100%;
             max-height: 100%;
+            overflow: hidden;
+
+            // Tracks with one lane have no space for a second line. The MaxN label is
+            // shown next to the label name instead.
+            &.single-lane {
+                display: flex;
+                align-items: center;
+
+                .max-n {
+                    flex: none;
+                    margin: 0 0 0 5px;
+                }
+            }
+        }
+
+        .label-name {
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+        }
+
+        .max-n {
+            display: inline-block;
+            margin-top: 2px;
+            cursor: help;
         }
 
         .lane-dummy {
