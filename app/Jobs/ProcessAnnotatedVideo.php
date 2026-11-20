@@ -219,16 +219,17 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
 
             try {
                 // Command explanation:
-                // -copyts -start_at_zero: Needed to deal with start timestamps unequal 0, makes sure
-                // that seeking via -ss <start> seeks to <start> seconds passed, regardless of the
-                // timestamp of the first frame
-                // -ss <start>: Seek to <start>
+                // -copyts -start_at_zero: This makes sure that if the timestamp of the first frame is not zero,
+                // the decoded frames have timestamps relative to the start of the video.
+                // Example: If start timestamp is -5s, and we seek to 10s after start, then frames would have
+                // timestamps starting at 5s. But we want them to start at 10s
+                // -ss <start>: Seek to <start> seconds after video start
                 // -t <window>: Decode a small <window> containing only a few frames
                 // -i <file>: Input file
-                // -vf "select='lte(t,<timestamp>)': Decode all frames with a timestamp <= <timestamp>.
+                // -vf "select='lte(t,<timestamp>)': Ignore decoded frames with a timestamp <= <timestamp>.
                 // To be consistent with mediabunny in the frontend, which always gives the frame at or
                 // before a given timestamp, we are only interested in the last frame that satisfies
-                // lte(t,<timestamp>). By default, ffmpeg gives the frame at or after a given timestamp,
+                // timestamp <= <timestamp>. By default, ffmpeg gives the frame at or after a given timestamp,
                 // so we need this filter
                 // setpts='if(eq(N,0),PTS,max(PTS,PREV_OUTPTS+1))': Retain the first presentation time stamp
                 // (pts) and make sure subsequent pts are strictly increasing. Otherwise the encoder will exit
