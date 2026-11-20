@@ -64,6 +64,9 @@ class VolumeExportTest extends TestCase
 
         $this->assertCount(10, $exports);
         $userContent = $exports[0]->getContent();
+        foreach ($userContent as $user) {
+            $this->assertArrayNotHasKey('password', $user);
+        }
         $userIds = array_map(fn ($user) => $user['id'], $userContent);
         $this->assertContains($imageAnnotationLabel->user->id, $userIds);
         $this->assertContains($imageLabel->user->id, $userIds);
