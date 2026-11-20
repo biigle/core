@@ -44,17 +44,19 @@ export default {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
                 this.currentInteraction = null;
-            } else if (!this.hasSelectedLabel && !this.labelbotIsActive) {
-                this.requireSelectedLabel();
-            } else if (this.canAdd) {
-                this.interactionMode = 'polygonBrush';
+            } else if (this.canAddAnnotations) {
+                if (!this.hasSelectedLabel && !this.labelbotIsActive) {
+                    this.requireSelectedLabel();
+                } else {
+                    this.interactionMode = 'polygonBrush';
+                }
             }
         },
         togglePolygonEraser() {
             if (this.isUsingPolygonEraser) {
                 this.resetInteractionMode();
                 this.currentInteraction = null;
-            } else if (this.canModify) {
+            } else if (this.canModifyAnnotations) {
                 this.interactionMode = 'polygonEraser';
             }
         },
@@ -62,7 +64,7 @@ export default {
             if (this.isUsingPolygonFill) {
                 this.resetInteractionMode();
                 this.currentInteraction = null;
-            } else if (this.canModify) {
+            } else if (this.canModifyAnnotations) {
                 this.interactionMode = 'polygonFill';
             }
         },

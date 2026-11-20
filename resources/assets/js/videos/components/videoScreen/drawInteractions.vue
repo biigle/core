@@ -113,10 +113,12 @@ export default {
         draw(name) {
             if (this['isDrawing' + name]) {
                 this.resetInteractionMode();
-            } else if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
-                this.requireSelectedLabel();
-            } else if (this.canAdd) {
-                this.interactionMode = 'draw' + name;
+            } else if (this.canAddAnnotations) {
+                if (this.hasNoSelectedLabel && !this.labelbotIsActive) {
+                    this.requireSelectedLabel();
+                } else {
+                    this.interactionMode = 'draw' + name;
+                }
             }
         },
         drawPoint() {
