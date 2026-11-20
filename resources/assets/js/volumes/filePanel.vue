@@ -5,6 +5,7 @@ import ImagesApi from '@/core/api/images.js';
 import VideosApi from '../videos/api/videos.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import VolumesApi from './api/volumes.js';
+import {confirm} from '@/core/messageBox.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
@@ -66,14 +67,18 @@ export default {
             }
             this.filenames = '';
         },
-        handleRemove(file) {
-            if (!this.loading && confirm(`Are you sure that you want to delete the ${this.type} #${file.id} (${file.filename})?`)) {
+        async handleRemove(file) {
+            if (this.loading) {
+                return;
+            }
+
+            if (await confirm(`Are you sure that you want to delete the ${this.type} #${file.id} (${file.filename})?`, {okText: 'Delete', okType: 'danger'})) {
                 this.startLoading();
                 this.fileApi.delete({id: file.id})
                     .then(() => this.fileRemoved(file.id))
-                    .catch((response) => {
+                    .catch(async (response) => {
                         if (response.status === 422) {
-                            if (confirm(`The ${this.type} contains annotations. Proceed to delete the ${this.type}?`)) {
+                            if (await confirm(`The ${this.type} contains annotations. Proceed to delete the ${this.type}?`, {okText: 'Delete', okType: 'danger'})) {
                                 return this.fileApi.delete({id: file.id}, {force: true})
                                     .then(() => this.fileRemoved(file.id));
                             }

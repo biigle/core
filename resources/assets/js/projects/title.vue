@@ -4,6 +4,7 @@ import EditorMixin from '@/core/mixins/editor.vue';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
 import ProjectsApi from '@/core/api/projects.js';
+import {confirm, prompt} from '@/core/messageBox.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
@@ -43,8 +44,8 @@ export default{
             this.description = this.project.description;
             this.finishEditing();
         },
-        leaveProject() {
-            let confirmed = confirm(`Do you really want to revoke your membership of project "${this.project.name}"?`);
+        async leaveProject() {
+            let confirmed = await confirm(`Do you really want to revoke your membership of project "${this.project.name}"?`, {okText: 'Leave', okType: 'danger'});
 
             if (confirmed) {
                 this.startLoading();
@@ -60,8 +61,12 @@ export default{
             Messages.success('You left the project. Redirecting...');
             setTimeout(() => location.href = this.redirectUrl, 2000);
         },
-        deleteProject() {
-            let inputproject = prompt(`Are you sure you want to delete "${this.project.name}"? Please type the project name to confirm.`);
+        async deleteProject() {
+            let inputproject = await prompt(`Are you sure you want to delete "${this.project.name}"? Please type the project name to confirm.`, {
+                okText: 'Delete',
+                okType: 'danger',
+                validator: (value) => value === this.project.name ? null : 'The name does not match the project name.',
+            });
             if (inputproject === this.project.name) {
                 this.startLoading();
                 ProjectsApi.delete({ id: this.project.id })
@@ -69,9 +74,9 @@ export default{
                     .finally(this.finishLoading);
             }
         },
-        maybeForceDeleteProject(response) {
+        async maybeForceDeleteProject(response) {
             if (response.status === 400) {
-                let confirmed = confirm('Deleting this project will delete one or more volumes with all annotations! Do you want to continue?');
+                let confirmed = await confirm('Deleting this project will delete one or more volumes with all annotations! Do you want to continue?', {okText: 'Delete', okType: 'danger'});
                 if (confirmed) {
                     this.startLoading();
                     ProjectsApi.delete({ id: this.project.id }, { force: true })

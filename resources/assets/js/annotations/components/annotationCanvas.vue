@@ -50,6 +50,7 @@ import {getCenter} from '@biigle/ol/extent';
 import {markRaw} from 'vue';
 import {shiftKeyOnly as shiftKeyOnlyCondition} from '@biigle/ol/events/condition';
 import {singleClick as singleClickCondition} from '@biigle/ol/events/condition';
+import {confirm} from '@/core/messageBox.js';
 
 /**
  * The annotator canvas
@@ -621,9 +622,14 @@ export default {
             // failed, to remove the temporary feature.
             this.$emit('new', newAnnotation, removeCallback);
         },
-        deleteSelectedAnnotations() {
-            if (!this.modifyInProgress && this.hasSelectedAnnotations && confirm('Are you sure you want to delete all selected annotations?')) {
-                this.$emit('delete', this.selectedAnnotations);
+        async deleteSelectedAnnotations() {
+            if (this.modifyInProgress || !this.hasSelectedAnnotations) {
+                return;
+            }
+
+            const annotations = this.selectedAnnotations.slice();
+            if (await confirm('Are you sure you want to delete all selected annotations?', {okText: 'Delete', okType: 'danger'})) {
+                this.$emit('delete', annotations);
             }
         },
         deleteLastCreatedAnnotation() {

@@ -23,6 +23,7 @@ import {CrossOriginTiffError} from './stores/images.js';
 import {debounce} from '@/core/utils.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {urlParams as UrlParams} from '@/core/utils.js';
+import {confirm} from '@/core/messageBox.js';
 
 const asyncAnnotationCanvas = defineAsyncComponent({
     loader: function () {
@@ -373,13 +374,13 @@ export default {
         focusAnnotation(annotation, fast, keepResolution) {
             this.$refs.canvas.focusAnnotation(annotation, fast, keepResolution);
         },
-        handleDetachAnnotationLabel(annotation, annotationLabel) {
+        async handleDetachAnnotationLabel(annotation, annotationLabel) {
             if (this.isEditor) {
                 if (annotation.labels.length > 1) {
                     AnnotationsStore.detachLabel(annotation, annotationLabel)
                         .then(() => this.refreshSingleAnnotation(annotation))
                         .catch(handleErrorResponse);
-                } else if (confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?')) {
+                } else if (await confirm('Detaching the last label of an annotation deletes the whole annotation. Do you want to delete the annotation?', {okText: 'Delete', okType: 'danger'})) {
                     this.handleDeleteAnnotation(annotation);
                 }
             }

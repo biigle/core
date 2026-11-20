@@ -6,6 +6,7 @@ import SessionsApi from './api/annotationSessions.js';
 import Typeahead from '@/core/components/typeahead.vue';
 import UserTag from './components/annotationSessionUserTag.vue';
 import VolumesApi from './api/volumes.js';
+import {confirm} from '@/core/messageBox.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import DatepickerDropdown from '@/uiv/datepickerDropdown.vue';
 
@@ -128,9 +129,12 @@ export default {
             return (response) => {
                 if (response.status === 400) {
                     this.finishLoading();
-                    if (confirm(response.data.message + ' ' + message)) {
-                        callback(true);
-                    }
+                    confirm(response.data.message + ' ' + message)
+                        .then((confirmed) => {
+                            if (confirmed) {
+                                callback(true);
+                            }
+                        });
                 } else {
                     this.handleErrorResponse(response);
                 }
@@ -152,10 +156,10 @@ export default {
         editSession(session) {
             this.editedSession = this.clone(session);
         },
-        deleteSession(force) {
+        async deleteSession(force) {
             if (this.loading || this.hasNewSession) return;
 
-            if (force === true || confirm(`Are you sure you want to delete the annotation session '${this.editedSession.name}'?`)) {
+            if (force === true || await confirm(`Are you sure you want to delete the annotation session '${this.editedSession.name}'?`, {okText: 'Delete', okType: 'danger'})) {
                 this.startLoading();
                 let id = this.editedSession.id;
                 let params = {
