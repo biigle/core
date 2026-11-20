@@ -6,6 +6,10 @@ updates:
           interval: "weekly"
       # Disable version updates
       open-pull-requests-limit: 0
+    - package-ecosystem: docker
+      directory: "/.docker"
+      schedule:
+          interval: "monthly"
     - package-ecosystem: composer
       directory: "/"
       schedule:
