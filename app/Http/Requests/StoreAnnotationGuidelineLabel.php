@@ -93,7 +93,8 @@ class StoreAnnotationGuidelineLabel extends FormRequest
                 'file',
                 'mimes:jpg',
                 'max:5120',
-                'dimensions:max_width=1000,max_height=1000',
+                // The UI resizes images to this size before upload.
+                'dimensions:max_width=300,max_height=300',
             ],
         ];
     }
