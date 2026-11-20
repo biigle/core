@@ -4,6 +4,7 @@ namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
 use Biigle\Enums\MediaType;
+use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageAnnotationTest;
 use Biigle\Tests\ImageTest;
@@ -12,9 +13,71 @@ use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Carbon\Carbon;
 
 class ProjectAnnotationLabelsTest extends ApiTestCase
 {
+    public function testGetProjectAnnotationLabelsAnnotationSession()
+    {
+        $id = $this->project()->id;
+        $img = ImageTest::create(['volume_id' => $this->volume()->id]);
+        $l = LabelTest::create();
+        // Own annotation before the annotation session.
+        $a1 = ImageAnnotationTest::create(['image_id' => $img->id, 'created_at' => Carbon::yesterday()]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'label_id' => $l->id,
+            'user_id' => $this->editor()->id,
+        ]);
+        // Own annotation of the annotation session.
+        $a2 = ImageAnnotationTest::create(['image_id' => $img->id, 'created_at' => Carbon::today()]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'label_id' => $l->id,
+            'user_id' => $this->editor()->id,
+        ]);
+        // Annotation of another user.
+        $a3 = ImageAnnotationTest::create(['image_id' => $img->id, 'created_at' => Carbon::today()]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'label_id' => $l->id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        // Annotation of another volume without annotation session.
+        $otherVolume = VolumeTest::create();
+        $this->project()->addVolumeId($otherVolume->id);
+        $otherImg = ImageTest::create(['volume_id' => $otherVolume->id]);
+        $a4 = ImageAnnotationTest::create(['image_id' => $otherImg->id, 'created_at' => Carbon::yesterday()]);
+        ImageAnnotationLabelTest::create([
+            'annotation_id' => $a4->id,
+            'label_id' => $l->id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume()->id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+        $session->users()->attach($this->editor());
+
+        $this->beEditor();
+        $this->getJson("/api/v1/projects/{$id}/label-count")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 2]);
+
+        $session->users()->detach($this->editor());
+
+        $this->getJson("/api/v1/projects/{$id}/label-count")
+            ->assertStatus(200)
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['id' => $l->id, 'count' => 4]);
+    }
+
     public function testGetProjectAnnotationLabels()
     {
         $id = $this->project()->id;

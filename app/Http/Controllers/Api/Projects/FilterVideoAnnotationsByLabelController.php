@@ -61,6 +61,8 @@ class FilterVideoAnnotationsByLabelController extends Controller
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
+        $user = $request->user();
+        $sessions = $project->getActiveAnnotationSessions($user);
 
         return VideoAnnotation::join('video_annotation_labels', 'video_annotations.id', '=', 'video_annotation_labels.annotation_id')
             ->join('videos', 'video_annotations.video_id', '=', 'videos.id')
@@ -70,6 +72,7 @@ class FilterVideoAnnotationsByLabelController extends Controller
                     ->where('project_id', $pid);
             })
             ->where('video_annotation_labels.label_id', $lid)
+            ->allowedBySessions($sessions, $user)
             ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
             ->when(!is_null($take), fn ($query) => $query->take($take))
             ->select('videos.uuid', 'video_annotations.id')

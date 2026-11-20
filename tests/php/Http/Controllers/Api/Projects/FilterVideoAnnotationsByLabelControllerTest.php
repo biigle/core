@@ -4,11 +4,13 @@ namespace Biigle\Tests\Http\Controllers\Api\Projects;
 
 use ApiTestCase;
 use Biigle\Enums\Shape;
+use Biigle\Tests\AnnotationSessionTest;
 use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Carbon\Carbon;
 
 class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
 {
@@ -50,6 +52,89 @@ class FilterVideoAnnotationsByLabelControllerTest extends ApiTestCase
         $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}?take=1")
             ->assertStatus(200)
             ->assertExactJson([$a2->id => $video->uuid]);
+    }
+
+    public function testIndexAnnotationSession()
+    {
+        $id = $this->project()->id;
+        $video = VideoTest::create(['volume_id' => $this->volume()->id]);
+
+        $a1 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => Carbon::yesterday(),
+        ]);
+
+        $a2 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => Carbon::today(),
+        ]);
+
+        $a3 = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => Carbon::yesterday(),
+        ]);
+
+        $l1 = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a1->id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        VideoAnnotationLabelTest::create([
+            'annotation_id' => $a2->id,
+            'label_id' => $l1->label_id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        VideoAnnotationLabelTest::create([
+            'annotation_id' => $a3->id,
+            'label_id' => $l1->label_id,
+            'user_id' => $this->admin()->id,
+        ]);
+
+        // Annotations of another volume of the project without annotation session
+        // should not be affected.
+        $otherVolume = VolumeTest::create();
+        $this->project()->addVolumeId($otherVolume->id);
+        $otherVideo = VideoTest::create(['volume_id' => $otherVolume->id]);
+        $a4 = VideoAnnotationTest::create([
+            'video_id' => $otherVideo->id,
+            'created_at' => Carbon::yesterday(),
+        ]);
+        VideoAnnotationLabelTest::create([
+            'annotation_id' => $a4->id,
+            'label_id' => $l1->label_id,
+            'user_id' => $this->editor()->id,
+        ]);
+
+        $this->beEditor();
+
+        $session = AnnotationSessionTest::create([
+            'volume_id' => $this->volume()->id,
+            'starts_at' => Carbon::today(),
+            'ends_at' => Carbon::tomorrow(),
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => true,
+        ]);
+
+        $session->users()->attach($this->editor());
+
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertExactJson([
+                $a2->id => $video->uuid,
+                $a4->id => $otherVideo->uuid,
+            ]);
+
+        $session->users()->detach($this->editor());
+
+        $this->get("/api/v1/projects/{$id}/video-annotations/filter/label/{$l1->label_id}")
+            ->assertStatus(200)
+            ->assertExactJson([
+                $a1->id => $video->uuid,
+                $a2->id => $video->uuid,
+                $a3->id => $video->uuid,
+                $a4->id => $otherVideo->uuid,
+            ]);
     }
 
     public function testIndexDuplicate()

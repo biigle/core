@@ -8,6 +8,7 @@ use Biigle\Jobs\DeleteVolume;
 use Biigle\PendingVolume;
 use Biigle\Project;
 use Biigle\ProjectInvitation;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use ModelTestCase;
 use Queue;
@@ -33,6 +34,47 @@ class ProjectTest extends ModelTestCase
     {
         $jsonProject = json_decode((string) $this->model);
         $this->assertObjectNotHasProperty('pivot', $jsonProject);
+    }
+
+    public function testGetActiveAnnotationSessions()
+    {
+        $user = UserTest::create();
+        $volume = VolumeTest::create();
+        $this->model->addVolumeId($volume->id);
+        $volume2 = VolumeTest::create();
+        $this->model->addVolumeId($volume2->id);
+
+        $active = AnnotationSessionTest::create([
+            'volume_id' => $volume->id,
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+        $active->users()->attach($user);
+
+        // Session of another user.
+        AnnotationSessionTest::create([
+            'volume_id' => $volume2->id,
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+
+        // Inactive session.
+        $inactive = AnnotationSessionTest::create([
+            'volume_id' => $volume2->id,
+            'starts_at' => Carbon::yesterday()->subDay(),
+            'ends_at' => Carbon::yesterday(),
+        ]);
+        $inactive->users()->attach($user);
+
+        // Session of a volume that does not belong to the project.
+        $other = AnnotationSessionTest::create([
+            'starts_at' => Carbon::yesterday(),
+            'ends_at' => Carbon::tomorrow(),
+        ]);
+        $other->users()->attach($user);
+
+        $sessions = $this->model->getActiveAnnotationSessions($user);
+        $this->assertSame([$active->id], $sessions->pluck('id')->all());
     }
 
     public function testNameRequired()
