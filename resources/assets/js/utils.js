@@ -62,6 +62,10 @@ let declare = function (namespace, object) {
     return object;
 };
 
+function required(name) {
+    throw new Error(`Missing required parameter '${name}'`);
+}
+
 function setOrUnsetProperty(feature, property, value) {
     if (!feature) {
         return;
@@ -74,4 +78,4 @@ function setOrUnsetProperty(feature, property, value) {
     }
 }
 
-export {mount, require, declare, setOrUnsetProperty};
+export { mount, require, required, declare, setOrUnsetProperty };

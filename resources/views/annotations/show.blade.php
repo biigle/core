@@ -87,6 +87,7 @@
             :selected-label="selectedLabel"
             :annotation-opacity="annotationOpacity"
             :annotation-mode="annotationMode"
+            :lawnmower-section-carry="annotationModeCarry"
             :show-mouse-position="showMousePosition"
             :show-zoom-level="showZoomLevel"
             :show-scale-line="showScaleLine"
@@ -103,6 +104,7 @@
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"
             v-on:close-labelbot-popup="closeLabelbotPopup"
             v-on:moveend="handleMapMoveend"
+            v-on:movestart="handleMapMovestart"
             v-on:previous="handlePrevious"
             v-on:next="handleNext"
             v-on:new="handleNewAnnotation"
@@ -115,6 +117,10 @@
             v-on:measuring="fetchImagesArea"
             v-on:requires-selected-label="handleRequiresSelectedLabel"
             v-on:is-invalid-shape="handleInvalidShape"
+            v-on:restore-lawnmower-image="restoreLawnmowerImage"
+            v-on:lawnmower-pre-viewport-change="disableAutomaticLawnmowerPausing"
+            v-on:lawnmower-post-viewport-change="enableAutomaticLawnmowerPausing"
+            v-on:restore-lawnmower-pause-state="pauseLawnmower"
             ref="canvas"
             ></annotation-canvas>
     </div>

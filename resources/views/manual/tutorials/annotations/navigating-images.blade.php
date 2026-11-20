@@ -44,6 +44,9 @@
         <p>
             Volume label review (Volare) allows you to quickly cycle through all annotations of a volume. When Volare is activated, your viewport will jump to the first annotation of the current image and select it. If there is no annotation, it will zoom out to show the whole image. You can now advance through annotations with the <i class="fa fa-step-forward"></i> forward and <i class="fa fa-step-backward"></i> backward buttons or the <a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}">shortcut keys</a>. If the last annotation of an image is displayed and you hit the forward button, the image annotation tool will switch to the first annotation of the next image.
         </p>
+        <p>
+            You can pause Volare at any time with the <i class="fa fa-pause"></i> pause button. The current image and annotation are saved, and Volare enters a paused state. Click the <i class="fa fa-play"></i> continue button to restore the saved position and resume reviewing. Click the <i class="fa fa-stop"></i> stop button to cancel the paused session and discard the saved position. Clicking the pause button while paused also discards the saved state. Starting Volare again after stopping begins at the current image's first annotation.
+        </p>
         <p class="text-center">
             <a href="{{asset('assets/images/manual/navigating_images_volare_2.jpg')}}"><img src="{{asset('assets/images/manual/navigating_images_volare_2.jpg')}}" width="32%"></a>
             <a href="{{asset('assets/images/manual/navigating_images_volare_3.jpg')}}"><img src="{{asset('assets/images/manual/navigating_images_volare_3.jpg')}}" width="32%"></a>
@@ -60,6 +63,9 @@
 
         <p>
             Lawnmower Mode can be used to quickly and methodically screen all areas of an image at a larger resolution that fits on your monitor. Before you activate Lawnmower Mode, first choose the zoom level on which you want to screen the image. When Lawnmower Mode is activated, your viewport will jump to the first "tile", the bottom left section of the image that fits in your viewport at the current zoom level. Now you can advance through image tiles with the <i class="fa fa-step-forward"></i> forward and <i class="fa fa-step-backward"></i> backward buttons or the <a href="{{route('manual-tutorials', ['annotations', 'shortcuts'])}}">shortcut keys</a>. If the last tile is displayed and you hit the forward button, the image annotation tool will switch to the first tile of the next image. This way you can quickly screen all images of a volume.
+        </p>
+        <p>
+            You can pause Lawnmower Mode with the <i class="fa fa-pause"></i> pause button or by changing the viewport manually (zoom, drag, etc.) during reviewing. The current image, image section, viewport position, and zoom level are saved. Click the <i class="fa fa-play"></i> continue button to restore that position and resume screening. Click the <i class="fa fa-stop"></i> stop button to cancel the paused session and discard the saved position. Clicking the pause button while paused also discards the saved state. Starting Lawnmower Mode again after stopping begins at the first image section.
         </p>
         <p class="text-center">
             <a href="{{asset('assets/images/manual/navigating_images_lmm_2.jpg')}}"><img src="{{asset('assets/images/manual/navigating_images_lmm_2.jpg')}}" width="32%"></a>
