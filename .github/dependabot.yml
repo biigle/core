@@ -10,6 +10,10 @@ updates:
       directory: "/.docker"
       schedule:
           interval: "monthly"
+      # The Python version is bound by wheel availability of the pinned
+      # requirements, so it is updated manually together with them.
+      ignore:
+          - dependency-name: "python"
     - package-ecosystem: composer
       directory: "/"
       schedule:
