@@ -21,12 +21,25 @@
             </div>
         </div>
     @endif
-    @if (config('biigle.user_registration_confirmation') && $user->role === \Biigle\Enums\Role::GUEST)
+    @if (config('biigle.user_registration_confirmation') && $user->role === \Biigle\Enums\Role::GUEST && is_null($user->registration_approved_at))
         <div class="row">
             <div class="col-xs-12">
                     <p class="text-info text-center">
                         You will be able to create new projects and label trees once an admin has accepted your sign up.
                     </p>
+            </div>
+        </div>
+    @endif
+    @if (config('biigle.email_verification') && !config('biigle.offline_mode') && $user->role === \Biigle\Enums\Role::GUEST && is_null($user->email_verified_at))
+        <div class="row">
+            <div class="col-xs-12">
+                <p class="text-info text-center">
+                    You should have received a verification email. Please verify your email address to unlock all features.
+                </p>
+                <form method="POST" action="{{ route('verification.resend') }}" class="text-center">
+                    @csrf
+                    <button type="submit" class="btn btn-link">Resend the verification email</button>
+                </form>
             </div>
         </div>
     @endif

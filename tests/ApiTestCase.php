@@ -30,7 +30,7 @@ class ApiTestCase extends TestCase
 
     private function newUser($role = null, $attrs = [])
     {
-        $user = UserTest::make($attrs);
+        $user = UserTest::make(array_merge(['email_verified_at' => now()], $attrs));
         $user->role = $role ? $role : Role::EDITOR;
         $user->save();
 

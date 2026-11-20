@@ -41,7 +41,10 @@ class UserRegistrationController extends Controller
         }
 
         $user = User::where('role', Role::GUEST)->findOrFail($id);
-        $user->role = Role::EDITOR;
+        $user->registration_approved_at = now();
+        if (!$this->isEmailVerificationEnabled() || $user->hasVerifiedEmail()) {
+            $user->role = Role::EDITOR;
+        }
         $user->save();
 
         $user->notify(new RegistrationAccepted);
@@ -105,5 +108,15 @@ class UserRegistrationController extends Controller
     protected function isAdminConfirmationEnabled()
     {
         return config('biigle.user_registration_confirmation') && !config('biigle.offline_mode');
+    }
+
+    /**
+     * Determines if email verification is enabled.
+     *
+     * @return bool
+     */
+    protected function isEmailVerificationEnabled()
+    {
+        return config('biigle.email_verification') && !config('biigle.offline_mode');
     }
 }
