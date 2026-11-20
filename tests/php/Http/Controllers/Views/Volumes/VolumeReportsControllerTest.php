@@ -3,6 +3,7 @@
 namespace Biigle\Tests\Http\Controllers\Views\Volumes;
 
 use ApiTestCase;
+use Biigle\Enums\MediaType;
 
 class VolumeReportsControllerTest extends ApiTestCase
 {
@@ -20,5 +21,43 @@ class VolumeReportsControllerTest extends ApiTestCase
         $this->beGuest();
         $response = $this->get("volumes/{$id}/reports")
             ->assertStatus(200);
+    }
+
+    public function testShowUsesSingleReportTypeSelector()
+    {
+        $id = $this->volume()->id;
+        $this->beGuest();
+
+        $response = $this->get("volumes/{$id}/reports")
+            ->assertStatus(200)
+            ->assertSee('<select id="report-type"', false)
+            ->assertSee('<option value="ImageAnnotations\\Csv"', false)
+            ->assertDontSee('<option value="VideoAnnotations\\Csv"', false)
+            ->assertDontSee('id="report-variant"', false)
+            ->assertDontSee('btn-group btn-group-justified', false);
+
+        $this->assertSame(1, substr_count($response->getContent(), 'id="report-type"'));
+    }
+
+    public function testShowVideoMetadataReport()
+    {
+        $id = $this->volume(['media_type' => MediaType::VIDEO])->id;
+        $this->beGuest();
+
+        $this->get("volumes/{$id}/reports")
+            ->assertStatus(200)
+            ->assertSee('<option value="VideoMetadata"', false)
+            ->assertSee('exports the current metadata for every video', false);
+    }
+
+    public function testShowImageMetadataReport()
+    {
+        $id = $this->volume(['media_type' => MediaType::IMAGE])->id;
+        $this->beGuest();
+
+        $this->get("volumes/{$id}/reports")
+            ->assertStatus(200)
+            ->assertSee('<option value="ImageMetadata"', false)
+            ->assertSee('exports the current metadata for every image', false);
     }
 }

@@ -48,6 +48,8 @@ export default {
                 'separate_users',
                 'only_labels',
             ],
+            'VideoMetadata': [],
+            'ImageMetadata': [],
             'ImageIfdo': [
                 'export_area',
                 'newest_label',

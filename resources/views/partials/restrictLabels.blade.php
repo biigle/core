@@ -1,4 +1,4 @@
-<div class="form-group" :class="{'has-error': errors.only_labels}">
+<div v-if="hasOption('only_labels')" class="form-group" :class="{'has-error': errors.only_labels}">
     <div class="checkbox">
         <label :class="{'text-muted': options.all_labels}">
             <input type="checkbox" v-model="hasOnlyLabels" :disabled="options.all_labels"> Restrict to labels <span v-show="hasOnlyLabels" v-cloak>(<span v-text="selectedLabelsCount"></span> labels selected)</span>
