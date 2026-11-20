@@ -1,6 +1,8 @@
 <script>
 import {Dropdown} from 'uiv';
 import LoaderMixin from '@/core/mixins/loader.vue';
+import MessageStore from '@/core/messages/store.js';
+import {getFileSelector} from './metadataFileSelectors.js';
 
 export const MEDIA_TYPE = {
     IMAGE: 'image',
@@ -58,10 +60,43 @@ export default {
             this.mediaType = MEDIA_TYPE.VIDEO;
         },
         selectFile(parser) {
+            let selector = getFileSelector(parser);
+            if (selector) {
+                this.selectFileWithSelector(parser, selector);
+                return;
+            }
+
             this.selectedParser = parser;
             // Use $nextTick so the input element will have the appropriate MIME type
             // filter from the selected parser.
             this.$nextTick(() => this.$refs.metadataFileField.click());
+        },
+        async selectFileWithSelector(parser, selector) {
+            let file;
+            try {
+                file = await selector(parser);
+            } catch (e) {
+                MessageStore.danger('The metadata files could not be selected.');
+                return;
+            }
+
+            // The user cancelled the selection.
+            if (!file) {
+                return;
+            }
+
+            // The file input of the form can only be filled programmatically with a
+            // DataTransfer object.
+            if (typeof DataTransfer === 'undefined') {
+                MessageStore.danger('This browser does not support the selection of this metadata format.');
+                return;
+            }
+
+            let transfer = new DataTransfer();
+            transfer.items.add(file);
+            this.selectedParser = parser;
+            this.$refs.metadataFileField.files = transfer.files;
+            this.handleSelectedFile();
         },
         handleSelectedFile() {
             this.hasFile = this.$refs.metadataFileField.files.length > 0;
