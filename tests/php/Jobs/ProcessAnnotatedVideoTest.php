@@ -11,6 +11,7 @@ use Biigle\Tests\VideoAnnotationTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Video as VideoModel;
 use Biigle\VideoAnnotationLabelFeatureVector;
+use Illuminate\Support\Facades\Process;
 use Bus;
 use Exception;
 use FileCache;
@@ -1020,6 +1021,19 @@ class ProcessAnnotatedVideoTest extends TestCase
         $this->assertSame(3.0, $job->calculateSeekWindowForTest('video.mp4'));
     }
 
+    public function testGetVideoFrameResetsSelectedFrameTimestamps()
+    {
+        Process::fake();
+        $job = new ProcessAnnotatedVideoFrameExtractionStub(new VideoModel);
+
+        $job->getVideoFrameForTest('video.mp4', 237.2105, 0.05, 1);
+
+        Process::assertRan(fn ($process) => str_contains(
+            $process->command,
+            "select='lte(t\\,237.210500)',setpts=N"
+        ));
+    }
+
     protected function getFrameMock($times = 1)
     {
         $video = Mockery::mock();
@@ -1103,6 +1117,19 @@ class ProcessAnnotatedVideoParseStub extends ProcessAnnotatedVideo
     public function parseVideoFpsForTest(mixed $rate): float
     {
         return $this->parseVideoFps($rate);
+    }
+}
+
+class ProcessAnnotatedVideoFrameExtractionStub extends ProcessAnnotatedVideo
+{
+    public function getVideoFps(string $path): float
+    {
+        return 30.0;
+    }
+
+    public function getVideoFrameForTest(string $sourcePath, float $time, float $window, ?int $trySeek = null)
+    {
+        return $this->getVideoFrame($sourcePath, $time, $window, $trySeek);
     }
 }
 
