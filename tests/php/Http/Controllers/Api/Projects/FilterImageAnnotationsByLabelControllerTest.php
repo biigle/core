@@ -221,4 +221,47 @@ class FilterImageAnnotationsByLabelControllerTest extends ApiTestCase
         $this->get("/api/v1/projects/{$project->id}/image-annotations/filter/label/{$l1->label_id}?volume_id[]=-{$volume1->id}&volume_id[]=-{$volume2->id}")
             ->assertExactJson([$a3->id => $image3->uuid]);
     }
+
+    public function testIndexCreatedFilter()
+    {
+        $id = $this->project()->id;
+        $vid = $this->volume()->id;
+
+        $image = ImageTest::create(['volume_id' => $vid]);
+
+        $s1 = ShapeTest::create();
+
+        $a1 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s1->id, 'created_at' => '2025-06-11 00:01:00.000', 'updated_at' => '2025-06-11 00:01:00.000']);
+        $a2 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s1->id, 'created_at' => '2025-06-12 00:01:00.000', 'updated_at' => '2025-06-12 00:01:00.000']);
+        $a3 = ImageAnnotationTest::create(['image_id' => $image->id, 'shape_id' =>$s1->id, 'created_at' => '2025-06-12 00:01:00.000', 'updated_at' => '2025-06-13 00:01:00.000']);
+
+        $l1 = ImageAnnotationLabelTest::create(['annotation_id' => $a1->id, 'created_at' => '2025-06-11 00:01:00.000', 'updated_at' => '2025-06-11 00:01:00.000']);
+        $l2 = ImageAnnotationLabelTest::create(['annotation_id' => $a2->id, 'label_id' => $l1->label_id, 'created_at' => '2025-06-12 00:01:00.000', 'updated_at' => '2025-06-12 00:01:00.000']);
+        $l4 = ImageAnnotationLabelTest::create(['annotation_id' => $a3->id, 'label_id' => $l1->label_id, 'created_at' => '2025-06-13 00:01:00.000', 'updated_at' => '2025-06-14 00:01:00.000']);
+
+        $this->beEditor();
+
+        //annotation
+        $response = $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?annotation_created_at=>2025-06-11");
+        $this->assertEqualsCanonicalizing([$a2->id => $image->uuid, $a3->id => $image->uuid], $response->json());
+
+        $response = $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?annotation_created_at=<2025-06-12");
+        $this->assertEqualsCanonicalizing([$a1->id => $image->uuid], $response->json());
+
+        $response = $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?annotation_created_at=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a1->id => $image->uuid], $response->json());
+
+        #annotation_label
+        $response = $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?annotation_label_created_at=>2025-06-12");
+        $this->assertEqualsCanonicalizing([$a3->id => $image->uuid], $response->json());
+
+        $response = $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?annotation_label_created_at=<2025-06-13");
+        $this->assertEqualsCanonicalizing([$a1->id => $image->uuid, $a2->id => $image->uuid], $response->json());
+
+        $response = $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?annotation_label_created_at=2025-06-11");
+        $this->assertEqualsCanonicalizing([$a1->id => $image->uuid], $response->json());
+
+        $response = $this->get("/api/v1/projects/{$id}/image-annotations/filter/label/{$l1->label_id}?annotation_label_created_at=-2025-06-11");
+        $this->assertEqualsCanonicalizing([$a2->id => $image->uuid, $a3->id => $image->uuid], $response->json());
+    }
 }
