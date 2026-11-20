@@ -478,6 +478,71 @@ class VolumeTest extends ModelTestCase
         $this->assertInstanceOf(Image::class, $thumbnails[0]);
     }
 
+    public function testPreloadThumbnails()
+    {
+        $other = static::create();
+        $i1 = ImageTest::create(['volume_id' => $this->model->id, 'filename' => 'a.jpg']);
+        $i2 = ImageTest::create(['volume_id' => $other->id, 'filename' => 'b.jpg']);
+
+        // Cache the thumbnails of one volume but not of the other.
+        $this->model->thumbnails;
+        $this->assertTrue(Cache::has("volume-thumbnails-{$this->model->id}"));
+        $this->assertFalse(Cache::has("volume-thumbnails-{$other->id}"));
+
+        $volumes = Volume::whereIn('id', [$this->model->id, $other->id])
+            ->orderBy('id')
+            ->get();
+        Volume::preloadThumbnails($volumes);
+
+        // Missing thumbnails are cached, too.
+        $this->assertTrue(Cache::has("volume-thumbnails-{$other->id}"));
+
+        // The preloaded volumes don't read from the cache any more.
+        Cache::forget("volume-thumbnails-{$this->model->id}");
+        Cache::forget("volume-thumbnails-{$other->id}");
+        $this->assertStringContainsString($i1->uuid, $volumes[0]->thumbnailUrl);
+        $this->assertCount(1, $volumes[0]->thumbnailsUrl);
+        $this->assertStringContainsString($i1->uuid, $volumes[0]->thumbnailsUrl[0]);
+        $this->assertStringContainsString($i2->uuid, $volumes[1]->thumbnailUrl);
+        $this->assertFalse(Cache::has("volume-thumbnails-{$this->model->id}"));
+        $this->assertFalse(Cache::has("volume-thumbnails-{$other->id}"));
+    }
+
+    public function testPreloadThumbnailsSameAsAccessors()
+    {
+        for ($i = 0; $i < 25; $i++) {
+            ImageTest::create(['volume_id' => $this->model->id, 'filename' => "file{$i}.jpg"]);
+        }
+
+        $expectedUrl = $this->model->thumbnailUrl;
+        $expectedUrls = $this->model->thumbnailsUrl->all();
+
+        $volume = Volume::find($this->model->id);
+        Volume::preloadThumbnails([$volume]);
+        $this->assertSame($expectedUrl, $volume->thumbnailUrl);
+        $this->assertSame($expectedUrls, $volume->thumbnailsUrl->all());
+    }
+
+    public function testPreloadThumbnailsEmpty()
+    {
+        Volume::preloadThumbnails([]);
+        $this->assertTrue(true);
+    }
+
+    public function testFlushThumbnailCacheResetsPreloadedThumbnails()
+    {
+        $volume = Volume::find($this->model->id);
+        Volume::preloadThumbnails([$volume]);
+        $this->assertNull($volume->thumbnailUrl);
+
+        $image = ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        // The preloaded thumbnails are kept until the cache is flushed.
+        $this->assertNull($volume->thumbnailUrl);
+
+        $volume->flushThumbnailCache();
+        $this->assertStringContainsString($image->uuid, $volume->thumbnailUrl);
+    }
+
     public function testGetThumbnailsAttributeWithGapsInIds()
     {
         $id = $this->model->id;
