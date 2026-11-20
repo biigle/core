@@ -14,6 +14,7 @@ import Messages from '@/core/messages/store.js';
 import Keyboard from '@/core/keyboard.js';
 import MeasureComponent from '../mixins/measureComponent.vue';
 import Settings from '../stores/settings.js';
+import { getBottomRight, getTopLeft } from '@biigle/ol/extent';
 import { trimCanvas, ScaleLineProperties } from '../utils';
 
 /**
@@ -149,17 +150,36 @@ export default {
             // See: https://openlayers.org/en/v6.15.1/examples/export-map.html
             // This version is modified/simplified because we want the screenshot
             // in the actual device pixel ratio and not at the original size.
-            const canvas = e.target
+            const map = e.target;
+            const canvas = map
                 .getViewport()
                 .querySelector('.ol-layer canvas, canvas.ol-layer');
 
+            // Only capture the area of the image/video. Anything that is drawn
+            // outside of it (e.g. the sketch of an active drawing tool at the mouse
+            // position) would otherwise add an empty margin to the screenshot.
+            const [x, y, width, height] = this.getFileArea(map, canvas);
             const clone = document.createElement('canvas');
-            clone.width = canvas.width;
-            clone.height = canvas.height;
+            clone.width = width;
+            clone.height = height;
             const ctx = clone.getContext('2d');
-            ctx.drawImage(canvas, 0, 0);
+            ctx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
 
             this.makeBlob(clone).then(this.download).catch(this.handleError);
+        },
+        // Get the area of the image/video on the map canvas as [x, y, width, height],
+        // clipped to the canvas.
+        getFileArea(map, canvas) {
+            const extent = map.getView().getProjection().getExtent();
+            const ratio = canvas.width / map.getSize()[0];
+            const topLeft = map.getPixelFromCoordinate(getTopLeft(extent));
+            const bottomRight = map.getPixelFromCoordinate(getBottomRight(extent));
+            const left = Math.max(0, Math.round(topLeft[0] * ratio));
+            const top = Math.max(0, Math.round(topLeft[1] * ratio));
+            const right = Math.min(canvas.width, Math.round(bottomRight[0] * ratio));
+            const bottom = Math.min(canvas.height, Math.round(bottomRight[1] * ratio));
+
+            return [left, top, Math.max(0, right - left), Math.max(0, bottom - top)];
         },
         handleError(message) {
             Messages.danger(message);
