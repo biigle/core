@@ -1,7 +1,7 @@
 <script>
 import Circle from '@biigle/ol/style/Circle';
 import Collection from '@biigle/ol/Collection';
-import DrawInteraction from '@biigle/ol/interaction/Draw';
+import DrawInteraction from '../ol/interaction/Draw.js';
 import Events from '@/core/events.js';
 import ExportAreaApi from '../api/exportArea.js';
 import Feature from '@biigle/ol/Feature';

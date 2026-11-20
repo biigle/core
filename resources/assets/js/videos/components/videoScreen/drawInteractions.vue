@@ -1,6 +1,6 @@
 <script>
 import * as preventDoubleclick from '@/prevent-doubleclick';
-import DrawInteraction, {createBox} from '@biigle/ol/interaction/Draw';
+import DrawInteraction, {createBox} from '../../../annotations/ol/interaction/Draw.js';
 import MagicWandInteraction from '@/annotations/ol/MagicWandInteraction.js';
 import Rectangle from '@biigle/ol/geom/Rectangle';
 import snapInteraction from "./snapInteraction.vue";

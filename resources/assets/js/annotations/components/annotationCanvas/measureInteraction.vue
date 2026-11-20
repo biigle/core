@@ -1,5 +1,5 @@
 <script>
-import DrawInteraction from '@biigle/ol/interaction/Draw';
+import DrawInteraction from '../../ol/interaction/Draw.js';
 import Keyboard from '@/core/keyboard.js';
 import Styles from '@/annotations/stores/styles.js';
 import VectorLayer from '@biigle/ol/layer/Vector';
