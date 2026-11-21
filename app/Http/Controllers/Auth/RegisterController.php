@@ -183,7 +183,8 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
-        if ($this->isAdminConfirmationEnabled()) {
+        if ($this->isAdminConfirmationEnabled()
+            && (!$this->isEmailVerificationEnabled() || $user->hasVerifiedEmail())) {
             $notifiable = Notification::route('mail', config('biigle.admin_email'));
             Notification::send($notifiable, new RegistrationConfirmation($user));
         }

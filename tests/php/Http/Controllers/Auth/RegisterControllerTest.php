@@ -156,7 +156,7 @@ class RegisterControllerTest extends TestCase
         /** @var User $user */
         $user = User::where('email', 'e@ma.il')->first();
         $this->assertCount(1, Notification::sent($user, VerifyEmail::class));
-        Notification::assertSentTo(
+        Notification::assertNotSentTo(
             new AnonymousNotifiable,
             RegistrationConfirmation::class,
         );
