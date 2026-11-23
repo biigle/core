@@ -36,7 +36,8 @@ class DashboardControllerTest extends TestCase
 
         $this->actingAs($user)->get('/')
             ->assertOk()
-            ->assertSee('You should have received a verification email')
+            ->assertSee($user->email)
+            ->assertSee(route('settings-account'))
             ->assertSee(route('verification.resend'));
     }
 
@@ -105,7 +106,7 @@ class DashboardControllerTest extends TestCase
 
         $this->actingAs($user)->get('/')
             ->assertOk()
-            ->assertSee('You should have received a verification email')
+            ->assertSee('Please verify your email address')
             ->assertDontSee('You will be able to create new projects')
             ->assertSee(route('verification.resend'));
     }
@@ -125,7 +126,7 @@ class DashboardControllerTest extends TestCase
             ->assertOk()
             ->assertSeeInOrder([
                 'You will be able to create new projects',
-                'You should have received a verification email',
+                'Please verify your email address',
             ]);
     }
 

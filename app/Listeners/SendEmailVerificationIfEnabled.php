@@ -3,6 +3,7 @@
 namespace Biigle\Listeners;
 
 use Illuminate\Auth\Events\Registered;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class SendEmailVerificationIfEnabled
 {
@@ -12,6 +13,14 @@ class SendEmailVerificationIfEnabled
             return;
         }
 
-        $event->user->sendEmailVerificationNotification();
+        try {
+            $event->user->sendEmailVerificationNotification();
+        } catch (TransportExceptionInterface $exception) {
+            report($exception);
+            if (request()->hasSession()) {
+                session()->flash('message', 'The verification email could not be sent. Please try again later.');
+                session()->flash('messageType', 'danger');
+            }
+        }
     }
 }

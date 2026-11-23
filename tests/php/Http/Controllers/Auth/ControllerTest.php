@@ -7,6 +7,7 @@ use Biigle\Tests\UserTest;
 use Biigle\User;
 use Illuminate\Support\Facades\Notification;
 use Session;
+use Symfony\Component\Mailer\Exception\TransportException;
 use TestCase;
 use URL;
 
@@ -146,6 +147,23 @@ class ControllerTest extends TestCase
             ->assertRedirect()
             ->assertSessionHas('message', 'Verification emails are rate limited. Please wait before requesting another email.')
             ->assertSessionHas('messageType', 'danger');
+    }
+
+    public function testEmailVerificationResendFailureIsReportedAndRateLimited()
+    {
+        config(['biigle.email_verification' => true]);
+        Notification::shouldReceive('send')->once()->andThrow(new TransportException('Mail server unavailable'));
+        $user = UserTest::create(['email_verified_at' => null]);
+        $this->actingAs($user);
+
+        $this->post(route('verification.resend'))
+            ->assertRedirect('/')
+            ->assertSessionHas('message', 'The verification email could not be sent. Please try again later.')
+            ->assertSessionHas('messageType', 'danger');
+
+        $this->post(route('verification.resend'))
+            ->assertSessionHas('message', 'Verification emails are rate limited. Please wait before requesting another email.');
+        $this->assertFalse($user->fresh()->hasVerifiedEmail());
     }
 
     public function testEmailVerificationRequiresAuthentication()

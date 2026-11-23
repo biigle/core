@@ -34,7 +34,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <p class="text-info text-center">
-                    You should have received a verification email. Please verify your email address to unlock all features.
+                    Please verify your email address to unlock all features. Check your inbox and spam folder for a verification email sent to <strong>{{ $user->email }}</strong>, or <a href="{{ route('settings-account') }}">change your email address</a>.
                 </p>
                 <form method="POST" action="{{ route('verification.resend') }}" class="text-center">
                     @csrf

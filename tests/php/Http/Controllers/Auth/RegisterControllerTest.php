@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
 use Mockery;
 use Session;
+use Symfony\Component\Mailer\Exception\TransportException;
 use TestCase;
 use View;
 
@@ -133,6 +134,28 @@ class RegisterControllerTest extends TestCase
         event(new Verified($user));
 
         $this->assertSame(Role::EDITOR, $user->fresh()->role);
+    }
+
+    public function testRegisterWhenVerificationEmailFails()
+    {
+        config(['biigle.email_verification' => true]);
+        Notification::shouldReceive('send')->once()->andThrow(new TransportException('Mail server unavailable'));
+
+        $this->post('register', [
+            '_token' => Session::token(),
+            'email' => 'e@ma.il',
+            'password' => 'password',
+            'firstname' => 'a',
+            'lastname' => 'b',
+            'affiliation' => 'something',
+        ])->assertRedirect('/')
+            ->assertSessionHas('message', 'The verification email could not be sent. Please try again later.')
+            ->assertSessionHas('messageType', 'danger');
+
+        $user = User::where('email', 'e@ma.il')->firstOrFail();
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame(Role::GUEST, $user->role);
+        $this->assertNull($user->email_verified_at);
     }
 
     public function testRegisterWithEmailVerificationAndAdminConfirmation()

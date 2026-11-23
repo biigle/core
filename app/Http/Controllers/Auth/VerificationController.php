@@ -6,6 +6,7 @@ use Biigle\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 /**
  * Adds application-specific messages and resend limits to email verification.
@@ -54,8 +55,14 @@ class VerificationController extends Controller
             return $this->verificationResponse('Your email address has already been verified.', 'info');
         }
 
-        $request->user()->sendEmailVerificationNotification();
         RateLimiter::hit($limit->key, $limit->decaySeconds);
+        try {
+            $request->user()->sendEmailVerificationNotification();
+        } catch (TransportExceptionInterface $exception) {
+            report($exception);
+
+            return $this->verificationResponse('The verification email could not be sent. Please try again later.', 'danger');
+        }
 
         return $this->verificationResponse('A fresh verification link has been sent to your email address.', 'info');
     }
