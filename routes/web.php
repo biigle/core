@@ -72,8 +72,7 @@ $router->group(['namespace' => 'Views', 'prefix' => 'manual'], function ($router
 
 // PROTECTED ROUTES -----------------------------------------------------------
 
-$protectedMiddleware = config('biigle.email_verification') && !config('biigle.offline_mode') ? ['auth', 'verified'] : ['auth'];
-$router->group(['namespace' => 'Views', 'middleware' => $protectedMiddleware], function ($router) {
+$router->group(['namespace' => 'Views', 'middleware' => 'auth'], function ($router) {
     $router->group(['namespace' => 'Notifications', 'prefix' => 'notifications'], function ($router) {
         $router->get('/', [
             'as' => 'notifications',

@@ -53,6 +53,27 @@ class DashboardControllerTest extends TestCase
             ->assertDontSee('Please verify your email address');
     }
 
+    public function testRouteAccessDependsOnRoleInsteadOfRegistrationStatus()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+
+        $this->get('settings/profile')->assertRedirect('login');
+
+        foreach ([Role::GUEST, Role::EDITOR, Role::ADMIN] as $role) {
+            $user = UserTest::create([
+                'role' => $role,
+                'email_verified_at' => null,
+                'registration_approved_at' => null,
+            ]);
+
+            $this->actingAs($user)->get('settings/profile')->assertOk();
+            $this->get('admin/users')->assertStatus($role === Role::ADMIN ? 200 : 403);
+        }
+    }
+
     public function testDashboardShowsAdminConfirmationNoticeAfterVerification()
     {
         config([
