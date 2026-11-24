@@ -5,7 +5,7 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="col-xs-12 col-md-offset-2 col-md-8">
+        <div class="col-xs-12">
             <form class="search-form" action="{{route('search')}}" method="GET">
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-search"></i></div>
@@ -21,7 +21,11 @@
                 @endif
                 <button type="submit" class="btn btn-success">Search</button>
             </form>
-            <ul class="nav nav-tabs">
+        </div>
+    </div>
+    <div class="row">
+        <nav class="col-sm-3 search-categories" aria-label="Search categories">
+            <ul class="nav nav-pills nav-stacked">
                 @include("search.projects-tab")
                 @include("search.label-trees-tab")
                 @include("search.volumes-tab")
@@ -32,6 +36,8 @@
                     @include("{$module}::searchTab")
                 @endforeach
             </ul>
+        </nav>
+        <div class="col-sm-9">
             <div class="tab-content">
                 @include("search.projects-content")
                 @include("search.label-trees-content")

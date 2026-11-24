@@ -1,14 +1,31 @@
 .search-form {
+    display: flex;
+    gap: 1em;
     padding-bottom: 1em;
 
     .input-group {
-        margin-right: 65px;
+        flex: 1;
+        min-width: 0;
     }
 
-    .btn {
-        position: absolute;
-        right: 0;
-        top: 0;
+    > .btn {
+        align-self: flex-start;
+    }
+}
+
+.search-categories {
+    margin-bottom: 1em;
+
+    .nav > li > a {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5em;
+        overflow-wrap: anywhere;
+    }
+
+    .nav > li > a > .badge {
+        flex-shrink: 0;
+        margin-left: auto;
     }
 }
 
