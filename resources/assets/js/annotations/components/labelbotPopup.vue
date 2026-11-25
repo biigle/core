@@ -282,10 +282,10 @@ export default {
         deleteLabelAnnotation() {
             if (!this.isFocused) return;
 
-            if (this.labels.length > 0) {
+            if (!this.noLabels) {
                 this.$emit('delete', this.annotation);
             }
-            // In case of no labels the deletion is happened before unmount
+            // In case of no labels the annotation is deleted in beforeUnmount
             this.emitClose();
             Events.emit('labelbot.dismissed');
         },

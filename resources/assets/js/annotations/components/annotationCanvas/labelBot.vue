@@ -61,6 +61,8 @@ export default {
     },
     methods: {
         createRestoredLabelbotAnnotation(event) {
+            // Videos ignore removeCallback because the temporary annotation is removed via
+            // annotation.pendingAnnotation in videoContainer.saveAnnotation().
             this.$emit('create-restored-labelbot-annotation', event.newAnnotation, event.removeCallback);
         },
         updateLabelbotLabel(event) {

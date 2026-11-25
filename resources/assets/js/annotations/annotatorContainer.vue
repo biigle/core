@@ -457,10 +457,7 @@ export default {
                 if (!annotation.label_id) {
                     annotation.label_id = this.selectedLabel.id;
                 }
-                promise = AnnotationsStore.create(this.imageId, annotation)
-                    .then((annotation) => {
-                        return annotation;
-                    });
+                promise = AnnotationsStore.create(this.imageId, annotation);
             }
 
             promise

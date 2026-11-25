@@ -421,7 +421,7 @@ export default {
                 label_id: annotation.label_id,
                 points: annotation.points,
                 frames: annotation.frames,
-                shape_id: annotation.shape_id,
+                shape: annotation.shape,
                 track: annotation.track,
             };
 
