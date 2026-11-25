@@ -224,16 +224,13 @@ class VideoAnnotationController extends Controller
             $label = Label::findOrFail($request->input('label_id'));
         } else {
             $labels = $labelBotService->getLabelsForAnnotation($annotation, $request->video->volume_id, $request);
-            // Add labelBOTlabels attribute to the response.
-            $annotation->append('labelBOTLabels');
-            $label = array_shift($labels);
-            if (is_null($label)) {
+            if (empty($labels)) {
                 return response('', 204);
             }
-            if (!empty($labels)) {
-                // Attach the remaining labels (if any).
-                $annotation->labelBOTLabels = $labels;
-            }
+            $label = array_shift($labels);
+            // Add the remaining suggestions as the labelBOTLabels attribute of the response.
+            $annotation->append('labelBOTLabels');
+            $annotation->labelBOTLabels = $labels;
         }
 
         $this->authorize('attach-label', [$annotation, $label]);
