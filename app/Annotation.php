@@ -4,6 +4,7 @@ namespace Biigle;
 
 use Biigle\Contracts\Annotation as AnnotationContract;
 use Biigle\Enums\Shape;
+use Biigle\Traits\HasEstimatedCount;
 use DB;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,7 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Hidden(['pivot'])]
 abstract class Annotation extends Model implements AnnotationContract
 {
-    use HasFactory;
+    use HasEstimatedCount, HasFactory;
 
     /**
      * Get the attributes that should be cast.
@@ -41,19 +42,6 @@ abstract class Annotation extends Model implements AnnotationContract
      * The additional labels suggested by the LabelBOT.
      */
     public $labelBOTLabels = [];
-
-    /**
-     * Get an estimated count of all annotations from pg_class statistics.
-     * This is much faster than a full table scan of a large table.
-     *
-     * See: https://wiki.postgresql.org/wiki/Count_estimate
-     */
-    public static function estimatedCount(): int
-    {
-        $table = (new static)->getTable();
-
-        return (int) DB::selectOne('SELECT reltuples::bigint AS estimate FROM pg_class WHERE relname = ?', [$table])->estimate;
-    }
 
     /**
      * Scope a query to only include annotations that are visible for a certain user.

@@ -1,6 +1,4 @@
-# PHP 8.5.7
-# FROM php:8.5
-FROM php@sha256:1954ff5cd21f222c992b79d25e403b2600cec829678d5bb7076883f3a44c0d6e
+FROM php:8.5.13@sha256:f324fcb4dc009ac0470a7d614cd122499dcee3ca47a9bab620fc14c0eb759ba2
 LABEL org.opencontainers.image.authors="Martin Zurowietz <m.zurowietz@uni-bielefeld.de>"
 LABEL org.opencontainers.image.source="https://github.com/biigle/core"
 

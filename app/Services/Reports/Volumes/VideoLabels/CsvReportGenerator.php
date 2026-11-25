@@ -52,7 +52,7 @@ class CsvReportGenerator extends VolumeReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $rows->isNotEmpty()) {
             $rows = $rows->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $rows->keys())->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $rows->keys())->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $csv = $this->createCsv($rows->get($id));
@@ -67,6 +67,7 @@ class CsvReportGenerator extends VolumeReportGenerator
             $ids = $rows->keys()->filter(fn ($id) => $id !== $nullKey);
             $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {

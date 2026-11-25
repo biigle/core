@@ -97,7 +97,34 @@ class StoreVolumeMetadata extends FormRequest
             $this->metadata = $parser->getMetadata();
             if (!$rule->passes('file', $this->metadata)) {
                 $validator->errors()->add('file', $rule->message());
+                return;
+            }
+
+            if (!$this->metadataMatchesVolume()) {
+                $validator->errors()->add('file', 'None of the filenames in the metadata file match a file of the volume.');
             }
         });
+    }
+
+    /**
+     * Determine if at least one file of the metadata matches a file of the volume.
+     * Files in the metadata that don't exist in the volume are ignored, but a metadata
+     * file without any match most likely belongs to a different volume.
+     */
+    protected function metadataMatchesVolume(): bool
+    {
+        // Chunk the filenames because they may exceed the parameter limit of a single
+        // database query (the volume ID is another parameter).
+        $chunks = $this->metadata->getFiles()
+            ->pluck('name')
+            ->chunk(config('biigle.db_param_limit') - 1);
+
+        foreach ($chunks as $chunk) {
+            if ($this->volume->files()->whereIn('filename', $chunk)->exists()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

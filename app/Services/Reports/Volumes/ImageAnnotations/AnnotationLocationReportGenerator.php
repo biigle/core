@@ -57,7 +57,7 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $items->isNotEmpty()) {
             $items = $items->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $items->keys())->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $items->keys())->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $tmpItems = $items->get($id);
@@ -73,6 +73,7 @@ class AnnotationLocationReportGenerator extends AnnotationReportGenerator
             $ids = $items->keys()->filter(fn ($id) => $id !== $nullKey);
             $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {

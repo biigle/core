@@ -60,7 +60,7 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
 
         if ($this->shouldSeparateLabelTrees() && $imageLabels->isNotEmpty()) {
             $imageLabels = $imageLabels->groupBy('label_tree_id');
-            $trees = LabelTree::whereIn('id', $imageLabels->keys())->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $imageLabels->keys())->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $usedImageLabels = (clone $usedImageLabelsQuery)
@@ -81,6 +81,7 @@ class ImageLocationReportGenerator extends VolumeReportGenerator
             $ids = $imageLabels->keys()->filter(fn ($id) => $id !== $nullKey);
             $users = User::whereIn('id', $ids)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {

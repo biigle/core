@@ -64,11 +64,12 @@ class CloneVolume extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
         $validator->after(function ($validator) {
+            // Only run these checks if all other validation rules passed.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             $fileIds = $this->input('only_files', []);
             if (!empty($fileIds)) {
                 $intersection = array_intersect($fileIds, $this->volume->files()->pluck('id')->toArray());

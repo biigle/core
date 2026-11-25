@@ -122,10 +122,13 @@ class ApplyLargoSession extends Job implements ShouldQueue
             return;
         }
 
+        // Retry on deadlocks. These can't be prevented entirely because other
+        // transactions may lock the annotations in an arbitrary order (see
+        // deleteDanglingAnnotations()).
         DB::transaction(function () {
             $this->handleImageAnnotations();
             $this->handleVideoAnnotations();
-        });
+        }, 3);
 
         $this->cleanupJobId();
         LargoSessionSaved::dispatch($this->id, $this->user);
@@ -397,8 +400,9 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // Free memory.
         unset($alreadyThere);
 
-        // Store the ID so we can efficiently loop over the models later. This is only
-        // possible because all this happens inside a DB transaction (see above).
+        // Store the ID so we can efficiently loop over the models later. Rows committed
+        // by concurrent transactions can still appear above this ID, so the loop below
+        // needs additional filters.
         $startId = $labelModel::orderBy('id', 'desc')->select('id')->first()->id;
 
         collect($newAnnotationLabels)
@@ -421,7 +425,13 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // Free memory.
         unset($newAnnotationLabels);
 
+        // Limit the loop to the annotation labels inserted above. Labels of other
+        // transactions could be deleted concurrently, which would cause a foreign key
+        // violation in the feature vector job and abort this transaction. Our own
+        // uncommitted labels are invisible to others and can't be deleted.
         $labelModel::where('id', '>', $startId)
+            ->where('user_id', $user->id)
+            ->where('created_at', $now)
             ->eachById(function ($annotationLabel) use ($labelModel) {
                 // Execute the jobs synchronously because after this method the
                 // old annotation labels may be deleted and there will be nothing
@@ -468,8 +478,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
         // delete. A label attached concurrently by a user would otherwise not be seen
         // by the snapshot of the delete statement and the annotation (including the
         // new label) would be deleted. With the lock acquired first, the delete takes
-        // a fresh snapshot that sees the new label. This can't deadlock with other
-        // jobs because they are already serialized by lockAnnotations().
+        // a fresh snapshot that sees the new label.
+        //
+        // This can still deadlock with transactions that hold KEY SHARE locks on the
+        // annotations (via FK checks of label inserts or feature vector upserts) while
+        // they wait for rows that this job modified. The transaction in handle() is
+        // retried in this case.
         foreach ($chunks as $chunk) {
             $toDeleteQuery($chunk)->orderBy('id')->lockForUpdate()->pluck('id');
         }
@@ -486,11 +500,12 @@ class ApplyLargoSession extends Job implements ShouldQueue
                 $toDeleteQuery($chunk)->delete();
             }
             // The annotation model observer does not fire for this query so we
-            // dispatch the remove patch job manually here.
+            // dispatch the remove patch job manually here. Only dispatch after commit
+            // because the transaction may be rolled back and retried.
             if ($annotationModel === ImageAnnotation::class) {
-                RemoveImageAnnotationPatches::dispatch($toDeleteArgs);
+                RemoveImageAnnotationPatches::dispatch($toDeleteArgs)->afterCommit();
             } else {
-                RemoveVideoAnnotationPatches::dispatch($toDeleteArgs);
+                RemoveVideoAnnotationPatches::dispatch($toDeleteArgs)->afterCommit();
             }
         }
     }

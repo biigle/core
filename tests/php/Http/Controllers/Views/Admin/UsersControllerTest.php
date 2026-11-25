@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views\Admin;
 
+use Biigle\Enums\MediaType;
 use Biigle\Enums\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageTest;
@@ -9,6 +10,7 @@ use Biigle\Tests\UserTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoTest;
 use Biigle\Tests\VolumeTest;
+use Biigle\User;
 use TestCase;
 
 class UsersControllerTest extends TestCase
@@ -49,6 +51,28 @@ class UsersControllerTest extends TestCase
         $this->call('GET', 'admin/users', ['q' => 'joe'])
             ->assertSee('joe@user.com')
             ->assertDontSee('jane@user.com');
+    }
+
+    public function testGetPaginationKeepsSearch()
+    {
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+        User::factory()->count(101)->create(['lastname' => 'Paginated']);
+        $this->be($admin);
+
+        $this->call('GET', 'admin/users', ['q' => 'Paginated'])
+            ->assertSee('q=Paginated&page=2');
+    }
+
+    public function testGetPaginationKeepsRecent()
+    {
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+        User::factory()->count(101)->create();
+        $this->be($admin);
+
+        $this->call('GET', 'admin/users', ['recent' => 1])
+            ->assertSee('recent=1&page=2');
     }
 
     public function testNewWhenNotLoggedIn()
@@ -175,6 +199,60 @@ class UsersControllerTest extends TestCase
 
         $this->be($admin);
         $this->get("admin/users/{$user->id}")->assertStatus(200);
+    }
+
+    public function testShowImageAndVideoCount()
+    {
+        $user = UserTest::create();
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+
+        $volume = VolumeTest::create(['creator_id' => $user->id]);
+        ImageTest::create(['volume_id' => $volume->id, 'filename' => 'a.jpg']);
+        $volume = VolumeTest::create([
+            'creator_id' => $user->id,
+            'media_type' => MediaType::VIDEO,
+        ]);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
+
+        $this->be($admin);
+        $this->get("admin/users/{$user->id}")
+            ->assertSeeText('with 1 image(s)')
+            ->assertSeeText('and 2 video(s)');
+    }
+
+    public function testShowVideoCount()
+    {
+        $user = UserTest::create();
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+
+        $volume = VolumeTest::create([
+            'creator_id' => $user->id,
+            'media_type' => MediaType::VIDEO,
+        ]);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'a.mp4']);
+        VideoTest::create(['volume_id' => $volume->id, 'filename' => 'b.mp4']);
+        // Video of another user.
+        VideoTest::create();
+
+        $this->be($admin);
+        $this->get("admin/users/{$user->id}")
+            ->assertSeeText('with 2 video(s)')
+            ->assertDontSeeText('with no images');
+    }
+
+    public function testShowNoFiles()
+    {
+        $user = UserTest::create();
+        $admin = UserTest::create();
+        $admin->role = Role::ADMIN;
+        VolumeTest::create(['creator_id' => $user->id]);
+
+        $this->be($admin);
+        $this->get("admin/users/{$user->id}")
+            ->assertSeeText('with no images or videos.');
     }
 
     public function testShowWhenReviewer()

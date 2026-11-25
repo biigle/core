@@ -34,7 +34,7 @@ class UpdateLabel extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'filled',
+            'name' => 'filled|max:512',
             'color' => 'filled|string|regex:/^\#?[A-Fa-f0-9]{6}$/',
             'parent_id' => 'filled|integer|exists:labels,id',
         ];
@@ -48,11 +48,12 @@ class UpdateLabel extends FormRequest
      */
     public function withValidator($validator)
     {
-        if ($validator->fails()) {
-            return;
-        }
-
         $validator->after(function ($validator) {
+            // Only run these checks if all other validation rules passed.
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
+
             if ($this->filled('parent_id')) {
                 $sameTree = Label::where('id', $this->input('parent_id'))
                     ->where('label_tree_id', $this->label->label_tree_id)

@@ -106,7 +106,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 ->select('labels.label_tree_id')
                 ->distinct()
                 ->pluck('label_tree_id');
-            $trees = LabelTree::whereIn('id', $treeIds)->pluck('name', 'id');
+            $trees = LabelTree::whereIn('id', $treeIds)->orderBy('id')->pluck('name', 'id');
 
             foreach ($trees as $id => $name) {
                 $csv = $this->createCsv($this->query()->where('labels.label_tree_id', $id));
@@ -120,6 +120,7 @@ class CsvReportGenerator extends VolumeReportGenerator
                 ->pluck('user_id');
             $users = User::whereIn('id', $userIds)
                 ->selectRaw("id, concat(firstname, ' ', lastname) as name")
+                ->orderBy('id')
                 ->pluck('name', 'id');
 
             foreach ($users as $id => $name) {

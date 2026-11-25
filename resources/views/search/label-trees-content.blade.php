@@ -1,7 +1,7 @@
 @if($type === 'label-trees')
 <div class="clearfix">
     @include('search.partials.federated-search-toggle')
-    <h2 class="lead">{{number_format($labelTreeResultCount)}} label tree results</h2>
+    <h2 class="lead">@if($labelTreeResultCountCapped)more than {{number_format($resultCountCap)}}@else{{number_format($labelTreeResultCount)}}@endif label tree results</h2>
 </div>
 <ul class="search-results">
     @foreach ($results as $tree)

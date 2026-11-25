@@ -9,6 +9,7 @@ use Biigle\ImageAnnotation;
 use Biigle\Project;
 use Biigle\Services\Modules;
 use Biigle\User;
+use Biigle\Video;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
@@ -39,7 +40,10 @@ class UsersController extends Controller
             // users with login_at=NULL at the end.
             ->orderByRaw('login_at IS NULL, login_at DESC')
             ->orderBy('created_at', 'desc')
-            ->paginate(100);
+            ->paginate(100)
+            // Keep the search query and the "recently joined" filter in the
+            // pagination links.
+            ->withQueryString();
 
         $roleNames = [
             Role::ADMIN->value => 'Admin',
@@ -181,13 +185,24 @@ class UsersController extends Controller
         $volumesCount = $volumes->count();
         $volumesPercent = $volumesCount > 0 ? round($volumesCount / $volumesTotal * 100, 2) : 0;
 
-        $imagesTotal = Image::count();
         $imagesCount = Image::join('volumes', 'volumes.id', '=', 'images.volume_id')
             ->where('volumes.creator_id', $user->id)
             ->count();
-        $imagesPercent = $imagesCount > 0 ? round($imagesCount / $imagesTotal * 100, 2) : 0;
+        $imagesPercent = 0;
+        if ($imagesCount > 0) {
+            // The estimate may be outdated and smaller than the exact count.
+            $imagesPercent = min(100, round($imagesCount / Image::estimatedCount() * 100, 2));
+        }
 
-        return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent');
+        $videosCount = Video::join('volumes', 'volumes.id', '=', 'videos.volume_id')
+            ->where('volumes.creator_id', $user->id)
+            ->count();
+        $videosPercent = 0;
+        if ($videosCount > 0) {
+            $videosPercent = min(100, round($videosCount / Video::estimatedCount() * 100, 2));
+        }
+
+        return compact('volumes', 'volumesCount', 'volumesPercent', 'imagesCount', 'imagesPercent', 'videosCount', 'videosPercent');
     }
 
     /**
@@ -205,8 +220,7 @@ class UsersController extends Controller
         $totalAnnotations = (clone $annotationQuery)->distinct()->count('image_annotations.id');
 
         if ($totalAnnotations > 0) {
-            $estimatedCount = ImageAnnotation::estimatedCount();
-            $relativeAnnotations =  $estimatedCount > 0 ? $totalAnnotations / $estimatedCount : 0;
+            $relativeAnnotations = min(1, $totalAnnotations / ImageAnnotation::estimatedCount());
 
             $recentImageAnnotations = $annotationQuery->orderBy('image_annotation_labels.created_at', 'desc')
                 ->take(10)
@@ -236,8 +250,7 @@ class UsersController extends Controller
         $totalVideoAnnotations = (clone $annotationQuery)->distinct()->count('video_annotations.id');
 
         if ($totalVideoAnnotations > 0) {
-            $estimatedCount = VideoAnnotation::estimatedCount();
-            $relativeVideoAnnotations = $estimatedCount > 0 ? $totalVideoAnnotations / $estimatedCount : 0;
+            $relativeVideoAnnotations = min(1, $totalVideoAnnotations / VideoAnnotation::estimatedCount());
 
             $recentVideoAnnotations = $annotationQuery->orderBy('video_annotation_labels.created_at', 'desc')
                 ->take(10)

@@ -6,6 +6,19 @@ updates:
           interval: "weekly"
       # Disable version updates
       open-pull-requests-limit: 0
+    - package-ecosystem: docker
+      directory: "/.docker"
+      schedule:
+          interval: "monthly"
+      ignore:
+          # Major and minor version updates may break dependencies, so these will be done
+          # manually.
+          - dependency-name: "python"
+            update-types: ["version-update:semver-major", "version-update:semver-minor"]
+          - dependency-name: "php"
+            update-types: ["version-update:semver-major", "version-update:semver-minor"]
+          - dependency-name: "nginx"
+            update-types: ["version-update:semver-major", "version-update:semver-minor"]
     - package-ecosystem: composer
       directory: "/"
       schedule:

@@ -6,6 +6,7 @@ use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Controller;
 use Biigle\Http\Requests\StoreUser;
 use Biigle\Notifications\RegistrationConfirmation;
+use Biigle\Rules\Utf8;
 use Biigle\Services\Modules;
 use Biigle\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -61,7 +62,8 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         // Email should be case insensitive
-        if (array_key_exists('email', $data)) {
+        // Non-strings are rejected by the validation but would crash strtolower().
+        if (array_key_exists('email', $data) && is_string($data['email'])) {
             $data['email'] = strtolower($data['email']);
         }
 
@@ -69,7 +71,7 @@ class RegisterController extends Controller
         $additionalRules = [
             'website' => 'honeypot',
             'homepage' => 'honeytime:10|required',
-            'affiliation' => 'required|max:255',
+            'affiliation' => ['required', 'string', 'max:255', new Utf8],
         ];
 
         if (View::exists('privacy')) {

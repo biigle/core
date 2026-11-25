@@ -12,9 +12,13 @@
             @endforeach
         </select>
     </div>
+    <div class="form-group">
+        <input type="search" class="form-control" name="q" value="{{$search}}" placeholder="Search">
+    </div>
+    <button type="submit" class="btn btn-default">Search</button>
 </form>
 @forelse ($paginator as $item)
-<?php if (!config('app.env') !== 'testing') dump($item) ?>
+<?php if (config('app.env') !== 'testing') dump($item) ?>
 @empty
 No log entries.
 @endforelse
