@@ -41,6 +41,10 @@ export default {
             type: Number,
             default: 1,
         },
+        labelbotHasPendingRequests: {
+            type: Boolean,
+            default: false,
+        },
     },
     components: {
         labelbotPopup: LabelbotPopup,
@@ -54,9 +58,6 @@ export default {
     computed: {
         labelbotIsActive() {
             return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;
-        },
-        labelbotIsComputing() {
-            return this.labelbotState === LABELBOT_STATES.COMPUTING;
         },
     },
     methods: {

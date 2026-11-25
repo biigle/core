@@ -99,6 +99,7 @@
             :labelbot-overlays="labelbotOverlays"
             :focused-popup-key="focusedPopupKey"
             :labelbot-timeout="labelbotTimeout"
+            :labelbot-has-pending-requests="labelbotHasPendingRequests"
             :draft-annotation-uses-label-color="draftAnnotationUsesLabelColor"
             v-on:create-restored-labelbot-annotation="handleNewAnnotation"
             v-on:change-labelbot-focused-popup="changeLabelbotFocusedPopup"

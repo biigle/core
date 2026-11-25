@@ -202,7 +202,7 @@ export default {
             return (index + this.imagesIds.length - 1) % this.imagesIds.length;
         },
         handleNext() {
-            if (this.loading || this.labelbotIsComputing) {
+            if (this.loading || this.labelbotHasPendingRequests) {
                 return;
             }
 
@@ -242,7 +242,7 @@ export default {
             this.imageIndex = this.getNextIndex(this.imageIndex);
         },
         handlePrevious() {
-            if (this.loading || this.labelbotIsComputing) {
+            if (this.loading || this.labelbotHasPendingRequests) {
                 return;
             }
 

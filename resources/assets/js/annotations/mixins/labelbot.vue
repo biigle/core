@@ -38,8 +38,11 @@ export default {
         labelbotIsActive() {
             return this.labelbotState === LABELBOT_STATES.INITIALIZING || this.labelbotState === LABELBOT_STATES.READY || this.labelbotState === LABELBOT_STATES.COMPUTING || this.labelbotState === LABELBOT_STATES.BUSY;
         },
-        labelbotIsComputing() {
-            return this.labelbotState === LABELBOT_STATES.COMPUTING;
+        // We use the request counter instead of the COMPUTING state to block navigation,
+        // because the state can change (e.g. LabelBOT is turned off or a 429 is
+        // received) while a request is still pending.
+        labelbotHasPendingRequests() {
+            return this.labelbotRequestsInFlight > 0;
         },
         labelbotOverlayCount() {
             return this.labelbotOverlays.length;
@@ -199,7 +202,9 @@ export default {
                     return saveCallback(annotation);
                 })
                 .then(savedAnnotation => {
-                    if (this.labelbotRequestsInFlight === 1) {
+                    // Don't turn LabelBOT on again if the user turned it off while the
+                    // request was pending.
+                    if (this.labelbotIsActive && this.labelbotRequestsInFlight === 1) {
                         this.updateLabelbotState(LABELBOT_STATES.READY);
                     }
                     if (!savedAnnotation) {
@@ -220,10 +225,14 @@ export default {
                     return savedAnnotation;
                 })
                 .catch((e) => {
-                    if (e.status === 429) {
-                        this.updateLabelbotState(LABELBOT_STATES.BUSY);
-                    } else if (this.labelbotRequestsInFlight === 1) {
-                        this.updateLabelbotState(LABELBOT_STATES.READY);
+                    // Don't turn LabelBOT on again if the user turned it off while the
+                    // request was pending.
+                    if (this.labelbotIsActive) {
+                        if (e.status === 429) {
+                            this.updateLabelbotState(LABELBOT_STATES.BUSY);
+                        } else if (this.labelbotRequestsInFlight === 1) {
+                            this.updateLabelbotState(LABELBOT_STATES.READY);
+                        }
                     }
 
                     throw e;

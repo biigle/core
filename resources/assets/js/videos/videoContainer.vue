@@ -230,7 +230,7 @@ export default {
             return annotation;
         },
         seek(time, force) {
-            if (this.seeking || this.labelbotIsComputing) {
+            if (this.seeking || this.labelbotHasPendingRequests) {
                 return Promise.resolve();
             }
 
@@ -764,7 +764,7 @@ export default {
             }
         },
         showPreviousVideo() {
-            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
+            if (!this.hasSiblingVideos || this.labelbotHasPendingRequests) {
                 return;
             }
 
@@ -777,7 +777,7 @@ export default {
             this.loadVideo(this.videoIds[index]).then(this.updateVideoUrlParams);
         },
         showNextVideo() {
-            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
+            if (!this.hasSiblingVideos || this.labelbotHasPendingRequests) {
                 return;
             }
 
@@ -915,7 +915,7 @@ export default {
             Events.emit('videos.map.init', map);
         },
         togglePlaying() {
-            if (this.labelbotIsComputing) {
+            if (this.labelbotHasPendingRequests) {
                 return;
             }
 
