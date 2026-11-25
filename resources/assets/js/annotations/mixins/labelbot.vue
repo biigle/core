@@ -166,8 +166,9 @@ export default {
             }
 
             this.updateLabelbotState(LABELBOT_STATES.COMPUTING);
-            // Make sure the LabelBOT image, feature, pending video annotation and the remove callback function are not sent in the API request to create the
-            // annotation.
+
+            // Make sure the LabelBOT image, feature, pending video annotation and the
+            // remove callback are not sent in the API request to create the annotation.
             const labelbotImage = annotation.labelbotImage;
             delete annotation.labelbotImage;
 
@@ -186,12 +187,13 @@ export default {
             }
 
             // We save the shape in case LabelBOT returns no results
-            // as the shape property is deleted in the create API function
+            // as the shape property is overwritten in the create API function
             const shape = annotation.shape;
+
+            this.labelbotRequestsInFlight += 1;
 
             return this.generateFeatureVector(labelbotImage)
                 .then((featureVector) => {
-                    this.labelbotRequestsInFlight += 1;
                     annotation.feature_vector = featureVector;
 
                     return saveCallback(annotation);
@@ -226,12 +228,10 @@ export default {
 
                     throw e;
                 })
-                .finally((annotation) => {
+                .finally(() => {
                     if (this.labelbotRequestsInFlight > 0) {
                         this.labelbotRequestsInFlight -= 1;
                     }
-
-                    return annotation;
                 });
         },
         initLabelBot() {
