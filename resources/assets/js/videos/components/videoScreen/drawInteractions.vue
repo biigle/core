@@ -361,7 +361,16 @@ export default {
 
             // Wait for the LabelBOT image before playing the video again.
             if (!this.video.ended && this.autoplayDraw > 0 && this.video.playbackRate > 0) {
-                this.pendingAnnotation.screenshotPromise.then(() => {
+                const pendingAnnotation = this.pendingAnnotation;
+                pendingAnnotation.screenshotPromise.then(() => {
+                    // Don't move away from the frame where a LabelBOT popup will be
+                    // anchored. If the annotation was already finished (e.g. single
+                    // annotation mode), this.pendingAnnotation was replaced and the
+                    // LabelBOT request may not have incremented the request counter yet.
+                    if (this.labelbotHasPendingRequests || (this.labelbotIsActive && this.pendingAnnotation !== pendingAnnotation)) {
+                        return;
+                    }
+
                     this.play();
                     window.clearTimeout(this.autoplayDrawTimeout);
                     const elapsedVideoTime = (this.autoplayDraw / this.video.playbackRate) * 1000;

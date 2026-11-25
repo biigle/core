@@ -367,6 +367,10 @@ export default {
                     .catch(handleErrorResponse);
             }
 
+            // Don't let a running auto-pause timer resume playback while LabelBOT is
+            // computing, because the LabelBOT popup is anchored to the current frame.
+            this.cancelAutoPlay();
+
             try {
                 newAnnotation.labelbotImage = await pendingAnnotation.screenshotPromise;
                 // We need to add the feature and the pending annotation to the new annotation
