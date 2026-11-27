@@ -14,32 +14,41 @@ trait ComputesAnnotationStatistics
      * statistics are fetched with a single query.
      *
      * @param string $type 'image' or 'video'
-     * @param callable $restrict Receives the base query and restricts it to the volumes
-     * of the statistics (e.g. with a where on "{$type}s.volume_id").
+     * @param callable $restrict Receives a query of the files and restricts it to the
+     * files of the statistics (e.g. with a where on "{$type}s.volume_id").
      *
      * @return array
      */
     protected function getAnnotationStatistics(string $type, callable $restrict): array
     {
-        $baseQuery = DB::table("{$type}_annotations")
-            ->join("{$type}_annotation_labels", "{$type}_annotation_labels.annotation_id", '=', "{$type}_annotations.id")
-            ->join("{$type}s", "{$type}s.id", '=', "{$type}_annotations.{$type}_id");
+        $filesQuery = DB::table("{$type}s")->select("{$type}s.id", "{$type}s.volume_id");
 
-        $restrict($baseQuery);
+        $restrict($filesQuery);
 
-        $baseQuery
-            ->select(
-                "{$type}s.id as file_id",
-                "{$type}s.volume_id",
-                "{$type}_annotation_labels.label_id",
-                "{$type}_annotation_labels.user_id",
-            )
-            ->selectRaw("to_char({$type}_annotations.created_at, 'YYYY-MM') as yearmonth");
+        // The annotations are fetched per file with a lateral join. Otherwise the
+        // planner often overestimates the number of annotations per file and scans
+        // all annotations and annotation labels of the database instead of using the
+        // indexes. "OFFSET 0" prevents the planner from flattening the subquery into
+        // such a join again.
+        $baseQuery = "
+            SELECT files.id AS file_id, files.volume_id, a.label_id, a.user_id, a.yearmonth
+            FROM ({$filesQuery->toSql()}) AS files
+            CROSS JOIN LATERAL (
+                SELECT
+                    {$type}_annotation_labels.label_id,
+                    {$type}_annotation_labels.user_id,
+                    to_char({$type}_annotations.created_at, 'YYYY-MM') AS yearmonth
+                FROM {$type}_annotations
+                JOIN {$type}_annotation_labels ON {$type}_annotation_labels.annotation_id = {$type}_annotations.id
+                WHERE {$type}_annotations.{$type}_id = files.id
+                OFFSET 0
+            ) AS a
+        ";
 
         $fullname = "concat(users.firstname, ' ', users.lastname)";
 
-        $statistics = DB::selectOne("
-            WITH base AS MATERIALIZED ({$baseQuery->toSql()}),
+        $sql = "
+            WITH base AS MATERIALIZED ({$baseQuery}),
             file_labels AS MATERIALIZED (SELECT DISTINCT file_id, label_id FROM base)
             SELECT
                 (SELECT count(DISTINCT file_id) FROM file_labels) AS annotated_files,
@@ -69,7 +78,15 @@ trait ComputesAnnotationStatistics
                         GROUP BY a.label_id
                     ) t
                 ) AS source_target_labels
-        ", $baseQuery->getBindings());
+        ";
+
+        // The cost estimate of the query is high enough to trigger JIT compilation, which
+        // takes longer (seconds) than executing the query itself.
+        $statistics = DB::transaction(function () use ($sql, $filesQuery) {
+            DB::statement('SET LOCAL jit = off');
+
+            return DB::selectOne($sql, $filesQuery->getBindings());
+        });
 
         return [
             'annotatedFiles' => $statistics->annotated_files,
