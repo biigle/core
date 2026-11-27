@@ -74,5 +74,5 @@ return [
     | they have the global "guest" role. This feature cannot be enabled in offline
     | mode as it relies on emails.
     */
-    'email_verification' => env('BIIGLE_EMAIL_VERIFICATION', false) && !env('BIIGLE_OFFLINE_MODE', false),
+    'email_verification' => env('BIIGLE_EMAIL_VERIFICATION', true) && !env('BIIGLE_OFFLINE_MODE', false),
 ];
