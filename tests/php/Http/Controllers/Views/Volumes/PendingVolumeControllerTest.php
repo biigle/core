@@ -52,6 +52,43 @@ class PendingVolumeControllerTest extends ApiTestCase
             ->assertSee('https:\/\/example.com\\\\0924S_ABC_1', false);
     }
 
+    public function testShowWithQuotedFilenamesInOldInput()
+    {
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+        ]);
+        $files = "\"1,2.jpg\",\n3.jpg";
+
+        $this->beAdmin();
+        $this
+            ->withSession(['_old_input' => ['files' => $files]])
+            ->get("pending-volumes/{$pv->id}")
+            ->assertOk()
+            // Quotes are required for filenames with commas.
+            ->assertViewHas('filenames', '"1,2.jpg",3.jpg');
+    }
+
+    public function testShowWithFilenamesFromMetadata()
+    {
+        $metadata = new VolumeMetadata;
+        $metadata->addFile(new ImageMetadata('1,2.jpg'));
+        $metadata->addFile(new ImageMetadata('3.jpg'));
+        Cache::store('array')->put('metadata-pending-metadata-mymeta.csv', $metadata);
+
+        $pv = PendingVolume::factory()->create([
+            'user_id' => $this->admin()->id,
+            'project_id' => $this->project()->id,
+            'metadata_file_path' => 'mymeta.csv',
+        ]);
+
+        $this->beAdmin();
+        $this->get("pending-volumes/{$pv->id}")
+            ->assertOk()
+            ->assertViewHas('filenames', '"1,2.jpg",3.jpg')
+            ->assertViewHas('filenamesFromMeta', true);
+    }
+
     public function testShowWithVolumeRedirectToSelectAnnotationLabels()
     {
         $pv = PendingVolume::factory()->create([
