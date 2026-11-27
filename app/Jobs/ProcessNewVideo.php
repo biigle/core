@@ -204,9 +204,58 @@ class ProcessNewVideo extends Job implements ShouldQueue
      */
     protected function getVideoDuration($path)
     {
-        return (float) FFProbe::create()
-            ->format($path)
-            ->get('duration');
+        $ffprobe = FFProbe::create();
+        $format = $ffprobe->format($path);
+        $duration = (float) $format->get('duration');
+
+        // The duration in the header of some videos only covers a part of the video
+        // (e.g. the first of multiple "mdat" blocks) but browsers can play the whole
+        // video. Check the end of the last video packets, too.
+        // See: https://github.com/biigle/core/issues/1060
+        $end = $this->getVideoEndTime($ffprobe, $path, $duration);
+        if (!is_null($end)) {
+            $duration = max($duration, $end - (float) $format->get('start_time'));
+        }
+
+        return $duration;
+    }
+
+    /**
+     * Get the end time of the last packet of the (first) video stream.
+     *
+     * @param FFProbe $ffprobe
+     * @param string $path Video file path.
+     * @param float $from Only packets after this time (in seconds) are read.
+     *
+     * @return float|null End time in seconds or null if it could not be determined.
+     */
+    protected function getVideoEndTime(FFProbe $ffprobe, $path, $from)
+    {
+        try {
+            $output = $ffprobe->getFFProbeDriver()->command([
+                '-v', 'error',
+                '-select_streams', 'v:0',
+                // Seek to shortly before the given time and read all packets from there.
+                '-read_intervals', sprintf('%.6F%%', max(0, $from - 1)),
+                '-show_entries', 'packet=pts_time,dts_time,duration_time',
+                '-of', 'json',
+                $path,
+            ]);
+        } catch (Throwable $e) {
+            return null;
+        }
+
+        $end = null;
+        foreach (json_decode($output, true)['packets'] ?? [] as $packet) {
+            // Some packets don't have a presentation timestamp.
+            $time = $packet['pts_time'] ?? $packet['dts_time'] ?? null;
+            if (is_numeric($time)) {
+                $time += is_numeric($packet['duration_time'] ?? null) ? $packet['duration_time'] : 0;
+                $end = max($end ?? $time, $time);
+            }
+        }
+
+        return $end;
     }
 
     /**
