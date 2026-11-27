@@ -61,6 +61,8 @@ class FilterImageAnnotationsByLabelController extends Controller
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
+        $user = $request->user();
+        $sessions = $project->getActiveAnnotationSessions($user);
 
         return ImageAnnotation::join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
@@ -71,6 +73,7 @@ class FilterImageAnnotationsByLabelController extends Controller
             })
             ->when(!is_null($take), fn ($query) => $query->take($take))
             ->where('image_annotation_labels.label_id', $lid)
+            ->allowedBySessions($sessions, $user)
             ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
             ->select('images.uuid', 'image_annotations.id')
             ->distinct()
