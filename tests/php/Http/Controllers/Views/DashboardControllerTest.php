@@ -2,6 +2,7 @@
 
 namespace Biigle\Tests\Http\Controllers\Views;
 
+use Biigle\Enums\Role;
 use Biigle\Http\Controllers\Views\DashboardController;
 use Biigle\Image;
 use Biigle\Tests\ImageAnnotationLabelTest;
@@ -23,6 +24,111 @@ class DashboardControllerTest extends TestCase
         $this->get('/')->assertRedirect('login');
         $user = UserTest::create();
         $this->actingAs($user)->get('/')->assertSee('Signed in as');
+    }
+
+    public function testDashboardShowsEmailVerificationNotice()
+    {
+        config(['biigle.email_verification' => true]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSee($user->email)
+            ->assertSee(route('settings-account'))
+            ->assertSee(route('verification.resend'));
+    }
+
+    public function testDashboardShowsEmailVerificationNoticeForUnverifiedEditor()
+    {
+        config(['biigle.email_verification' => true]);
+        $user = UserTest::create([
+            'role' => Role::EDITOR,
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSee('Please verify your email address')
+            ->assertSee(route('verification.resend'));
+    }
+
+    public function testRouteAccessDependsOnRoleInsteadOfRegistrationStatus()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+
+        $this->get('settings/profile')->assertRedirect('login');
+
+        foreach ([Role::GUEST, Role::EDITOR, Role::ADMIN] as $role) {
+            $user = UserTest::create([
+                'role' => $role,
+                'email_verified_at' => null,
+                'registration_approved_at' => null,
+            ]);
+
+            $this->actingAs($user)->get('settings/profile')->assertOk();
+            $this->get('admin/users')->assertStatus($role === Role::ADMIN ? 200 : 403);
+        }
+    }
+
+    public function testDashboardShowsAdminConfirmationNoticeAfterVerification()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => now(),
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSee('You will be able to create new projects')
+            ->assertDontSee('Please verify your email address');
+    }
+
+    public function testDashboardHidesAdminConfirmationNoticeAfterApproval()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => null,
+            'registration_approved_at' => now(),
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSee('Please verify your email address')
+            ->assertDontSee('You will be able to create new projects')
+            ->assertSee(route('verification.resend'));
+    }
+
+    public function testDashboardShowsBothRegistrationNoticesInOrder()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        $user = UserTest::create([
+            'role' => Role::GUEST,
+            'email_verified_at' => null,
+        ]);
+
+        $this->actingAs($user)->get('/')
+            ->assertOk()
+            ->assertSeeInOrder([
+                'You will be able to create new projects',
+                'Please verify your email address',
+            ]);
     }
 
     public function testLandingPage()

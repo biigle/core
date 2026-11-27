@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Notification;
 use Ramsey\Uuid\Uuid;
 use Validator;
@@ -70,7 +71,6 @@ class RegisterController extends Controller
         $rules = (new StoreUser)->rules();
         $additionalRules = [
             'website' => 'honeypot',
-            'homepage' => 'honeytime:10|required',
             'affiliation' => ['required', 'string', 'max:255', new Utf8],
         ];
 
@@ -100,7 +100,7 @@ class RegisterController extends Controller
         $user->email = $data['email'];
         $user->password = Hash::make($data['password']);
         $user->uuid = Uuid::uuid4();
-        if ($this->isAdminConfirmationEnabled()) {
+        if ($this->isEmailVerificationEnabled() || $this->isAdminConfirmationEnabled()) {
             $user->role = Role::GUEST;
         } else {
             $user->role = Role::EDITOR;
@@ -142,6 +142,15 @@ class RegisterController extends Controller
             abort(Response::HTTP_NOT_FOUND);
         }
 
+        // Uses the per-IP registration limit defined in RouteServiceProvider.
+        $limit = RateLimiter::limiter('registration')($request);
+        if (RateLimiter::tooManyAttempts($limit->key, $limit->maxAttempts)) {
+            return redirect()->route('register')->withInput()
+                ->with('message', 'Please wait before submitting the form again.')
+                ->with('messageType', 'danger');
+        }
+        RateLimiter::hit($limit->key, $limit->decaySeconds);
+
         return $this->baseRegister($request);
     }
 
@@ -174,7 +183,8 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
-        if ($this->isAdminConfirmationEnabled()) {
+        if ($this->isAdminConfirmationEnabled()
+            && (!$this->isEmailVerificationEnabled() || $user->hasVerifiedEmail())) {
             $notifiable = Notification::route('mail', config('biigle.admin_email'));
             Notification::send($notifiable, new RegistrationConfirmation($user));
         }
@@ -182,5 +192,15 @@ class RegisterController extends Controller
         // Redirect to the intended path in case users came from a project invitation.
         return redirect()->intended($this->redirectPath())
             ->with('welcomeMessage', true);
+    }
+
+    /**
+     * Determines if email verification is enabled.
+     *
+     * @return bool
+     */
+    protected function isEmailVerificationEnabled()
+    {
+        return config('biigle.email_verification') && !config('biigle.offline_mode');
     }
 }

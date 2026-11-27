@@ -21,6 +21,7 @@ class UserFactory extends Factory
             // 'password', hashed with 4 rounds as defined in phpunit.xml
             'password' => '$2y$04$aqV2XBF34eexL9ezbQZs1eM872NWgH5MhvrmD0SC9qUbhmg9EoxJq',
             'email' => $this->faker->unique()->email(),
+            'email_verified_at' => now(),
             'remember_token' => Str::random(10),
             'uuid' => $this->faker->unique()->uuid(),
             'affiliation' => $this->faker->company(),

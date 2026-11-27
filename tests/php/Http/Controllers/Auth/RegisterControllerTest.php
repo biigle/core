@@ -7,11 +7,16 @@ use Biigle\Notifications\RegistrationConfirmation;
 use Biigle\Tests\UserTest;
 use Biigle\User;
 use Honeypot;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\View\View as ViewContract;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\RateLimiter;
 use Mockery;
 use Session;
+use Symfony\Component\Mailer\Exception\TransportException;
 use TestCase;
 use View;
 
@@ -20,7 +25,12 @@ class RegisterControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        config(['biigle.user_registration' => true]);
+        config([
+            'biigle.user_registration' => true,
+            'biigle.email_verification' => false,
+            'biigle.user_registration_confirmation' => false,
+        ]);
+        RateLimiter::for('registration', fn () => Limit::none());
         Honeypot::disable();
     }
 
@@ -51,6 +61,33 @@ class RegisterControllerTest extends TestCase
             ->assertRedirect('register');
     }
 
+    public function testRegisterIsRateLimited()
+    {
+        RateLimiter::for('registration', fn ($request) => Limit::perSecond(1, 10)->by($request->ip()));
+
+        $data = [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ];
+
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
+            ->post('register', $data)
+            ->assertRedirect('/');
+
+        $this->post('logout');
+
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.1'])
+            ->post('register', $data)
+            ->assertRedirect('register')
+            ->assertSessionHas('message', 'Please wait before submitting the form again.')
+            ->assertSessionHas('messageType', 'danger');
+    }
+
     public function testRegisterSuccess()
     {
         $this->post('register', [
@@ -63,12 +100,94 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ])->assertRedirect('/');
 
+        /** @var User $user */
         $user = User::where('email', 'e@ma.il')->first();
         $this->assertNotNull($user);
         $this->assertSame('a', $user->firstname);
         $this->assertSame('b', $user->lastname);
         $this->assertSame('something', $user->affiliation);
         $this->assertSame(Role::EDITOR, $user->role);
+    }
+
+    public function testRegisterWithEmailVerification()
+    {
+        config(['biigle.email_verification' => true]);
+        Notification::fake();
+
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ])->assertRedirect('/');
+
+        /** @var User $user */
+        $user = User::where('email', 'e@ma.il')->first();
+        $this->assertSame(Role::GUEST, $user->role);
+        $this->assertNull($user->email_verified_at);
+        $this->assertCount(1, Notification::sent($user, VerifyEmail::class));
+
+        $user->markEmailAsVerified();
+        event(new Verified($user));
+
+        $this->assertSame(Role::EDITOR, $user->fresh()->role);
+    }
+
+    public function testRegisterWhenVerificationEmailFails()
+    {
+        config(['biigle.email_verification' => true]);
+        Notification::shouldReceive('send')->once()->andThrow(new TransportException('Mail server unavailable'));
+
+        $this->post('register', [
+            '_token' => Session::token(),
+            'email' => 'e@ma.il',
+            'password' => 'password',
+            'firstname' => 'a',
+            'lastname' => 'b',
+            'affiliation' => 'something',
+        ])->assertRedirect('/')
+            ->assertSessionHas('message', 'The verification email could not be sent. Please try again later.')
+            ->assertSessionHas('messageType', 'danger');
+
+        $user = User::where('email', 'e@ma.il')->firstOrFail();
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame(Role::GUEST, $user->role);
+        $this->assertNull($user->email_verified_at);
+    }
+
+    public function testRegisterWithEmailVerificationAndAdminConfirmation()
+    {
+        config([
+            'biigle.email_verification' => true,
+            'biigle.user_registration_confirmation' => true,
+        ]);
+        Notification::fake();
+
+        $this->post('register', [
+            '_token'    => Session::token(),
+            'email'     => 'e@ma.il',
+            'password'  => 'password',
+            'firstname' => 'a',
+            'lastname'  => 'b',
+            'affiliation' => 'something',
+            'homepage' => 'honeypotvalue',
+        ])->assertRedirect('/');
+
+        /** @var User $user */
+        $user = User::where('email', 'e@ma.il')->first();
+        $this->assertCount(1, Notification::sent($user, VerifyEmail::class));
+        Notification::assertNotSentTo(
+            new AnonymousNotifiable,
+            RegistrationConfirmation::class,
+        );
+        $user->markEmailAsVerified();
+        event(new Verified($user));
+
+        $this->assertCount(1, Notification::sent(new AnonymousNotifiable, RegistrationConfirmation::class));
+        $this->assertSame(Role::GUEST, $user->fresh()->role);
     }
 
     public function testRegisterInvalidUtf8()
@@ -104,6 +223,7 @@ class RegisterControllerTest extends TestCase
             'firstname' => 'a',
             'lastname'  => 'b',
             'affiliation' => 'something',
+            'website' => 'spam',
             'homepage' => 'honeypotvalue',
         ])->assertRedirect('register');
 
@@ -122,6 +242,40 @@ class RegisterControllerTest extends TestCase
         ])->assertRedirect('/');
 
         $this->assertTrue(User::where('email', 'e@ma.il')->exists());
+    }
+
+    public function testRegisterImmediatelyWithHoneypotEnabled()
+    {
+        Honeypot::enable();
+        RateLimiter::for('registration', fn ($request) => Limit::perSecond(1, 10)->by($request->ip()));
+
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.2'])
+            ->post('register', [
+                '_token' => Session::token(),
+                'email' => 'immediate@ma.il',
+                'password' => 'password',
+                'firstname' => 'a',
+                'lastname' => 'b',
+                'affiliation' => 'something',
+                'website' => '',
+            ])->assertRedirect('/');
+
+        $this->assertTrue(User::where('email', 'immediate@ma.il')->exists());
+
+        $this->post('logout');
+        $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.2'])
+            ->post('register', [
+                '_token' => Session::token(),
+                'email' => 'second@ma.il',
+                'password' => 'password',
+                'firstname' => 'a',
+                'lastname' => 'b',
+                'affiliation' => 'something',
+                'website' => '',
+            ])
+            ->assertRedirect('register')
+            ->assertSessionHas('message', 'Please wait before submitting the form again.')
+            ->assertSessionHas('messageType', 'danger');
     }
 
     public function testRegisterEmailTaken()
@@ -261,7 +415,7 @@ class RegisterControllerTest extends TestCase
             'homepage' => 'honeypotvalue',
         ]);
 
-        Notification::assertNothingSent();
+        Notification::assertNotSentTo(new AnonymousNotifiable, RegistrationConfirmation::class);
     }
 
     public function testRegisterAdminConfirmationEnabled()

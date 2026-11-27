@@ -479,6 +479,8 @@ class UserControllerTest extends ApiTestCase
     {
         // 'guest-password', hashed with 4 rounds as defined in phpunit.xml
         $this->guest()->password = '$2y$04$j3f9h84KswH3h30Q1CnXZuthgMt569YJdOo2NCWpS4AdLlj3emupO';
+        $this->guest()->role = Role::EDITOR;
+        $this->guest()->email_verified_at = now();
         $this->guest()->save();
         $this->beGuest();
 
@@ -496,7 +498,10 @@ class UserControllerTest extends ApiTestCase
             'auth_password' => 'guest-password',
         ]);
         $response->assertStatus(200);
-        $this->assertSame('test2@test.com', $this->guest()->fresh()->email);
+        $user = $this->guest()->fresh();
+        $this->assertSame('test2@test.com', $user->email);
+        $this->assertNull($user->email_verified_at);
+        $this->assertSame(Role::EDITOR, $user->role);
     }
 
     public function testUpdateOwnAffiliation()
