@@ -37,6 +37,35 @@
                 </div>
             </form>
         </li>
+        @can('sudo')
+        <li class="list-group-item">
+            <h4>Export notifications</h4>
+            <p class="text-muted">
+                Notifications when an export that you requested is ready for download.
+            </p>
+            <form id="export-notification-settings">
+                <div class="form-group">
+                    @if (config('sync.notifications.allow_user_settings'))
+                        <label class="radio-inline">
+                            <input type="radio" v-model="settings" value="email"> <strong>Email</strong>
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" v-model="settings" value="web"> <strong>Web</strong>
+                        </label>
+                        <span v-cloak>
+                            <loader v-if="loading" :active="true"></loader>
+                            <span v-else>
+                                <i v-if="saved" class="fa fa-check text-success"></i>
+                                <i v-if="error" class="fa fa-times text-danger"></i>
+                            </span>
+                        </span>
+                    @else
+                        {{ucfirst(config('sync.notifications.default_settings'))}} <span class="text-muted">(fixed by admin)</span>
+                    @endif
+                </div>
+            </form>
+        </li>
+        @endcan
         @foreach ($modules->getMixins('settings.notifications') as $module => $nestedMixins)
             <li class="list-group-item">
                 @include($module.'::settings.notifications')
@@ -55,5 +84,14 @@
             settingsKey: 'report_notifications',
         },
     });
+    @can('sudo')
+    biigle.$mount('export-notification-settings', {
+        mixins: [biigle.$require('core.mixins.notificationSettings')],
+        data: {
+            settings: '{!! $user->getSettings('export_notifications', config('sync.notifications.default_settings')) !!}',
+            settingsKey: 'export_notifications',
+        },
+    });
+    @endcan
 </script>
 @endpush

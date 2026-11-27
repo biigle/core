@@ -5,6 +5,7 @@ namespace Biigle\Tests\Http\Controllers\Views;
 use Biigle\Enums\ReportType;
 use Biigle\Enums\Role;
 use Biigle\Enums\Visibility;
+use Biigle\ExportFile;
 use Biigle\LabelTree;
 use Biigle\Project;
 use Biigle\Tests\FederatedSearchModelTest;
@@ -525,5 +526,47 @@ class SearchControllerTest extends TestCase
             ->assertStatus(200)
             ->assertSeeText('my volume')
             ->assertDontSeeText('my project');
+    }
+
+    public function testIndexExportsSudoOnly()
+    {
+        $user = UserTest::create();
+        $this->be($user);
+        $this->get('search')->assertDontSee('>Exports <');
+        $this->get('search?t=exports')->assertDontSee('>Exports <');
+
+        $sudo = UserTest::create(['role' => Role::ADMIN]);
+        $this->be($sudo);
+        $this->get('search')->assertSee('>Exports <', false);
+    }
+
+    public function testIndexExports()
+    {
+        $sudo = UserTest::create(['role' => Role::ADMIN]);
+        $this->createExport($sudo, 'Migration Pending');
+        $this->createExport($sudo, 'Migration Ready', now());
+        $this->createExport($sudo, 'Unrelated');
+        $this->createExport(UserTest::create(['role' => Role::ADMIN]), 'Migration Foreign');
+        $this->be($sudo);
+
+        $this->get('search?t=exports&q=migration')
+            ->assertStatus(200)
+            ->assertSeeText('Migration Pending')
+            ->assertSeeText('Migration Ready')
+            ->assertDontSeeText('Unrelated')
+            ->assertDontSeeText('Migration Foreign');
+    }
+
+    private function createExport($user, $description, $readyAt = null): ExportFile
+    {
+        $export = new ExportFile;
+        $export->user()->associate($user);
+        $export->type = 'volumes';
+        $export->description = $description;
+        $export->entity_ids = [];
+        $export->ready_at = $readyAt;
+        $export->save();
+
+        return $export;
     }
 }

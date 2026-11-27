@@ -50,6 +50,10 @@ class UpdateUserSettings extends FormRequest
             $rules['report_notifications'] = 'filled|in:email,web';
         }
 
+        if (config('sync.notifications.allow_user_settings') && $this->user()->can('sudo')) {
+            $rules['export_notifications'] = 'filled|in:email,web';
+        }
+
         return array_merge(static::$additionalRules, $rules);
     }
 
