@@ -139,12 +139,20 @@ export default {
                 links: this.createLinks(),
             }
         },
+        subtext() {
+            let text = 'shows which labels occur together in the same files';
+            if (this.graph.links.length === 0) {
+                text += '\n\nThere are no labels that occur together in the same files.';
+            }
+
+            return text;
+        },
         option() {
             return {
                 backgroundColor: 'transparent',
                 title: {
                     text: 'NetMap Display',
-                    subtext: 'shows which labels occur together in the same files',
+                    subtext: this.subtext,
                     textStyle: {
                         fontSize: 15
                     },
