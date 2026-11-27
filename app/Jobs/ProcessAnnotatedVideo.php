@@ -226,19 +226,16 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                 // -ss <start>: Seek to <start> seconds after video start
                 // -t <window>: Decode a small <window> containing only a few frames
                 // -i <file>: Input file
-                // -vf "select='lte(t,<timestamp>)': Ignore decoded frames with a timestamp <= <timestamp>.
+                // -vf "select='lte(t,<timestamp>)'": Keep only decoded frames with a timestamp <= <timestamp>.
                 // To be consistent with mediabunny in the frontend, which always gives the frame at or
                 // before a given timestamp, we are only interested in the last frame that satisfies
                 // timestamp <= <timestamp>. By default, ffmpeg gives the frame at or after a given timestamp,
                 // so we need this filter
-                // setpts='if(eq(N,0),PTS,max(PTS,PREV_OUTPTS+1))': Retain the first presentation time stamp
-                // (pts) and make sure subsequent pts are strictly increasing. Otherwise the encoder will exit
-                // with an error if it receives two frames with the same pts
-                // -enc_time_base filter: The timestamp of a frame is time base * pts. The filtering may use
-                // a smaller time base for more accuracy, whereas the encoder often uses time base = 1 / FPS.
-                // If a duplicate pts was fixed, we now have 2 values that are close together, and to avoid
-                // rounding problems, -enc_time_base filter tells the encoder to use the same time base as
-                // the filter graph
+                // -enc_time_base filter: The timestamp of a frame is time base * pts. The filter graph uses
+                // the (often very fine) time base of the input stream, whereas the encoder uses 1 / FPS by
+                // default. Variable frame rate videos can have frames closer together than 1 / FPS. Their
+                // timestamps would be rounded to the same pts and the encoder would exit with an error.
+                // This option tells the encoder to use the same time base as the filter graph
                 // -fps_mode passthrough: ffmpeg uses an MJPEG video encoder to encode the selected frames
                 // as JPEGs, and by default, it may drop or duplicate frames to achieve a constant frame rate.
                 // This flag disables that
@@ -247,7 +244,7 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                 // -y: Don't ask when overwriting the last image file
                 $result = Process::timeout(30)
                     ->run(sprintf(
-                        'ffmpeg -copyts -start_at_zero -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\',setpts=\'if(eq(N\\,0)\\,PTS\\,max(PTS\\,PREV_OUTPTS+1))\'" -enc_time_base filter -fps_mode passthrough -update 1 -y %s',
+                        'ffmpeg -copyts -start_at_zero -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\'" -enc_time_base filter -fps_mode passthrough -update 1 -y %s',
                         $seekTime,
                         $decodeDuration,
                         escapeshellarg($sourcePath),
