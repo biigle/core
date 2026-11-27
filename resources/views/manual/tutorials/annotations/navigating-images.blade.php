@@ -75,6 +75,9 @@
         <p>
             Note that the random locations for each image are remembered until you leave the image annotation tool. This means that, if you deactivate and activate random sampling mode, you will get the same random locations for an image. To get a new set of random locations, reload the image annotation tool.
         </p>
+        <p>
+            If a point annotation already exists at the current location (e.g. because you created it before or hit enter twice), you are asked to confirm that you really want to create another one. This applies to regular sampling mode, too.
+        </p>
 
         <h4><a name="regular-sampling"></a>Regular Sampling</h4>
 

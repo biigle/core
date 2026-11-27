@@ -10,6 +10,11 @@ import VectorSource from '@biigle/ol/source/Vector';
 let crosshairLayer;
 let crosshairFeature;
 
+// Point coordinates are rounded to 2 decimals when saved (see
+// ImageAnnotation::setPointsAttribute()), so an existing point can be off by up to 0.005
+// from the (unrounded) sampling location. Use a slightly larger tolerance than that.
+const SAME_LOCATION_TOLERANCE = 0.01;
+
 /**
  * Mixin for the annotationCanvas component that contains logic for random/regular sampling.
  *
@@ -124,8 +129,38 @@ export default {
 
             return true;
         },
+        hasPointAnnotationAt(location) {
+            // New annotations are only temporary features without an ID until they are
+            // saved, and LabelBOT annotations are moved to a separate source meanwhile.
+            // Check both so a quick second "create" is caught, too.
+            return [this.annotationSource, this.labelbotSource].some((source) => {
+                return source.getFeatures().some((feature) => {
+                    const geometry = feature.getGeometry();
+                    if (geometry.getType() !== 'Point') {
+                        return false;
+                    }
+
+                    const coordinates = geometry.getCoordinates();
+
+                    return Math.abs(coordinates[0] - location[0]) <= SAME_LOCATION_TOLERANCE
+                        && Math.abs(coordinates[1] - location[1]) <= SAME_LOCATION_TOLERANCE;
+                });
+            });
+        },
         createSampledAnnotation() {
             let location = this.samplingLocations[this.currentSamplingIndex];
+
+            // Without a selected label, no point is created and the user is asked to
+            // select one. Don't ask for a confirmation in this case.
+            const willCreate = this.hasSelectedLabel || this.labelbotIsActive;
+            if (
+                willCreate
+                && this.hasPointAnnotationAt(location)
+                && !confirm('There already is a point annotation at this sampling location. Do you really want to create another one?')
+            ) {
+                return;
+            }
+
             this.createPointAnnotationAt(location[0], location[1]);
         },
     },
