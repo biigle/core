@@ -102,7 +102,7 @@ export default {
             }
 
             if (!this.triedUrls[prevSpriteUrl]) {
-                this.triedUrls[prevSpriteUrl] = 0
+                this.triedUrls[prevSpriteUrl] = 0;
             }
             let prevImg = new Image();
             this.preloadedSprites[prevSpriteUrl] = prevImg;
@@ -111,7 +111,7 @@ export default {
                 if (prevSpriteUrl in this.triedUrls) {
                     this.triedUrls[prevSpriteUrl]++;
                 }
-            }
+            };
             prevImg.src = prevSpriteUrl;
         },
         preloadNextSprite() {
@@ -124,7 +124,7 @@ export default {
                 return;
             }
             if (!this.triedUrls[nextSpriteUrl]) {
-                this.triedUrls[nextSpriteUrl] = 0
+                this.triedUrls[nextSpriteUrl] = 0;
             }
             let nextImg = new Image();
             this.preloadedSprites[nextSpriteUrl] = nextImg;
@@ -133,11 +133,11 @@ export default {
                 if (nextSpriteUrl in this.triedUrls) {
                     this.triedUrls[nextSpriteUrl]++;
                 }
-            }
+            };
             nextImg.src = nextSpriteUrl;
         },
         removeOldSprites() {
-            let preloadedSprites = {}
+            let preloadedSprites = {};
             for (let i = this.spriteIdx - 1; i < this.spriteIdx + 2; i++) {
                 if (i !== 0 || i !== this.lastSpriteIdx) {
                     let url = this.getSpriteUrl(i);
@@ -154,7 +154,7 @@ export default {
             let spriteUrl = this.getSpriteUrl(this.spriteIdx);
 
             if (!this.triedUrls[spriteUrl]) {
-                this.triedUrls[spriteUrl] = 0
+                this.triedUrls[spriteUrl] = 0;
             }
 
             let preloadedSprite = this.preloadedSprites[spriteUrl];
@@ -241,7 +241,7 @@ export default {
             // If thumbnail is too narrow, enlarge it to 120px so that the hover time fits
             if (this.canvasWidth < this.hoverTimeBarWidth) {
                 let ratio = this.canvasHeight / this.canvasWidth;
-                this.canvasWidth = this.hoverTimeBarWidth
+                this.canvasWidth = this.hoverTimeBarWidth;
                 this.canvasHeight = this.canvasWidth * ratio;
             }
 
@@ -254,7 +254,7 @@ export default {
             if (!sprite) {
                 return false;
             }
-            return sprite.complete && sprite.naturalWidth && sprite.naturalWidth !== 0
+            return sprite.complete && sprite.naturalWidth && sprite.naturalWidth !== 0;
         }
     },
     watch: {
@@ -304,14 +304,14 @@ export default {
                 this.viewThumbnailPreview();
             }
             this.viewHoverTimeBar();
-        }
+        };
         this.sprite.onerror = () => {
             this.spriteNotFound = true;
             if (this.sprite.src in this.triedUrls) {
                 this.triedUrls[this.sprite.src]++;
             }
             this.viewHoverTimeBar();
-        }
+        };
     },
     mounted() {
         this.thumbnailPreview = this.$refs.thumbnailPreview;

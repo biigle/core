@@ -77,14 +77,14 @@ const proxy = {
             this.parent.handleRequiresSelectedLabel();
         },
         showPreviousVideo() {
-            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
+            if (!this.hasSiblingVideos || this.labelbotHasPendingRequests) {
                 return;
             }
             this.reset();
             this.parent.showPreviousVideo();
         },
         showNextVideo() {
-            if (!this.hasSiblingVideos || this.labelbotIsComputing) {
+            if (!this.hasSiblingVideos || this.labelbotHasPendingRequests) {
                 return;
             }
             this.reset();

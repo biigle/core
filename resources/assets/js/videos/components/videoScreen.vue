@@ -13,40 +13,40 @@
             <div v-if="showPrevNext" class="btn-group">
                 <control-button
                     icon="fa-step-backward"
-                    :title="labelbotIsComputing
+                    :title="labelbotHasPendingRequests
                         ? 'Can\'t change video while LabelBOT is computing'
                         : (enableJumpByFrame
                             ? 'Previous video 𝗦𝗵𝗶𝗳𝘁+𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'
                             : 'Previous video 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄')"
-                    :disabled="labelbotIsComputing"
+                    :disabled="labelbotHasPendingRequests"
                     @click="emitPrevious"
                     ></control-button>
                 <control-button
                     icon="fa-step-forward"
-                    :title="labelbotIsComputing
+                    :title="labelbotHasPendingRequests
                         ? 'Can\'t change video while LabelBOT is computing'
                         : (enableJumpByFrame
                             ? 'Next video 𝗦𝗵𝗶𝗳𝘁+𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'
                             : 'Next video 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄')"
-                    :disabled="labelbotIsComputing"
+                    :disabled="labelbotHasPendingRequests"
                     @click="emitNext"
                     ></control-button>
             </div>
             <div class="btn-group">
                 <control-button
                     v-if="jumpStep != 0"
-                    :disabled="seeking || labelbotIsComputing || null"
+                    :disabled="seeking || labelbotHasPendingRequests || null"
                     icon="fa-backward"
-                    :title="labelbotIsComputing
+                    :title="labelbotHasPendingRequests
                         ? 'Can\'t seek while LabelBOT is computing'
                         : jumpBackwardMessage"
                     @click="jumpBackward"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking || labelbotIsComputing || null"
+                    :disabled="seeking || labelbotHasPendingRequests || null"
                     icon="fa-caret-square-left"
-                    :title="labelbotIsComputing
+                    :title="labelbotHasPendingRequests
                         ? 'Can\'t seek while LabelBOT is computing'
                         : 'Previous frame 𝗟𝗲𝗳𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     v-on:click="emitPreviousFrame"
@@ -67,26 +67,26 @@
                 <control-button
                     v-else
                     icon="fa-play"
-                    :title="labelbotIsComputing
+                    :title="labelbotHasPendingRequests
                         ? 'Can\'t play the video while LabelBOT is computing'
                         : 'Play 𝗦𝗽𝗮𝗰𝗲𝗯𝗮𝗿'"
-                    :disabled="hasError || labelbotIsComputing || null"
+                    :disabled="hasError || labelbotHasPendingRequests || null"
                     @click="play"
                     ></control-button>
                 <control-button
                     v-if="enableJumpByFrame"
-                    :disabled="seeking || labelbotIsComputing || null"
+                    :disabled="seeking || labelbotHasPendingRequests || null"
                     icon="fa-caret-square-right"
-                    :title="labelbotIsComputing
+                    :title="labelbotHasPendingRequests
                         ? 'Can\'t seek while LabelBOT is computing'
                         : 'Next frame 𝗥𝗶𝗴𝗵𝘁 𝗮𝗿𝗿𝗼𝘄'"
                     v-on:click="emitNextFrame"
                     ></control-button>
                 <control-button
                     v-if="jumpStep!=0"
-                    :disabled="seeking || labelbotIsComputing || null"
+                    :disabled="seeking || labelbotHasPendingRequests || null"
                     icon="fa-forward"
-                    :title="labelbotIsComputing
+                    :title="labelbotHasPendingRequests
                         ? 'Can\'t seek while LabelBOT is computing'
                         : jumpForwardMessage"
                     @click="jumpForward"
@@ -391,10 +391,11 @@
         </div>
         <labelbot-popup
             v-for="annotation in labelbotOverlays"
-            :key="annotation.id"
+            :key="annotation.id ?? annotation.feature.ol_uid"
             :focused-popup-key="focusedPopupKey"
             :annotation="annotation"
             :timeout="labelbotTimeout"
+            @create-restored-labelbot-annotation="createRestoredLabelbotAnnotation"
             @update="updateLabelbotLabel"
             @close="closeLabelbotPopup"
             @delete="handleDeleteLabelbotAnnotation"
@@ -442,6 +443,8 @@ export default {
         'popout',
         'initMap',
         'cancel-auto-play',
+        'start-playing',
+        'create-restored-labelbot-annotation',
     ],
     mixins: [
         VideoPlayback,

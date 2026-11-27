@@ -80,7 +80,7 @@ class ModifyPolygonBrush extends Modify {
       if (this.draftColor_) {
         this.sketchPoint_.set('color', this.draftColor_);
       }
-      this.overlay_.getSource().addFeature(this.sketchPoint_)
+      this.overlay_.getSource().addFeature(this.sketchPoint_);
     } else {
       const sketchPointGeom = this.sketchPoint_.getGeometry();
       sketchPointGeom.setCenter(coordinates);
@@ -93,7 +93,7 @@ class ModifyPolygonBrush extends Modify {
       this.sketchCircle_ = new Circle(coordinates, this.sketchPoint_.getGeometry().getRadius());
     } else {
       this.sketchCircle_.setCenter(coordinates);
-      this.sketchCircle_.setRadius(this.sketchPoint_.getGeometry().getRadius())
+      this.sketchCircle_.setRadius(this.sketchPoint_.getGeometry().getRadius());
     }
 
     if (event.originalEvent.pointerType === 'pen') {
@@ -260,7 +260,7 @@ function getDefaultStyleFunction() {
 
   return function() {
     return style['Circle'];
-  }
+  };
 }
 
 

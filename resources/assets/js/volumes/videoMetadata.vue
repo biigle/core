@@ -28,7 +28,7 @@ export default {
             // If modal has been opened before, use cached data
             if (this.times.length === 0) {
                 let dateStrings = [];
-                const options = { year: "numeric", month: "numeric", day: "numeric", hour: '2-digit', minute:'2-digit', second:'2-digit'}
+                const options = { year: "numeric", month: "numeric", day: "numeric", hour: '2-digit', minute:'2-digit', second:'2-digit'};
                 values.forEach(element => {
                     dateStrings.push(new Date(element).toLocaleDateString(undefined, options));
                 });

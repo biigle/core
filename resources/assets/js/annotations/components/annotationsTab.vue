@@ -93,7 +93,7 @@ export default {
         },
         annotationBadgeCount() {
             if (this.hasActiveFilter) {
-                return this.annotations.length + "/" + this.totalAnnotationCount
+                return this.annotations.length + "/" + this.totalAnnotationCount;
             } else {
                 return this.totalAnnotationCount;
             }

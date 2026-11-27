@@ -200,7 +200,7 @@ class PolygonBrush extends Draw {
       this.sketchCircle_ = new Circle(coordinates, this.sketchPoint_.getGeometry().getRadius());
     } else {
       this.sketchCircle_.setCenter(coordinates);
-      this.sketchCircle_.setRadius(this.sketchPoint_.getGeometry().getRadius())
+      this.sketchCircle_.setRadius(this.sketchPoint_.getGeometry().getRadius());
     }
 
     if (penOnly(event)) {

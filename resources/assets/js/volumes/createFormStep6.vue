@@ -47,7 +47,7 @@ export default {
         },
     },
     created() {
-        this.startLoading()
+        this.startLoading();
         UserApi.query().then(this.initAllUsers).finally(this.finishLoading);
 
         const userMap = biigle.$require('volumes.userMap');
@@ -61,7 +61,7 @@ export default {
             };
         });
 
-        this.ownUserId = biigle.$require('volumes.ownUserId')
+        this.ownUserId = biigle.$require('volumes.ownUserId');
     },
 };
 </script>

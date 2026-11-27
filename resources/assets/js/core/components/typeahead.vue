@@ -111,7 +111,7 @@ export default {
     },
     computed: {
         itemLimit() {
-            return this.scrollable ? this.maxItemCount : this.limit
+            return this.scrollable ? this.maxItemCount : this.limit;
         },
         showTypeahead() {
             return !this.scrollable || this.scrollable && !this.isTyping;
@@ -159,13 +159,13 @@ export default {
                     this.$emit('fetch', v);
                 }
                 this.isTyping = false;
-                this.oldInput = v
+                this.oldInput = v;
             }, 500, 'typeahead-fetch');
         },
         disabled() {
             // Use disabled and nextTick to show dropdown right after loading finished
             if (!this.disabled) {
-                this.$nextTick(() => this.$refs.input.focus())
+                this.$nextTick(() => this.$refs.input.focus());
             }
         },
     },

@@ -304,7 +304,7 @@ export default {
             });
         },
         initializeSelectedFilesAfterError(directory, path) {
-            let files = this.filenames.split(',').map(f => f.trim())
+            let files = this.filenames.split(',').map(f => f.trim());
             if (files.length === directory.files.length) {
                 this.selectDirectory(directory, path);
             } else {
@@ -333,7 +333,7 @@ export default {
         selectFile(file, directory, path, event) {
             let selectedFiles = directory.files.filter(f => f.selected);
             if (event?.ctrlKey && selectedFiles.length > 0) {
-                selectedFiles.push(file)
+                selectedFiles.push(file);
                 if (selectedFiles.length === directory.files.length) {
                     this.selectDirectory(directory, path);
                 } else {

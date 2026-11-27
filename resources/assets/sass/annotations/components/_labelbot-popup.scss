@@ -28,6 +28,11 @@
     border-radius: 50%;
 }
 
+.labelbot-popup__message {
+    padding: $padding-small-vertical;
+    color: $text-muted;
+}
+
 .labelbot-label {
     position: relative;
     margin-bottom: 4px;

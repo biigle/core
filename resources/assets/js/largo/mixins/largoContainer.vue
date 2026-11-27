@@ -198,7 +198,7 @@ export default {
                 index[t.id] = { index: i, labels: {} };
                 t.labels.forEach((l, j) => {
                     index[t.id].labels[l.id] = j;
-                })
+                });
             });
             return index;
         },
@@ -206,7 +206,7 @@ export default {
             return this.annotations.includes(this.pinnedImage);
         },
         hasActiveFilters() {
-            return this.activeFilters.length > 0
+            return this.activeFilters.length > 0;
         }
     },
     methods: {
@@ -220,7 +220,7 @@ export default {
                     }
                     parameters[filter.filter].push(filter.value);
                 }
-            )
+            );
             parameters['union'] = union ? 1 : 0;
             return parameters;
         },
@@ -241,7 +241,7 @@ export default {
                         (response) => this.gotAnnotations(label, response),
                         handleErrorResponse
                     )
-                    .then(a => this.annotationsCache[label.id] = a)
+                    .then(a => this.annotationsCache[label.id] = a);
             } else {
                 promise1 = Promise.resolve();
             }
@@ -291,7 +291,7 @@ export default {
             // Show the newest annotations (with highest ID) first.
             annotations = annotations.sort((a, b) => b.id - a.id);
 
-            return annotations
+            return annotations;
         },
         removeFilter(key) {
             this.activeFilters.splice(key, 1);

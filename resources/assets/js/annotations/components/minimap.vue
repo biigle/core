@@ -143,7 +143,7 @@ export default {
                 // Create a new tile source instead of sharing it because otherwise the
                 // minimap would flicker on zoom/pan sometimes.
                 if (this.currentLayer instanceof TileLayer) {
-                    let image = this.$parent.image
+                    let image = this.$parent.image;
                     source = new ZoomifySource({
                         url: image.url,
                         size: [image.width, image.height],
