@@ -972,7 +972,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         Log::shouldReceive('error')
             ->once()
             ->withArgs(fn ($message, $context) => $message === 'Unexpected error while extracting a video frame.'
-                && $context['source_path'] === 'abc'
+                && $context['annotation_id'] === $annotation->id
                 && $context['time'] === 1);
 
         $video->shouldReceive('crop')->never();
