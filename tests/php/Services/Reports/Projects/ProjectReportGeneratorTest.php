@@ -57,7 +57,7 @@ class ProjectReportGeneratorTest extends TestCase
         $mock = Mockery::mock();
         $mock->shouldReceive('open')->once()->andReturn(true);
         $mock->shouldReceive('addFile')->once()
-            ->with('my_tmp_file_path', '123_my_download_filename.pdf');
+            ->with('my_tmp_file_path', "{$project->id}_my_project_report/123_my_download_filename.pdf");
         $mock->shouldReceive('close')->once();
 
         App::bind(ZipArchive::class, fn () => $mock);
@@ -68,6 +68,8 @@ class ProjectReportGeneratorTest extends TestCase
 
 class ProjectReportStub extends ProjectReportGenerator
 {
+    public $filename = 'my_project_report';
+
     public $mock;
 
     protected function getReportGenerator()
