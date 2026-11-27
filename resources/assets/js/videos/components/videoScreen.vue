@@ -295,7 +295,7 @@
                     :hover="false"
                     :open="isDrawingWholeFrame"
                     :active="isDrawingWholeFrame"
-                    :disabled="hasError || null"
+                    :disabled="hasError || this.labelbotIsActive || null"
                     @click="drawWholeFrame"
                     v-slot="{onActive}"
                     >
