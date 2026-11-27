@@ -13,6 +13,7 @@ import Style from '@biigle/ol/style/Style';
 import VectorLayer from '@biigle/ol/layer/Vector';
 import VectorSource from '@biigle/ol/source/Vector';
 import {handleErrorResponse} from '@/core/messages/store.js';
+import {confirm} from '@/core/messageBox.js';
 import {never as neverCondition} from '@biigle/ol/events/condition';
 
 /**
@@ -134,8 +135,8 @@ export default {
                 this.modifyInteraction.setActive(false);
             }
         },
-        deleteArea() {
-            if (this.hasExportArea && confirm('Do you really want to delete the export area?')) {
+        async deleteArea() {
+            if (this.hasExportArea && await confirm('Do you really want to delete the export area?', {okText: 'Delete', okType: 'danger'})) {
                 let source = this.layer.getSource();
                 let feature = source.getFeatures()[0];
                 source.clear();

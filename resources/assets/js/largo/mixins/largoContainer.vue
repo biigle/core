@@ -18,6 +18,7 @@ import {computed} from 'vue';
 import {handleErrorResponse} from '@/core/messages/store.js';
 import {IMAGE_ANNOTATION, VIDEO_ANNOTATION} from '../constants.js';
 import {SORT_DIRECTION, SORT_KEY} from '../components/sortingTab.vue';
+import {prompt} from '@/core/messageBox.js';
 
 /**
  * Mixin for largo view models
@@ -389,18 +390,20 @@ export default {
                 }
             }
         },
-        save() {
+        async save() {
             if (this.loading) {
                 return;
             }
 
             if (this.toDeleteCount > 0) {
-                let response;
-                while (response !== null && parseInt(response, 10) !== this.toDeleteCount) {
-                    response = prompt(`This might delete ${this.toDeleteCount} annotation(s). Please enter the number to continue.`);
-                }
+                const count = this.toDeleteCount;
+                const response = await prompt(`This might delete ${count} annotation(s). Please enter the number to continue.`, {
+                    okText: 'Save',
+                    okType: 'danger',
+                    validator: (value) => parseInt(value, 10) === count ? null : `Please enter ${count} to continue.`,
+                });
 
-                if (response === null) {
+                if (response === null || this.loading) {
                     return;
                 }
             }

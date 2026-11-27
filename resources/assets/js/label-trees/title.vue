@@ -4,6 +4,7 @@ import EditorMixin from '@/core/mixins/editor.vue';
 import LabelTreesApi from '@/core/api/labelTree.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Messages from '@/core/messages/store.js';
+import {confirm} from '@/core/messageBox.js';
 import {handleErrorResponse} from '@/core/messages/store.js';
 
 /**
@@ -49,8 +50,8 @@ export default {
             this.description = this.labelTree.description;
             this.visibility = this.labelTree.visibility;
         },
-        leaveTree() {
-            let confirmed = confirm(`Do you really want to revoke your membership of label tree '${this.labelTree.name}'?`);
+        async leaveTree() {
+            let confirmed = await confirm(`Do you really want to revoke your membership of label tree '${this.labelTree.name}'?`, {okText: 'Leave', okType: 'danger'});
 
             if (confirmed) {
                 this.startLoading();
@@ -70,8 +71,8 @@ export default {
                 location.reload();
             }
         },
-        deleteTree() {
-            let confirmed = confirm(`Do you really want to delete the label tree '${this.labelTree.name}'?`);
+        async deleteTree() {
+            let confirmed = await confirm(`Do you really want to delete the label tree '${this.labelTree.name}'?`, {okText: 'Delete', okType: 'danger'});
 
             if (confirmed) {
                 this.startLoading();
