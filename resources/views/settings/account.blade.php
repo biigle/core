@@ -57,7 +57,7 @@
 
             @if ($saved && $origin === 'email')
                 <div class="alert alert-success" role="alert">
-                    Your email was successfully updated.
+                    Your email was successfully updated. Please go back to your <a href="{{ route('home') }}">dashboard</a> to request a new verification email.
                 </div>
             @endif
 

@@ -41,7 +41,7 @@ class DashboardControllerTest extends TestCase
             ->assertSee(route('verification.resend'));
     }
 
-    public function testDashboardAllowsLegacyUnverifiedEditor()
+    public function testDashboardShowsEmailVerificationNoticeForUnverifiedEditor()
     {
         config(['biigle.email_verification' => true]);
         $user = UserTest::create([
@@ -51,7 +51,8 @@ class DashboardControllerTest extends TestCase
 
         $this->actingAs($user)->get('/')
             ->assertOk()
-            ->assertDontSee('Please verify your email address');
+            ->assertSee('Please verify your email address')
+            ->assertSee(route('verification.resend'));
     }
 
     public function testRouteAccessDependsOnRoleInsteadOfRegistrationStatus()

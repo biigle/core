@@ -38,6 +38,18 @@ class SettingsControllerTest extends TestCase
         }
     }
 
+    public function testAccountSettingsInstructsUserToRequestVerificationAfterEmailChange()
+    {
+        $this->be(UserTest::create());
+        $this->withSession(['saved' => true, 'origin' => 'email']);
+
+        $this->get('settings/account')
+            ->assertOk()
+            ->assertSee('Your email was successfully updated.')
+            ->assertSee('go back to your')
+            ->assertSee(route('home'));
+    }
+
     public function testTokensGlobalGuest()
     {
         $this->be(UserTest::create(['role' => Role::GUEST]));

@@ -30,11 +30,11 @@
             </div>
         </div>
     @endif
-    @if (config('biigle.email_verification') && !config('biigle.offline_mode') && $user->role === \Biigle\Enums\Role::GUEST && is_null($user->email_verified_at))
+    @if (config('biigle.email_verification') && !config('biigle.offline_mode') && is_null($user->email_verified_at))
         <div class="row">
             <div class="col-xs-12">
                 <p class="text-info text-center">
-                    Please verify your email address to unlock all features. Check your inbox and spam folder for a verification email sent to <strong>{{ $user->email }}</strong>, or <a href="{{ route('settings-account') }}">change your email address</a>.
+                    Please verify your email address@if ($user->role === \Biigle\Enums\Role::GUEST) to unlock all features@endif. Check your inbox and spam folder for a verification email sent to <strong>{{ $user->email }}</strong>, or <a href="{{ route('settings-account') }}">change your email address</a>.
                 </p>
                 <form method="POST" action="{{ route('verification.resend') }}" class="text-center">
                     @csrf
