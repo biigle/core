@@ -6,6 +6,7 @@ use Biigle\Annotation;
 use Biigle\Enums\Shape;
 use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabelFeatureVector;
+use Biigle\Traits\ChunksInserts;
 use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabelFeatureVector;
 use Illuminate\Queue\InteractsWithQueue;
@@ -17,7 +18,7 @@ use League\Flysystem\UnableToReadFile;
 
 class InitializeFeatureVectorChunk extends GenerateFeatureVectors
 {
-    use InteractsWithQueue;
+    use InteractsWithQueue, ChunksInserts;
 
     public function __construct(
         public array $imageAnnotationIds,
@@ -39,10 +40,9 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
             ->get()
             ->keyBy('id');
 
-        // Chunk to avoid maximum insert parameter limit.
-        $this->getInsertData($models)->chunk(10000)->each(
-            fn ($chunk) =>
-            ImageAnnotationLabelFeatureVector::insert($chunk->toArray())
+        $this->insertInChunks(
+            ImageAnnotationLabelFeatureVector::class,
+            $this->getInsertData($models)->all()
         );
 
         $skipIds = VideoAnnotationLabelFeatureVector::whereIn('annotation_id', $this->videoAnnotationIds)
@@ -56,10 +56,9 @@ class InitializeFeatureVectorChunk extends GenerateFeatureVectors
             ->get()
             ->keyBy('id');
 
-        // Chunk to avoid maximum insert parameter limit.
-        $this->getInsertData($models)->chunk(10000)->each(
-            fn ($chunk) =>
-            VideoAnnotationLabelFeatureVector::insert($chunk->toArray())
+        $this->insertInChunks(
+            VideoAnnotationLabelFeatureVector::class,
+            $this->getInsertData($models)->all()
         );
     }
 

@@ -3,10 +3,13 @@
 namespace Biigle\Jobs;
 
 use Biigle\Image;
+use Biigle\ImageAnnotation;
 use Biigle\ImageAnnotationLabel;
 use Biigle\ImageLabel;
 use Biigle\PendingVolume;
 use Biigle\Services\MetadataParsing\FileMetadata;
+use Biigle\Traits\ChunksInserts;
+use Biigle\VideoAnnotation;
 use Biigle\VideoAnnotationLabel;
 use Biigle\VideoLabel;
 use Biigle\VolumeFile;
@@ -19,10 +22,11 @@ use Illuminate\Support\Facades\DB;
 #[DeleteWhenMissingModels]
 class ImportVolumeMetadata extends Job implements ShouldQueue
 {
-    use SerializesModels, InteractsWithQueue;
+    use SerializesModels, InteractsWithQueue, ChunksInserts;
 
     /**
-     * The number of annotation (label) rows to insert in one chunk.
+     * The number of annotations to collect before they are inserted (in chunks that stay
+     * below the database parameter limit).
      *
      * @var integer
      */
@@ -138,7 +142,11 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
         array $annotations,
         array $annotationLabels
     ): void {
-        $file->annotations()->insert($annotations);
+        if ($file instanceof Image) {
+            $this->insertInChunks(ImageAnnotation::class, $annotations);
+        } else {
+            $this->insertInChunks(VideoAnnotation::class, $annotations);
+        }
 
         $ids = $file->annotations()
             ->orderBy('id', 'desc')
@@ -163,13 +171,13 @@ class ImportVolumeMetadata extends Job implements ShouldQueue
                 $i['confidence'] = 1.0;
             }
 
-            ImageAnnotationLabel::insert($annotationLabels);
+            $this->insertInChunks(ImageAnnotationLabel::class, $annotationLabels);
             // afterCommit is important because all new annotations are inserted in
             // one big transaction. They can be processed only after the transaction
             // was committed.
             ProcessAnnotatedImage::dispatch($file, only: $ids)->afterCommit();
         } else {
-            VideoAnnotationLabel::insert($annotationLabels);
+            $this->insertInChunks(VideoAnnotationLabel::class, $annotationLabels);
             // afterCommit is important because all new annotations are inserted in
             // one big transaction. They can be processed only after the transaction
             // was committed.
