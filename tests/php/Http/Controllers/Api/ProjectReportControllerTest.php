@@ -130,6 +130,7 @@ class ProjectReportControllerTest extends ApiTestCase
             ReportType::IMAGE_ANNOTATIONS_CSV->value,
             ReportType::IMAGE_ANNOTATIONS_EXTENDED->value,
             ReportType::IMAGE_ANNOTATIONS_COCO->value,
+            ReportType::IMAGE_ANNOTATIONS_YOLO->value,
             ReportType::IMAGE_ANNOTATIONS_FULL->value,
             ReportType::IMAGE_ANNOTATIONS_ABUNDANCE->value,
             ReportType::IMAGE_ANNOTATIONS_IMAGE_LOCATION->value,

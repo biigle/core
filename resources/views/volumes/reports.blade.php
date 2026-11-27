@@ -159,6 +159,7 @@
                     </div>
                 </div>
                 @include('partials.restrictLabels')
+                @include('partials.yoloReportOptions', ['help' => 'Directory that contains the images of this volume on your computer.'])
                 <div v-cloak v-if="wantsCombination('ImageAnnotations', 'Abundance')" class="form-group" :class="{'has-error': errors.all_labels}">
                     <div class="checkbox">
                         <label :class="{'text-muted': disableAllLabelsOption}">
@@ -185,7 +186,7 @@
                 </div>
                 <div class="form-group">
                     <a href="{{route('volume', $volume->id)}}" title="Back to {{$volume->name}}" class="btn btn-default">back</a>
-                    <button class="btn btn-success pull-right" type="submit" :disabled="loading || null">Request this report</button>
+                    <button class="btn btn-success pull-right" type="submit" :disabled="loading || !hasValidYoloSplit || null">Request this report</button>
                 </div>
             </form>
             <p class="text-muted">
