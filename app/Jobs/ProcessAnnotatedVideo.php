@@ -121,9 +121,9 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                     $videoFrame = $this->getVideoFrame($sourcePath, $frame, $window);
                 } catch (\Throwable $e) {
                     Log::error('Unexpected error while extracting a video frame.', [
-                        'exception' => $e,
-                        'source_path' => $sourcePath,
+                        'annotation_id' => $a->id,
                         'time' => $frame,
+                        'exception' => $e,
                     ]);
                     continue;
                 }
@@ -218,9 +218,33 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
             File::move($tmpFile, $outputPath);
 
             try {
+                // Command explanation:
+                // -copyts -start_at_zero: This makes sure that if the timestamp of the first frame is not zero,
+                // the decoded frames have timestamps relative to the start of the video.
+                // Example: If start timestamp is -5s, and we seek to 10s after start, then frames would have
+                // timestamps starting at 5s. But we want them to start at 10s
+                // -ss <start>: Seek to <start> seconds after video start
+                // -t <window>: Decode a small <window> containing only a few frames
+                // -i <file>: Input file
+                // -vf "select='lte(t,<timestamp>)'": Keep only decoded frames with a timestamp <= <timestamp>.
+                // To be consistent with mediabunny in the frontend, which always gives the frame at or
+                // before a given timestamp, we are only interested in the last frame that satisfies
+                // timestamp <= <timestamp>. By default, ffmpeg gives the frame at or after a given timestamp,
+                // so we need this filter
+                // -enc_time_base filter: The timestamp of a frame is time base * pts. The filter graph uses
+                // the (often very fine) time base of the input stream, whereas the encoder uses 1 / FPS by
+                // default. Variable frame rate videos can have frames closer together than 1 / FPS. Their
+                // timestamps would be rounded to the same pts and the encoder would exit with an error.
+                // This option tells the encoder to use the same time base as the filter graph
+                // -fps_mode passthrough: ffmpeg uses an MJPEG video encoder to encode the selected frames
+                // as JPEGs, and by default, it may drop or duplicate frames to achieve a constant frame rate.
+                // This flag disables that
+                // -update 1: Option for ffmpeg's image2 output muxer. Tells the muxer to treat the output
+                // filename as a single file and overwrite for each frame (we only care about the last anyways)
+                // -y: Don't ask when overwriting the last image file
                 $result = Process::timeout(30)
                     ->run(sprintf(
-                        'ffmpeg -copyts -start_at_zero -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\'" -fps_mode passthrough -update 1 -y %s',
+                        'ffmpeg -copyts -start_at_zero -ss %s -t %s -i %s -vf "select=\'lte(t\\,%s)\'" -enc_time_base filter -fps_mode passthrough -update 1 -y %s',
                         $seekTime,
                         $decodeDuration,
                         escapeshellarg($sourcePath),

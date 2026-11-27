@@ -14,6 +14,7 @@ use Biigle\VideoAnnotationLabelFeatureVector;
 use Bus;
 use Exception;
 use FileCache;
+use Illuminate\Support\Facades\Process;
 use Log;
 use Mockery;
 use Storage;
@@ -971,7 +972,7 @@ class ProcessAnnotatedVideoTest extends TestCase
         Log::shouldReceive('error')
             ->once()
             ->withArgs(fn ($message, $context) => $message === 'Unexpected error while extracting a video frame.'
-                && $context['source_path'] === 'abc'
+                && $context['annotation_id'] === $annotation->id
                 && $context['time'] === 1);
 
         $video->shouldReceive('crop')->never();
@@ -1018,6 +1019,19 @@ class ProcessAnnotatedVideoTest extends TestCase
 
         $job->fps = 1;
         $this->assertSame(3.0, $job->calculateSeekWindowForTest('video.mp4'));
+    }
+
+    public function testGetVideoFrameUsesFilterTimeBase()
+    {
+        Process::fake();
+        $job = new ProcessAnnotatedVideoFrameExtractionStub(new VideoModel);
+
+        $job->getVideoFrameForTest('video.mp4', 237.2105, 0.05, 1);
+
+        Process::assertRan(fn ($process) => str_contains(
+            $process->command,
+            "select='lte(t\\,237.210500)'\" -enc_time_base filter"
+        ));
     }
 
     protected function getFrameMock($times = 1)
@@ -1103,6 +1117,19 @@ class ProcessAnnotatedVideoParseStub extends ProcessAnnotatedVideo
     public function parseVideoFpsForTest(mixed $rate): float
     {
         return $this->parseVideoFps($rate);
+    }
+}
+
+class ProcessAnnotatedVideoFrameExtractionStub extends ProcessAnnotatedVideo
+{
+    public function getVideoFps(string $path): float
+    {
+        return 30.0;
+    }
+
+    public function getVideoFrameForTest(string $sourcePath, float $time, float $window, ?int $trySeek = null)
+    {
+        return $this->getVideoFrame($sourcePath, $time, $window, $trySeek);
     }
 }
 
