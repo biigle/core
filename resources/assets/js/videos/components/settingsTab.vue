@@ -56,6 +56,7 @@ export default {
                 'showMousePosition',
                 'showProgressIndicator',
                 'showThumbnailPreview',
+                'showMaxN',
                 'enableJumpByFrame',
                 'jumpStep',
                 'muteVideo',
@@ -73,6 +74,7 @@ export default {
             jumpStep: 5.0,
             showProgressIndicator: true,
             showThumbnailPreview: true,
+            showMaxN: true,
             enableJumpByFrame: false,
             muteVideo: true,
             singleAnnotation: false,
@@ -130,6 +132,12 @@ export default {
         },
         handleHideThumbnailPreview() {
             this.showThumbnailPreview = false;
+        },
+        handleShowMaxN() {
+            this.showMaxN = true;
+        },
+        handleHideMaxN() {
+            this.showMaxN = false;
         },
         handleEnableJumpByFrame() {
             this.enableJumpByFrame = true;
@@ -216,6 +224,10 @@ export default {
         showThumbnailPreview(show) {
             this.$emit('update', 'showThumbnailPreview', show);
             Settings.set('showThumbnailPreview', show);
+        },
+        showMaxN(show) {
+            this.$emit('update', 'showMaxN', show);
+            Settings.set('showMaxN', show);
         },
         enableJumpByFrame(show) {
             this.$emit('update', 'enableJumpByFrame', show);
