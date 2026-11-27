@@ -121,9 +121,9 @@ class ProcessAnnotatedVideo extends ProcessAnnotatedFile
                     $videoFrame = $this->getVideoFrame($sourcePath, $frame, $window);
                 } catch (\Throwable $e) {
                     Log::error('Unexpected error while extracting a video frame.', [
-                        'exception' => $e,
-                        'source_path' => $sourcePath,
+                        'annotation' => $a,
                         'time' => $frame,
+                        'exception' => $e,
                     ]);
                     continue;
                 }
