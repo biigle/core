@@ -252,6 +252,25 @@ class ControllerTest extends TestCase
         ]);
 
         $this->get($expiredUrl)
-            ->assertForbidden();
+            ->assertRedirect(route('home'))
+            ->assertSessionHas('message', 'The verification link is invalid or has expired. Please request a new verification email from your dashboard.')
+            ->assertSessionHas('messageType', 'danger');
+
+        $invalidUrl = URL::temporarySignedRoute('verification.verify', now()->addHour(), [
+            'id' => $user->id,
+            'hash' => sha1($user->email),
+        ]);
+        $invalidUrl = str_replace('signature=', 'signature=invalid', $invalidUrl);
+
+        $this->get($invalidUrl)
+            ->assertRedirect(route('home'))
+            ->assertSessionHas('message', 'The verification link is invalid or has expired. Please request a new verification email from your dashboard.')
+            ->assertSessionHas('messageType', 'danger');
+
+        $invalidIdUrl = str_replace("/{$user->id}/", '/'.($user->id + 1).'/', $url);
+        $this->get($invalidIdUrl)
+            ->assertRedirect(route('home'))
+            ->assertSessionHas('message', 'The verification link is invalid or has expired. Please request a new verification email from your dashboard.')
+            ->assertSessionHas('messageType', 'danger');
     }
 }

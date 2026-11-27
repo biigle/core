@@ -3,37 +3,47 @@
 namespace Biigle\Http\Controllers\Auth;
 
 use Biigle\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 /**
- * Adds application-specific messages and resend limits to email verification.
- *
- * Laravel's EmailVerificationRequest handles link authorization and fulfillment;
- * this controller customizes the responses and rate-limits resend requests.
+ * Validates email-verification links, customizes responses, and rate-limits resends.
  */
 class VerificationController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify');
     }
 
-    public function verify(EmailVerificationRequest $request)
+    public function verify(Request $request)
     {
         if (config('biigle.offline_mode')) {
             abort(404);
         }
 
-        if ($request->user()->hasVerifiedEmail()) {
+        $user = $request->user();
+        if (!$request->hasValidSignature()) {
+            return $this->invalidVerificationLinkResponse();
+        }
+
+        if ((string) $request->route('id') !== (string) $user->getKey()) {
+            abort(403);
+        }
+
+        if (!hash_equals(sha1($user->getEmailForVerification()), (string) $request->route('hash'))) {
+            return $this->invalidVerificationLinkResponse();
+        }
+
+        if ($user->hasVerifiedEmail()) {
             return $this->verificationResponse('Your email address has already been verified.', 'info');
         }
 
-        $request->fulfill();
+        $user->markEmailAsVerified();
+        event(new Verified($user));
 
         return $this->verificationResponse('Your email address has been verified.', 'success');
     }
@@ -65,6 +75,14 @@ class VerificationController extends Controller
         }
 
         return $this->verificationResponse('A fresh verification link has been sent to your email address.', 'info');
+    }
+
+    protected function invalidVerificationLinkResponse()
+    {
+        return $this->verificationResponse(
+            'The verification link is invalid or has expired. Please request a new verification email from your dashboard.',
+            'danger'
+        );
     }
 
     protected function verificationResponse(string $message, string $messageType)
