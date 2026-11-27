@@ -31,6 +31,24 @@
         padding-bottom: $padding-large-vertical;
     }
 
+    .largo-tab__guideline-selector {
+        margin-bottom: $padding-large-vertical;
+    }
+
+    // Stays visible below the scrolling label trees.
+    .largo-tab__label-indicator {
+        flex-shrink: 0;
+        padding: 1em 0 0 0;
+        border: none;
+        border-top: 1px solid #353535;
+        border-radius: 0;
+        background-color: transparent;
+
+        .label-indicator__guideline {
+            max-width: none;
+        }
+    }
+
     .largo-tab__label-trees {
         flex: 1;
         overflow: auto;

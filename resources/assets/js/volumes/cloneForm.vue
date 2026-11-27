@@ -1,4 +1,5 @@
 <script>
+import AnnotationGuidelineApi from '@/projects/api/annotationGuideline.js';
 import LoaderMixin from '@/core/mixins/loader.vue';
 import Typeahead from '@/core/components/typeahead.vue';
 import FileItem from './components/filePanelItem.vue';
@@ -42,6 +43,7 @@ export default {
             showTestQueryBtn: false,
             cloneBtnTitle: "",
             disableCloneBtn: false,
+            selectedProjectHasEnforcedGuideline: false,
         };
     },
     computed: {
@@ -84,10 +86,34 @@ export default {
         selectedProjectName() {
             return this.destinationProjects.find(p => p.id === this.selectedProjectId)?.name || '';
         },
+        showEnforcedGuidelineNotice() {
+            return (this.cloneAnnotations || this.cloneFileLabels)
+                && this.selectedProjectHasEnforcedGuideline;
+        },
     },
     methods: {
         setProject(project) {
             this.selectedProjectId = project.id;
+        },
+        checkEnforcedGuideline(projectId) {
+            this.selectedProjectHasEnforcedGuideline = false;
+            if (!projectId) {
+                return;
+            }
+
+            // Cloning is exempt from annotation guidelines but users are notified.
+            AnnotationGuidelineApi.get({id: projectId})
+                .then((response) => {
+                    // Ignore the response if another project was selected meanwhile.
+                    if (this.selectedProjectId === projectId) {
+                        this.selectedProjectHasEnforcedGuideline = response.body.enforced;
+                    }
+                }, (response) => {
+                    // The project has no guideline.
+                    if (response.status !== 404) {
+                        handleErrorResponse(response);
+                    }
+                });
         },
         async loadFilesMatchingPattern() {
             if (this.filePattern.length === 0) {
@@ -174,6 +200,11 @@ export default {
         },
     },
     watch: {
+        // Also covers the project that is preselected with the URL parameter in
+        // created().
+        selectedProjectId(id) {
+            this.checkEnforcedGuideline(id);
+        },
         cloneAnnotations(newState) {
             if (!newState) {
                 this.filterAnnotations = false;

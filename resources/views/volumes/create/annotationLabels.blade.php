@@ -16,6 +16,7 @@
         <p class="text-muted">
             If you wish to import only annotations with certain labels from the metadata file, you can choose these labels here. By default, all labels are selected. With <kbd>Alt</kbd>+click you can select and deselect all labels.
         </p>
+        @include('volumes.create.enforcedGuidelineNotice')
         <form role="form" method="POST" action="{{ url("api/v1/pending-volumes/{$pv->id}/annotation-labels") }}" v-on:submit="startLoading">
 
         <div class="well well-sm">

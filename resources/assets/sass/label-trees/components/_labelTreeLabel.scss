@@ -69,6 +69,14 @@
                 display: inline-block;
             }
         }
+
+        &.label-tree-label__name--disallowed:hover {
+            cursor: not-allowed;
+        }
+    }
+
+    .label-tree-label__text--disallowed {
+        cursor: not-allowed;
     }
 
     .form-control.label-tree-label__name-input, .form-control.label-tree-color-input {

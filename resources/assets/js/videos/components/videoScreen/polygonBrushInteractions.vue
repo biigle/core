@@ -44,6 +44,10 @@ export default {
             if (this.isUsingPolygonBrush) {
                 this.resetInteractionMode();
                 this.currentInteraction = null;
+            // The button is disabled if polygons are not allowed but the keyboard
+            // shortcut still calls this method.
+            } else if (!this.isShapeAllowed('Polygon')) {
+                return;
             } else if (!this.hasSelectedLabel && !this.labelbotIsActive) {
                 this.requireSelectedLabel();
             } else if (this.canAdd) {

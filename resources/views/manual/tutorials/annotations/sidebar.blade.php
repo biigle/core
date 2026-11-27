@@ -36,6 +36,10 @@
             If there already are some annotations with the selected label in the same volume, example annotation patches will be displayed at the bottom of this tab. Use these patches as a reference to decide if the label is actually the one you are looking for. You can disable the example annotations in the <a href="#settings-tab">settings tab</a>.
         </p>
 
+        <p>
+            If a project of the volume has an annotation guideline, the <button class="btn btn-default btn-xs"><i class="fa fa-clipboard-list"></i> Use Guideline</button> button above the label trees can be used to select the guideline. An enforced guideline restricts the labels and shapes that can be used for new annotations. Read more about this in the <a href="{{route('manual-tutorials', ['projects', 'about'])}}#use-a-guideline">annotation guideline</a> section of the projects article.
+        </p>
+
         @mixin('annotationsManualSidebarLabelTrees')
 
         <h3><a name="annotation-modes-tab"></a> <i class="fa fa-th"></i> Annotation Modes</h3>

@@ -3,6 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Enums\Role;
 use Biigle\Tests\ImageAnnotationLabelTest;
 use Biigle\Tests\ImageLabelTest;
@@ -10,6 +12,7 @@ use Biigle\Tests\LabelTest;
 use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\VideoAnnotationLabelTest;
 use Biigle\Tests\VideoLabelTest;
+use Storage;
 
 class LabelTreeMergeControllerTest extends ApiTestCase
 {
@@ -343,6 +346,34 @@ class LabelTreeMergeControllerTest extends ApiTestCase
                 'remove' => [$label->id],
             ])
             ->assertStatus(200);
+    }
+
+    public function testStoreRemoveDeletesGuidelineLabelReferenceImage()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        Storage::fake('annotation_storage');
+
+        $tree = LabelTreeTest::create();
+        $tree->addMember($this->editor(), Role::EDITOR);
+        $label = LabelTest::create(['label_tree_id' => $tree->id]);
+        $guideline = AnnotationGuideline::factory()->create();
+        $guidelineLabel = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $guideline->id,
+            'label_id' => $label->id,
+            'reference_image_path' => "{$guideline->id}/image.jpg",
+        ]);
+        Storage::disk('annotation_storage')->put("{$guideline->id}/image.jpg", 'image');
+
+        $this->beEditor();
+        $this
+            ->postJson("/api/v1/label-trees/{$tree->id}/merge-labels", [
+                'remove' => [$label->id],
+            ])
+            ->assertStatus(200);
+
+        $this->assertNull($label->fresh());
+        $this->assertNull($guidelineLabel->fresh());
+        Storage::disk('annotation_storage')->assertMissing("{$guideline->id}/image.jpg");
     }
 
     public function testStoreRemoveIdsAreNotUsedInCreate()

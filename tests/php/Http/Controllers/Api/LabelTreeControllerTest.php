@@ -3,6 +3,8 @@
 namespace Biigle\Tests\Http\Controllers\Api;
 
 use ApiTestCase;
+use Biigle\AnnotationGuideline;
+use Biigle\AnnotationGuidelineLabel;
 use Biigle\Enums\Role;
 use Biigle\Enums\Visibility;
 use Biigle\LabelTree;
@@ -12,6 +14,7 @@ use Biigle\Tests\LabelTreeTest;
 use Biigle\Tests\LabelTreeVersionTest;
 use Biigle\Tests\ProjectTest;
 use Cache;
+use Storage;
 
 class LabelTreeControllerTest extends ApiTestCase
 {
@@ -218,6 +221,61 @@ class LabelTreeControllerTest extends ApiTestCase
         ]);
 
         $this->assertSame($authorized->id, $tree->projects()->pluck('id')->first());
+    }
+
+    public function testUpdateVisibilityDeletesGuidelineLabels()
+    {
+        config(['projects.annotation_guideline_disk' => 'annotation_storage']);
+        Storage::fake('annotation_storage');
+
+        $master = LabelTreeTest::create(['visibility' => Visibility::PUBLIC]);
+        $master->addMember($this->admin(), Role::ADMIN);
+        $version = LabelTreeVersionTest::create(['label_tree_id' => $master->id]);
+        $versionTree = LabelTreeTest::create([
+            'version_id' => $version->id,
+            'visibility' => Visibility::PUBLIC,
+        ]);
+        $masterLabel = LabelTest::create(['label_tree_id' => $master->id]);
+        $versionLabel = LabelTest::create(['label_tree_id' => $versionTree->id]);
+
+        $unauthorized = ProjectTest::create();
+        $master->projects()->attach($unauthorized->id);
+        $versionTree->projects()->attach($unauthorized->id);
+        $unauthorizedGuideline = AnnotationGuideline::factory()->create([
+            'project_id' => $unauthorized->id,
+        ]);
+        $masterPivot = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $unauthorizedGuideline->id,
+            'label_id' => $masterLabel->id,
+            'reference_image_path' => "{$unauthorizedGuideline->id}/image.jpg",
+        ]);
+        Storage::disk('annotation_storage')->put("{$unauthorizedGuideline->id}/image.jpg", 'image');
+        $versionPivot = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => $unauthorizedGuideline->id,
+            'label_id' => $versionLabel->id,
+        ]);
+
+        $authorized = ProjectTest::create();
+        $master->authorizedProjects()->attach($authorized->id);
+        $master->projects()->attach($authorized->id);
+        $authorizedPivot = AnnotationGuidelineLabel::factory()->create([
+            'annotation_guideline_id' => AnnotationGuideline::factory()->create([
+                'project_id' => $authorized->id,
+            ])->id,
+            'label_id' => $masterLabel->id,
+        ]);
+
+        $this->beAdmin();
+        $this
+            ->putJson("/api/v1/label-trees/{$master->id}", [
+                'visibility' => Visibility::PRIVATE->value,
+            ])
+            ->assertSuccessful();
+
+        $this->assertModelMissing($masterPivot);
+        $this->assertModelMissing($versionPivot);
+        $this->assertModelExists($authorizedPivot);
+        Storage::disk('annotation_storage')->assertMissing("{$unauthorizedGuideline->id}/image.jpg");
     }
 
     public function testUpdatePropagateVisibility()

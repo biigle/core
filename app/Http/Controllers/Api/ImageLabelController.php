@@ -51,6 +51,7 @@ class ImageLabelController extends VolumeFileLabelController
      *
      * @apiParam {Number} id The image ID.
      * @apiParam (Required arguments) {Number} label_id The ID of the label category to attach to the image.
+     * @apiParam (Optional arguments) {Number} guideline_id ID of the enforced annotation guideline that applies. The label must be allowed by the guideline. Required if all projects of the volume (where the user can create annotations) have an enforced guideline. See the "Get annotation guidelines" endpoint of volumes.
      * @apiParamExample {String} Request example:
      * label_id: 1
      * @apiSuccessExample {json} Success response:
