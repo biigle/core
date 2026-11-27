@@ -10,10 +10,16 @@
         <labelbot-indicator v-show="labelbotIsActive" :labelbot-state="labelbotState"></labelbot-indicator>
     </div>
     <label-tooltip
-        :show="showLabelTooltip"
+        :show="showHoverLabelTooltip"
         :position="mousePosition"
         :features="hoveredFeatures"
         ></label-tooltip>
+    <persistent-label-tooltips
+        :annotation-source="annotationSource"
+        :map="map"
+        :mode="showLabelTooltip"
+        :opacity="annotationOpacity"
+        ></persistent-label-tooltips>
     <measure-tooltip
         :show="showMeasureTooltip"
         :position="mousePosition"
@@ -214,6 +220,9 @@
         :key="annotation.id"
         :focused-popup-key="focusedPopupKey"
         :annotation="annotation"
+        :feature="annotationSource.getFeatureById(annotation.id)"
+        :line-source="labelbotSource"
+        :map="map"
         :timeout="labelbotTimeout"
         @update="updateLabelbotLabel"
         @close="closeLabelbotPopup"

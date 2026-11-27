@@ -6,7 +6,11 @@ import ShortcutsButton from './shortcutsButton.vue';
 import ScreenshotButton from './screenshotButton.vue';
 import Settings from '../stores/settings.js';
 import {TIMEOUTS} from '../components/labelbotPopup.vue';
-import { UnitNames } from '../utils.js';
+import {
+    LABEL_TOOLTIP_MODES,
+    normalizeLabelTooltipMode,
+    UnitNames,
+} from '../utils.js';
 
 /**
  * Additional components that can be dynamically added by other Biigle modules via
@@ -75,7 +79,7 @@ export default {
             mousePosition: false,
             zoomLevel: false,
             scaleLine: false,
-            labelTooltip: false,
+            labelTooltip: LABEL_TOOLTIP_MODES.OFF,
             measureTooltip: false,
             minimap: true,
             progressIndicator: true,
@@ -102,6 +106,9 @@ export default {
         unitNames() {
             return ['auto'].concat(UnitNames);
         },
+        labelTooltipModes() {
+            return Object.values(LABEL_TOOLTIP_MODES);
+        },
     },
     methods: {
         showMousePosition() {
@@ -122,16 +129,9 @@ export default {
         hideScaleLine() {
             this.scaleLine = false;
         },
-        showLabelTooltip() {
-            this.labelTooltip = true;
-            this.measureTooltip = false;
-        },
-        hideLabelTooltip() {
-            this.labelTooltip = false;
-        },
         showMeasureTooltip() {
             this.measureTooltip = true;
-            this.labelTooltip = false;
+            this.labelTooltip = LABEL_TOOLTIP_MODES.OFF;
         },
         hideMeasureTooltip() {
             this.measureTooltip = false;
@@ -196,9 +196,13 @@ export default {
             this.$emit('change', 'scaleLine', show);
             this.settings.set('scaleLine', show);
         },
-        labelTooltip(show) {
-            this.$emit('change', 'labelTooltip', show);
-            this.settings.set('labelTooltip', show);
+        labelTooltip(mode) {
+            mode = normalizeLabelTooltipMode(mode);
+            if (mode !== LABEL_TOOLTIP_MODES.OFF) {
+                this.measureTooltip = false;
+            }
+            this.$emit('change', 'labelTooltip', mode);
+            this.settings.set('labelTooltip', mode);
         },
         measureTooltip(show) {
             this.$emit('change', 'measureTooltip', show);
@@ -227,7 +231,9 @@ export default {
     },
     created() {
         this.restoreKeys.forEach((key) => {
-            this[key] = this.settings.get(key);
+            this[key] = key === 'labelTooltip'
+                ? normalizeLabelTooltipMode(this.settings.get(key))
+                : this.settings.get(key);
         });
         Keyboard.on('o', this.toggleAnnotationOpacity);
     },
