@@ -67,9 +67,33 @@ export default class {
         keys = keys || Object.keys(params);
         keys.forEach((key) => {
             if (params.hasOwnProperty(key)) {
-                this.data[key] = params[key];
+                let value = this.parseUrlParam(key, params[key]);
+                if (value !== undefined) {
+                    this.data[key] = value;
+                }
             }
         });
+    }
+
+    // URL params are strings. Convert them to the type of the default value or
+    // return undefined if this is not possible.
+    parseUrlParam(key, value) {
+        switch (typeof this.defaults[key]) {
+            case 'boolean':
+                if (value === 'true' || value === '1') {
+                    return true;
+                } else if (value === 'false' || value === '0') {
+                    return false;
+                }
+
+                return undefined;
+            case 'number':
+                value = parseFloat(value);
+
+                return Number.isNaN(value) ? undefined : value;
+            default:
+                return value;
+        }
     }
 
     watch(key, callback) {
