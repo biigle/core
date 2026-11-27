@@ -62,13 +62,16 @@ class ProjectsAttachableVolumesController extends Controller
                 ->from('project_volume')
                 ->where('project_id', $id))
             ->distinct()
-            ->get()
-            ->each(function ($item) use ($hidden) {
-                $item->append('thumbnailUrl')
-                    ->append('thumbnailsUrl')
-                    ->makeHidden($hidden)
-                    ->setAttribute('media_type_label', $item->media_type->label());
-            });
+            ->get();
+
+        Volume::preloadThumbnails($volumes);
+
+        $volumes->each(function ($item) use ($hidden) {
+            $item->append('thumbnailUrl')
+                ->append('thumbnailsUrl')
+                ->makeHidden($hidden)
+                ->setAttribute('media_type_label', $item->media_type->label());
+        });
 
         return $volumes;
     }

@@ -4,6 +4,7 @@ namespace Biigle\Http\Controllers\Views\Projects;
 
 use Biigle\Http\Controllers\Views\Controller;
 use Biigle\Project;
+use Biigle\Volume;
 use Illuminate\Http\Request;
 
 class ProjectsController extends Controller
@@ -44,13 +45,16 @@ class ProjectsController extends Controller
         $volumes = $project->volumes()
             ->select('id', 'name', 'updated_at', 'media_type')
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->each(function ($item) use ($hidden) {
-                $item->append('thumbnailUrl')
-                    ->append('thumbnailsUrl')
-                    ->makeHidden($hidden)
-                    ->setAttribute('media_type_label', $item->media_type->label());
-            });
+            ->get();
+
+        Volume::preloadThumbnails($volumes);
+
+        $volumes->each(function ($item) use ($hidden) {
+            $item->append('thumbnailUrl')
+                ->append('thumbnailsUrl')
+                ->makeHidden($hidden)
+                ->setAttribute('media_type_label', $item->media_type->label());
+        });
 
         $userProject = $request->user()->projects()->where('id', $id)->first();
         $isMember = $userProject !== null;
