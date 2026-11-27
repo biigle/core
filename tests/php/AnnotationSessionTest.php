@@ -126,6 +126,39 @@ class AnnotationSessionTest extends ModelTestCase
         $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
     }
 
+    public function testGetVolumeFileAnnotationsHideOwnLabelCreatedLaterImage()
+    {
+        $ownUser = UserTest::create();
+        $image = ImageTest::create();
+
+        // The annotation was created during the annotation session but the label was
+        // created later (e.g. by relabeling the annotation in Largo).
+        $a = ImageAnnotationTest::create([
+            'image_id' => $image->id,
+            'created_at' => '2016-09-06',
+            'points' => [20, 30, 40],
+        ]);
+        $al = ImageAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-08',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $image->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $yieldAnnotations = $session->getVolumeFileAnnotations($image, $ownUser);
+        $annotations = collect(collect($yieldAnnotations())->toArray());
+
+        $this->assertCount(1, $annotations);
+        $this->assertSame([$al->id], array_column($annotations->first()['labels'], 'id'));
+    }
+
     public function testGetVolumeFileAnnotationsHideOwnVideo()
     {
         $ownUser = UserTest::create();
@@ -179,6 +212,38 @@ class AnnotationSessionTest extends ModelTestCase
 
         $this->assertTrue($annotations->contains('points', [[30, 40, 50]]));
         $this->assertTrue($annotations->contains('labels', [$al2->toArray()]));
+    }
+
+    public function testGetVolumeFileAnnotationsHideOwnLabelCreatedLaterVideo()
+    {
+        $ownUser = UserTest::create();
+        $video = VideoTest::create();
+
+        // The annotation was created during the annotation session but the label was
+        // created later (e.g. by relabeling the annotation in Largo).
+        $a = VideoAnnotationTest::create([
+            'video_id' => $video->id,
+            'created_at' => '2016-09-06',
+        ]);
+        $al = VideoAnnotationLabelTest::create([
+            'annotation_id' => $a->id,
+            'user_id' => $ownUser->id,
+            'created_at' => '2016-09-08',
+        ]);
+
+        $session = static::create([
+            'volume_id' => $video->volume_id,
+            'starts_at' => '2016-09-06',
+            'ends_at' => '2016-09-07',
+            'hide_own_annotations' => true,
+            'hide_other_users_annotations' => false,
+        ]);
+
+        $yieldAnnotations = $session->getVolumeFileAnnotations($video, $ownUser);
+        $annotations = collect(collect($yieldAnnotations())->toArray());
+
+        $this->assertCount(1, $annotations);
+        $this->assertSame([$al->id], array_column($annotations->first()['labels'], 'id'));
     }
 
     public function testGetVolumeFileAnnotationsHideOtherImage()
