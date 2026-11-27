@@ -42,8 +42,8 @@ export default {
 
             return ProjectsApi.sortAnnotationsBySimilarity(params);
         },
-        fetchLabelCount() {
-            return ProjectsApi.fetchProjectAnnotationLabelCount({ id: this.projectId });
+        fetchLabelCount(filters = []) {
+            return ProjectsApi.fetchProjectAnnotationLabelCount({ ...filters, id: this.projectId });
         },
     },
     created() {

@@ -4,12 +4,15 @@ namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
 use Biigle\ImageAnnotation;
+use Biigle\Traits\CompileFilters;
 use Biigle\VideoAnnotation;
 use Biigle\Volume;
 use Illuminate\Http\Request;
 
 class VolumeAnnotationLabels extends Controller
 {
+    use CompileFilters;
+
     /**
      * Get all annotation labels and annotation count for a given volume
      *
@@ -17,6 +20,10 @@ class VolumeAnnotationLabels extends Controller
      * @apiGroup Volumes
      * @apiName GetVolumeAnnotationLabelCounts
      * @apiParam {Number} id The Volume ID
+     * @apiParam (Optional arguments) {Array} shape Array of shape ids to use to filter annotations
+     * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter annotations
+     * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a collection of annotation labels and their counts in the volume
      *
@@ -34,6 +41,25 @@ class VolumeAnnotationLabels extends Controller
     {
         $volume = Volume::findOrFail($id);
         $this->authorize('access', $volume);
+
+        $this->validate($request, [
+            'shape' => 'array',
+            'shape.*' => 'integer',
+            'user_id' => 'array',
+            'user_id.*' => 'integer',
+            'filename' => 'array',
+            'filename.*' => 'string',
+            'union' => 'boolean',
+        ]);
+
+        $filters = [
+            'shape' => $request->input('shape'),
+            'user_id' => $request->input('user_id'),
+            'filename' => $request->input('filename'),
+        ];
+        $filters = array_filter($filters);
+        $union = $request->input('union', false);
+
         $isImageVolume = $volume->isImageVolume();
         $session = $volume->getActiveAnnotationSession($request->user());
 
@@ -69,6 +95,7 @@ class VolumeAnnotationLabels extends Controller
                     }
                 }
             })
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
             ->selectRaw('labels.id, labels.name, labels.color, labels.label_tree_id, count(labels.id) as count')
             ->groupBy(['labels.id', 'labels.name', 'labels.color', 'labels.label_tree_id'])
             ->orderBy('labels.name')
