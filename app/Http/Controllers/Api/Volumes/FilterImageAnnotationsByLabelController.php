@@ -2,10 +2,10 @@
 namespace Biigle\Http\Controllers\Api\Volumes;
 
 use Biigle\Http\Controllers\Api\Controller;
+use Biigle\Http\Requests\FilterVolumeAnnotationsRequest;
 use Biigle\ImageAnnotation;
 use Biigle\Traits\CompileFilters;
 use Biigle\Volume;
-use Illuminate\Http\Request;
 
 class FilterImageAnnotationsByLabelController extends Controller
 {
@@ -23,42 +23,30 @@ class FilterImageAnnotationsByLabelController extends Controller
      * @apiParam (Optional arguments) {Array} shape Array of shape ids to use to filter images
      * @apiParam (Optional arguments) {Array} user_id Array of user ids to use to filter values
      * @apiParam (Optional arguments) {Array} filename Array of filename patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_created_at  Array of date patterns to use to filter annotations
+     * @apiParam (Optional arguments) {Array} annotation_label_created_at  Array of date patterns to use to filter annotations
      * @apiParam (Optional arguments) {Boolean} union Whether the filters should be considered inclusive (OR) or exclusive (AND)
      * @apiPermission projectMember
      * @apiDescription Returns a map of image annotation IDs to their image UUIDs. If there is an active annotation session, annotations hidden by the session are not returned. Only available for image volumes.
      *
-     * @param Request $request
-     * @param  int  $vid Volume ID
-     * @param int $lid Label ID
+     * @param FilterVolumeAnnotationsRequest $request
      * @return \Illuminate\Support\Collection
      */
-    public function index(Request $request, $vid, $lid)
+    public function index(FilterVolumeAnnotationsRequest $request)
     {
-        $volume = Volume::findOrFail($vid);
-        $this->authorize('access', $volume);
-
-        $this->validate($request, [
-            'take' => 'integer',
-            'shape' => 'array',
-            'shape.*' => 'integer',
-            'user_id' => 'array',
-            'user_id.*' => 'integer',
-            'filename' => 'array',
-            'filename.*' => 'string',
-            'union' => 'boolean',
-        ]);
-
         $take = $request->input('take');
 
         $filters = [
             'shape' => $request->input('shape'),
             'user_id' => $request->input('user_id'),
             'filename' => $request->input('filename'),
+            'annotation_created_at' => $request->input('annotation_created_at'),
+            'annotation_label_created_at' => $request->input('annotation_label_created_at'),
         ];
         $filters = array_filter($filters);
         $union = $request->input('union', false);
 
-        $session = $volume->getActiveAnnotationSession($request->user());
+        $session = $request->volume->getActiveAnnotationSession($request->user());
 
         if ($session) {
             $query = ImageAnnotation::allowedBySession($session, $request->user());
@@ -68,10 +56,10 @@ class FilterImageAnnotationsByLabelController extends Controller
 
         return $query->join('image_annotation_labels', 'image_annotations.id', '=', 'image_annotation_labels.annotation_id')
             ->join('images', 'image_annotations.image_id', '=', 'images.id')
-            ->where('images.volume_id', $vid)
-            ->where('image_annotation_labels.label_id', $lid)
+            ->where('images.volume_id', $request->volume->id)
+            ->where('image_annotation_labels.label_id', $request->labelId)
             ->when(!is_null($take), fn ($query) => $query->take($take))
-            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions($query, $union, $filters))
+            ->when(!empty($filters), fn ($query) => $this->compileFilterConditions('image', $query, $union, $filters))
             ->when($session, function ($query) use ($session, $request) {
                 if ($session->hide_other_users_annotations) {
                     $query->where('image_annotation_labels.user_id', $request->user()->id);
