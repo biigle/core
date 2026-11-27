@@ -123,7 +123,7 @@ class VolumeFiles implements Rule
             }
         } elseif ($this->type === MediaType::VIDEO) {
             if ($count !== count(preg_grep(Volume::VIDEO_FILE_REGEX, $value))) {
-                $this->message = 'Only MPEG, MP4 or WebM video formats are supported.';
+                $this->message = 'Only MPEG, MP4, M4V or WebM video formats are supported.';
 
                 return false;
             }

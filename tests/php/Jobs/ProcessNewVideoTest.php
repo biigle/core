@@ -140,6 +140,18 @@ class ProcessNewVideoTest extends TestCase
         $this->assertSame('video/mp4', $video->fresh()->mimeType);
     }
 
+    public function testHandleMimeTypeM4v()
+    {
+        // MP4 file with the "M4V " brand which is detected as video/x-m4v.
+        $video = VideoTest::create(['filename' => 'test.m4v']);
+        $job = new ProcessNewVideoStub($video);
+        $job->passThroughCodec = true;
+        $job->handle();
+        $video->refresh();
+        $this->assertSame('video/x-m4v', $video->mimeType);
+        $this->assertNull($video->error);
+    }
+
     public function testHandleInvalidMimeType()
     {
         $video = VideoTest::create(['filename' => 'test-image.jpg']);
